@@ -15,7 +15,7 @@ ifeq ($(OS), Windows_NT) # Windows
 	OUTPUT = bin/horinezumi.exe
 endif
 
-all: run
+all: build
 run:
 	go run main.go
 build:
