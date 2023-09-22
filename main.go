@@ -4,9 +4,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ChaosIsFramecode/horinezumi/wikiroute"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/ChaosIsFramecode/horinezumi/subroutes/wikiroute"
 )
 
 func main() {
