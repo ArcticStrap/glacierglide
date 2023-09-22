@@ -6,11 +6,18 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/joho/godotenv"
 
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/wikiroute"
 )
 
 func main() {
+	// Load .env variables
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading environment variables: %s", err)
+	}
+
 	rt := chi.NewRouter()
 
 	// Use logger
