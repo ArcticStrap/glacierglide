@@ -4,20 +4,21 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5"
 
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/editroute"
 )
 
-func SetupWikiroute(rt *chi.Mux) {
+func SetupWikiroute(rt *chi.Mux, conn *pgx.Conn) {
 	// Add view subroute
-	rt.Route("/wiki", func(sr chi.Router) {
+	rt.Route("/wiki", func(wikirouter chi.Router) {
 		// Redirect root to main page
-		sr.Get("/", http.RedirectHandler("/wiki/Main_Page", http.StatusSeeOther).ServeHTTP)
+		wikirouter.Get("/", http.RedirectHandler("/wiki/Main_Page", http.StatusSeeOther).ServeHTTP)
 
 		// Page view handler
-		sr.Route("/{title}", func(pr chi.Router) {
+		wikirouter.Route("/{title}", func(pagerouter chi.Router) {
 			// Retrieve page content
-			pr.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			pagerouter.Get("/", func(w http.ResponseWriter, r *http.Request) {
 				titleParam := chi.URLParam(r, "title")
 				if titleParam == "Main_Page" {
 					// Main page
@@ -30,5 +31,5 @@ func SetupWikiroute(rt *chi.Mux) {
 	})
 
 	// Call edit subroute
-	editroute.SetupEditRoute(rt)
+	editroute.SetupEditRoute(rt, conn)
 }

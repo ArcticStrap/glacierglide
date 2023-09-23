@@ -5,21 +5,36 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/ChaosIsFramecode/horinezumi/data"
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5"
 )
 
-func SetupEditRoute(rt *chi.Mux) {
+func SetupEditRoute(rt *chi.Mux, conn *pgx.Conn) {
 	// Setup subrouter for wiki editing
-	rt.Route("/e", func(sr chi.Router) {
-		sr.Route("/{title}", func(pr chi.Router) {
+	rt.Route("/e", func(editrouter chi.Router) {
+		editrouter.Route("/{title}", func(pagerouter chi.Router) {
 			// TODO: Create page
-			pr.Post("/", func(w http.ResponseWriter, r *http.Request) {
+			pagerouter.Post("/", func(w http.ResponseWriter, r *http.Request) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
+
+				// Handle request
+				newPage := new(data.Page)
+				if err := json.NewDecoder(r.Body).Decode(&newPage); err != nil {
+					log.Fatalf("Error with parsing json request: %s", err)
+					return
+				}
+				// Create page in database
+				if err := data.InsertPage(conn, newPage); err != nil {
+					log.Fatalf("Error with inserting page into database: %s", err)
+					return
+				}
 
 				// Make response
 				resp := make(map[string]string)
 				resp["message"] = "Page created"
+				resp["pageTitle"] = newPage.Title
 				jsonResp, err := json.Marshal(resp)
 				if err != nil {
 					log.Fatalf("Error happened in JSON marshal. Err: %s", err)
@@ -29,7 +44,7 @@ func SetupEditRoute(rt *chi.Mux) {
 			})
 
 			// TODO: Update page content
-			pr.Put("/", func(w http.ResponseWriter, r *http.Request) {
+			pagerouter.Put("/", func(w http.ResponseWriter, r *http.Request) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
 
@@ -45,9 +60,23 @@ func SetupEditRoute(rt *chi.Mux) {
 			})
 
 			// TODO: Delete page
-			pr.Delete("/", func(w http.ResponseWriter, r *http.Request) {
+			pagerouter.Delete("/", func(w http.ResponseWriter, r *http.Request) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
+
+				// Handle request
+				pageTitle := new(struct {
+					Title string `json:"title"`
+				})
+				if err := json.NewDecoder(r.Body).Decode(&pageTitle); err != nil {
+					log.Fatalf("Error with parsing json request: %s", err)
+					return
+				}
+				// Delete page from database
+				if err := data.DeletePage(conn, pageTitle.Title); err != nil {
+					log.Fatalf("Error deleting page from database: %s", err)
+					return
+				}
 
 				// Make response
 				resp := make(map[string]string)
