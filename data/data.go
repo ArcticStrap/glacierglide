@@ -7,13 +7,22 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func ConnectToDataBase() (*pgx.Conn, error) {
-	return pgx.Connect(context.Background(), os.Getenv("PAGEDATAURL"))
+type PostgresBase struct {
+	conn *pgx.Conn
 }
 
-func CreateTables(conn *pgx.Conn) error {
+// (*pgx.Conn, error)
+func ConnectToDatabase() (PostgresBase, error) {
+	conn, err := pgx.Connect(context.Background(), os.Getenv("PAGEDATAURL"))
+	if err != nil {
+		return PostgresBase{}, err
+	}
+	return PostgresBase{conn: conn}, nil
+}
+
+func (b *PostgresBase) CreateTables() error {
 	// Create the tables for pages, users, page history, and diffs if they don't exist
-	_, err := conn.Exec(context.Background(), `
+	_, err := b.conn.Exec(context.Background(), `
 		CREATE TABLE IF NOT EXISTS pages (
 			page_id SERIAL PRIMARY KEY,
 			title TEXT NOT NULL,
@@ -46,33 +55,6 @@ func CreateTables(conn *pgx.Conn) error {
 	return nil
 }
 
-func CloseDataBase(conn *pgx.Conn) {
-	conn.Close(context.Background())
-}
-
-func InsertPage(conn *pgx.Conn, v *Page) error {
-	// Execute create request
-	_, err := conn.Exec(context.Background(), "INSERT INTO pages (title, content) VALUES ($1, $2)", v.Title, v.Content)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func DeletePage(conn *pgx.Conn, title string) error {
-	// Fetch page id from title
-	var id int
-	err := conn.QueryRow(context.Background(), "SELECT page_id FROM pages WHERE title=$1", title).Scan(&id)
-	if err != nil {
-		return err
-	}
-
-	// Execute delete request
-	_, err = conn.Exec(context.Background(), "DELETE FROM pages WHERE page_id=$1", id)
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (b *PostgresBase) Close() {
+	b.conn.Close(context.Background())
 }

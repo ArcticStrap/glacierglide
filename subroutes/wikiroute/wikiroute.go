@@ -4,12 +4,12 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/jackc/pgx/v5"
 
+	"github.com/ChaosIsFramecode/horinezumi/data"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/editroute"
 )
 
-func SetupWikiroute(rt *chi.Mux, conn *pgx.Conn) {
+func SetupWikiroute(rt *chi.Mux, db *data.PostgresBase) {
 	// Add view subroute
 	rt.Route("/wiki", func(wikirouter chi.Router) {
 		// Redirect root to main page
@@ -31,5 +31,5 @@ func SetupWikiroute(rt *chi.Mux, conn *pgx.Conn) {
 	})
 
 	// Call edit subroute
-	editroute.SetupEditRoute(rt, conn)
+	editroute.SetupEditRoute(rt, db)
 }

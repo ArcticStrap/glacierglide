@@ -21,15 +21,15 @@ func main() {
 	}
 
 	// Connect to our database
-	conn, err := data.ConnectToDataBase()
+	db, err := data.ConnectToDatabase()
 	if err != nil {
 		log.Fatalf("Error connecting to data base: %s", err)
 	} else {
 		log.Printf("Successfully connected to data base")
 	}
-	defer data.CloseDataBase(conn)
+	defer db.Close()
 
-	if err = data.CreateTables(conn); err != nil {
+	if err = db.CreateTables(); err != nil {
 		log.Fatalf("Failed to create table: %s", err)
 	}
 
@@ -42,7 +42,7 @@ func main() {
 	rt.Get("/", http.RedirectHandler("/wiki/Main_Page", http.StatusSeeOther).ServeHTTP)
 
 	// Wiki sub router
-	wikiroute.SetupWikiroute(rt, conn)
+	wikiroute.SetupWikiroute(rt, &db)
 
 	log.Println("Running on " + os.Getenv("ADDR"))
 	http.ListenAndServe(os.Getenv("ADDR"), rt)

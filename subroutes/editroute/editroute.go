@@ -7,10 +7,9 @@ import (
 
 	"github.com/ChaosIsFramecode/horinezumi/data"
 	"github.com/go-chi/chi/v5"
-	"github.com/jackc/pgx/v5"
 )
 
-func SetupEditRoute(rt *chi.Mux, conn *pgx.Conn) {
+func SetupEditRoute(rt *chi.Mux, db *data.PostgresBase) {
 	// Setup subrouter for wiki editing
 	rt.Route("/e", func(editrouter chi.Router) {
 		editrouter.Route("/{title}", func(pagerouter chi.Router) {
@@ -26,7 +25,7 @@ func SetupEditRoute(rt *chi.Mux, conn *pgx.Conn) {
 					return
 				}
 				// Create page in database
-				if err := data.InsertPage(conn, newPage); err != nil {
+				if err := db.CreatePage(newPage); err != nil {
 					log.Fatalf("Error with inserting page into database: %s", err)
 					return
 				}
@@ -73,7 +72,7 @@ func SetupEditRoute(rt *chi.Mux, conn *pgx.Conn) {
 					return
 				}
 				// Delete page from database
-				if err := data.DeletePage(conn, pageTitle.Title); err != nil {
+				if err := db.DeletePage(pageTitle.Title); err != nil {
 					log.Fatalf("Error deleting page from database: %s", err)
 					return
 				}
