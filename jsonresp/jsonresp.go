@@ -2,6 +2,7 @@ package jsonresp
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -19,7 +20,8 @@ func JsonOK(w http.ResponseWriter, resp map[string]string, message string) {
 	w.Write(jsonResp)
 }
 
-func JsonERR(w http.ResponseWriter, code int, message string, err error) {
+func JsonERR(w http.ResponseWriter, code int, message string, msgerr error) {
+	message = fmt.Sprintf(message, msgerr)
 	// Make response
 	resp := make(map[string]string)
 	resp["message"] = message

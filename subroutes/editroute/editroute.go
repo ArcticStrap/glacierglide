@@ -42,6 +42,19 @@ func SetupEditRoute(rt *chi.Mux, db *data.PostgresBase) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
 
+				// Handle request
+				uPage := new(data.Page)
+				if err := json.NewDecoder(r.Body).Decode(&uPage); err != nil {
+					jsonresp.JsonERR(w, 422, "Error with parsing json request: %s", err)
+					return
+				}
+				// Update page from database
+				// Create page in database
+				if err := db.UpdatePage(uPage); err != nil {
+					jsonresp.JsonERR(w, 422, "Error with inserting page into database: %s", err)
+					return
+				}
+
 				// Make response
 				jsonresp.JsonOK(w, make(map[string]string), "Page updated!")
 			})

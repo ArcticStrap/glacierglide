@@ -14,18 +14,13 @@ type User struct {
 	CreationDate time.Time
 }
 
-type Diff struct {
-	DiffId  int64
-	Content string
-}
-
-type PageHistory struct {
-	Id          int64
+type PageDiff struct {
+	DiffId      int64
 	PageId      int64
 	Date        time.Time
 	Time        time.Time
 	UserId      int64
 	Anon        bool
 	Description string
-	DiffId      int64
+	Content     string
 }

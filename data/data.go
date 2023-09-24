@@ -35,20 +35,16 @@ func (b *PostgresBase) CreateTables() error {
 			password TEXT NOT NULL,
 			creation_date TIMESTAMP
 		);
-		CREATE TABLE IF NOT EXISTS page_history (
-			id SERIAL PRIMARY KEY,
+		CREATE TABLE IF NOT EXISTS page_diff (
+			diff_id SERIAL PRIMARY KEY,
 			page_id INT REFERENCES pages(page_id),
 			change_date DATE NOT NULL,
 			change_time TIME NOT NULL,
 			editor_id INT REFERENCES users(user_id),
 			anon BOOLEAN DEFAULT FALSE,
 			description TEXT,
-			diff_id UUID UNIQUE
-		);
-		CREATE TABLE IF NOT EXISTS diffs (
-			diff_id UUID PRIMARY KEY,
-			diff_content TEXT NOT NULL -- this could be in a unified diff format or any format you choose
-		);		
+			content TEXT
+		);	
 	`)
 	if err != nil {
 		return err
