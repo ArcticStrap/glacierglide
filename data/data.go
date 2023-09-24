@@ -35,7 +35,7 @@ func (b *PostgresBase) CreateTables() error {
 			password TEXT NOT NULL,
 			creation_date TIMESTAMP
 		);
-		CREATE TABLE IF NOT EXISTS page_diff (
+		CREATE TABLE IF NOT EXISTS page_diffs (
 			diff_id SERIAL PRIMARY KEY,
 			page_id INT REFERENCES pages(page_id),
 			change_date DATE NOT NULL,

@@ -26,8 +26,8 @@ func (db *PostgresBase) GetIdFromPageTitle(title string) (*int, error) {
 // CRUD functions for Page datatype
 
 func (db *PostgresBase) CreatePageDiff(p *Page) error {
-	// SQL query to insert a new page_diff row
-	query := "INSERT INTO page_diff (page_id,change_date,change_time,editor_id,anon,description,content) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	// SQL query to insert a new page_diffs row
+	query := "INSERT INTO page_diffs (page_id,change_date,change_time,editor_id,anon,description,content) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 
 	// Get page id
 	pId, err := db.GetIdFromPageTitle(p.Title)
@@ -46,7 +46,7 @@ func (db *PostgresBase) CreatePageDiff(p *Page) error {
 
 func (db *PostgresBase) ReadPageDiff(id int64) (*PageDiff, error) {
 	// SQL query to fetch the page by ID
-	query := `SELECT page_id,change_date,change_time,editor_id,anon,description,diff_id FROM page_diff WHERE id=$1`
+	query := `SELECT page_id,change_date,change_time,editor_id,anon,description,diff_id FROM page_diffs WHERE id=$1`
 
 	var pageDiff PageDiff
 
@@ -60,7 +60,7 @@ func (db *PostgresBase) ReadPageDiff(id int64) (*PageDiff, error) {
 
 func (db *PostgresBase) DeletePageDiff(id int64) error {
 	// Execute delete request for page history
-	_, err := db.conn.Exec(context.Background(), "DELETE FROM page_diff WHERE id=$1", id)
+	_, err := db.conn.Exec(context.Background(), "DELETE FROM page_diffs WHERE id=$1", id)
 	if err != nil {
 		return err
 	}
