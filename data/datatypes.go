@@ -25,6 +25,7 @@ type PageHistory struct {
 	Date        time.Time
 	Time        time.Time
 	UserId      int64
+	Anon        bool
 	Description string
 	DiffId      int64
 }

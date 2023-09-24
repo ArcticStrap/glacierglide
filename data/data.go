@@ -41,6 +41,7 @@ func (b *PostgresBase) CreateTables() error {
 			change_date DATE NOT NULL,
 			change_time TIME NOT NULL,
 			editor_id INT REFERENCES users(user_id),
+			anon BOOLEAN DEFAULT FALSE,
 			description TEXT,
 			diff_id UUID UNIQUE
 		);
