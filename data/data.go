@@ -31,7 +31,6 @@ func (b *PostgresBase) CreateTables() error {
 		CREATE TABLE IF NOT EXISTS users (
 			user_id SERIAL PRIMARY KEY,
 			username TEXT NOT NULL,
-			email TEXT UNIQUE NOT NULL,
 			password TEXT NOT NULL,
 			creation_date TIMESTAMP
 		);

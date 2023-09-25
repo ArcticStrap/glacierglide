@@ -134,3 +134,83 @@ func (db *PostgresBase) DeletePage(title string) error {
 
 	return nil
 }
+
+// CRUD functions for user accounts
+
+func (db *PostgresBase) GetUserIdFromName(username string) (*int, error) {
+	var id int
+	err := db.conn.QueryRow(context.Background(), "SELECT user_id FROM users WHERE username=$1", username).Scan(&id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &id, nil
+}
+
+func (db *PostgresBase) GetUser(username string) (*User, error) {
+	// SQL query to fetch the user by ID
+	query := `SELECT username, password, creation_date FROM users WHERE user_id=$1`
+
+	pageID, err := db.GetUserIdFromName(username)
+	if err != nil {
+		return nil, err
+	}
+
+	var u User
+
+	// Execute the query and scan the result into the Page struct
+	if err := db.conn.QueryRow(context.Background(), query, pageID).Scan(&u.Username, u.Password, u.CreationDate); err != nil {
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+func (db *PostgresBase) CreateUser(username, password string) (*User, error) {
+	// Set up struct
+	newUser := &User{
+		Username:     username,
+		Password:     password,
+		CreationDate: time.Now().UTC(),
+	}
+
+	// Execute create request
+	_, err := db.conn.Exec(context.Background(), "INSERT INTO users (username, password, creation_date) VALUES ($1, $2, $3)", username, password, newUser.CreationDate)
+	if err != nil {
+		return nil, err
+	}
+
+	return newUser, nil
+}
+
+func (db *PostgresBase) UpdateUser(u *User, newName, newPass string) error {
+	// Fetch page id from name
+	id, err := db.GetUserIdFromName(u.Username)
+	if err != nil {
+		return err
+	}
+
+	// Execute create request
+	_, err = db.conn.Exec(context.Background(), "UPDATE users SET username = ($1), SET password = ($2) WHERE user_id = ($3)", newName, newPass, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *PostgresBase) DeleteUser(username string) error {
+	// Fetch user id from name
+	id, err := db.GetUserIdFromName(username)
+	if err != nil {
+		return err
+	}
+
+	// Execute delete request
+	_, err = db.conn.Exec(context.Background(), "DELETE FROM users WHERE user_id=$1", *id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
