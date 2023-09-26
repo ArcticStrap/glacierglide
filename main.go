@@ -10,7 +10,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/ChaosIsFramecode/horinezumi/data"
-	"github.com/ChaosIsFramecode/horinezumi/subroutes/wikiroute"
+	"github.com/ChaosIsFramecode/horinezumi/subroutes/wiki"
 )
 
 func main() {
@@ -42,7 +42,7 @@ func main() {
 	rt.Get("/", http.RedirectHandler("/wiki/Main_Page", http.StatusSeeOther).ServeHTTP)
 
 	// Wiki sub router
-	wikiroute.SetupWikiroute(rt, &db)
+	wiki.SetupWikiroute(rt, &db)
 
 	log.Println("Running on " + os.Getenv("ADDR"))
 	http.ListenAndServe(os.Getenv("ADDR"), rt)

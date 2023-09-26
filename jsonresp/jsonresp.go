@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 func JsonOK(w http.ResponseWriter, resp map[string]string, message string) {
+	// Write OK CODE
+	w.WriteHeader(200)
+
 	// Make response
 	resp["message"] = message
-	resp["code"] = strconv.Itoa(200)
+
 	jsonResp, err := json.Marshal(resp)
 	if err != nil {
 		log.Printf("Error happened in JSON marshal. Err: %s", err)
@@ -21,11 +23,15 @@ func JsonOK(w http.ResponseWriter, resp map[string]string, message string) {
 }
 
 func JsonERR(w http.ResponseWriter, code int, message string, msgerr error) {
+	// Write ERR CODE
+	w.WriteHeader(code)
+
+	// Format error message
 	message = fmt.Sprintf(message, msgerr)
 	// Make response
 	resp := make(map[string]string)
 	resp["message"] = message
-	resp["code"] = strconv.Itoa(code)
+
 	jsonResp, err := json.Marshal(resp)
 	if err != nil {
 		log.Printf("Error happened in JSON marshal. Err: %s", err)

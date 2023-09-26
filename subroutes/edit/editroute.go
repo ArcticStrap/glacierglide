@@ -1,4 +1,4 @@
-package editroute
+package edit
 
 import (
 	"encoding/json"
