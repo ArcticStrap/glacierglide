@@ -10,6 +10,8 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/ChaosIsFramecode/horinezumi/data"
+	"github.com/ChaosIsFramecode/horinezumi/subroutes/edit"
+	"github.com/ChaosIsFramecode/horinezumi/subroutes/user"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/wiki"
 )
 
@@ -41,8 +43,10 @@ func main() {
 	// Redirect root path to main page
 	rt.Get("/", http.RedirectHandler("/wiki/Main_Page", http.StatusSeeOther).ServeHTTP)
 
-	// Wiki sub router
+	// Initalize subrouters
 	wiki.SetupWikiroute(rt, &db)
+	edit.SetupEditRoute(rt, &db)
+	user.SetupUserRoute(rt, &db)
 
 	log.Println("Running on " + os.Getenv("ADDR"))
 	http.ListenAndServe(os.Getenv("ADDR"), rt)

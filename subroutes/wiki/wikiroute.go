@@ -6,7 +6,6 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/ChaosIsFramecode/horinezumi/data"
-	"github.com/ChaosIsFramecode/horinezumi/subroutes/edit"
 )
 
 func SetupWikiroute(rt *chi.Mux, db data.Datastore) {
@@ -29,7 +28,4 @@ func SetupWikiroute(rt *chi.Mux, db data.Datastore) {
 			})
 		})
 	})
-
-	// Call edit subroute
-	edit.SetupEditRoute(rt, db)
 }
