@@ -11,8 +11,8 @@ type PostgresBase struct {
 	conn *pgx.Conn
 }
 
-// (*pgx.Conn, error)
-func ConnectToDatabase() (PostgresBase, error) {
+// Postgres connections
+func ConnectToPostgresDatabase() (PostgresBase, error) {
 	conn, err := pgx.Connect(context.Background(), os.Getenv("PAGEDATAURL"))
 	if err != nil {
 		return PostgresBase{}, err
