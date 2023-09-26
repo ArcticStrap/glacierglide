@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func SetupEditRoute(rt *chi.Mux, db *data.PostgresBase) {
+func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 	// Setup subrouter for wiki editing
 	rt.Route("/e", func(editrouter chi.Router) {
 		editrouter.Route("/{title}", func(pagerouter chi.Router) {

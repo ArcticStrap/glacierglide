@@ -9,7 +9,7 @@ import (
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/editroute"
 )
 
-func SetupWikiroute(rt *chi.Mux, db *data.PostgresBase) {
+func SetupWikiroute(rt *chi.Mux, db data.Datastore) {
 	// Add view subroute
 	rt.Route("/wiki", func(wikirouter chi.Router) {
 		// Redirect root to main page

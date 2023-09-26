@@ -6,12 +6,23 @@ import (
 )
 
 // Created for use in future updates when we plan on implementing different databses (e.g. MariaDB/MySQL and MongoDB)
-/* type Datastore interface {
-	Insert(any)
-	Fetch(any)
-	Delete(any)
-	Update(any)
-} */
+type Datastore interface {
+	Close()
+	CreatePage(v *Page) error
+	CreatePageDiff(p *Page) error
+	CreateTables() error
+	CreateUser(username string, password string) (*User, error)
+	DeletePage(title string) error
+	DeletePageDiff(id int64) error
+	DeleteUser(username string) error
+	GetIdFromPageTitle(title string) (*int, error)
+	GetUser(username string) (*User, error)
+	GetUserIdFromName(username string) (*int, error)
+	ReadPage(title string) (*Page, error)
+	ReadPageDiff(id int64) (*PageDiff, error)
+	UpdatePage(p *Page) error
+	UpdateUser(u *User, newName string, newPass string) error
+}
 
 func (db *PostgresBase) GetIdFromPageTitle(title string) (*int, error) {
 	var id int
