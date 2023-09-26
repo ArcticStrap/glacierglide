@@ -11,10 +11,10 @@ You need a .env file with 2 variables:
 
 ### Dependencies
 Make sure to get the dependencies first:
-* ![Chi](github.com/go-chi/chi/v5) - The HTTP library
-* ![Pgx](github.com/jackc/pgx/v5) - The Postgres database driver
-* ![Godotenv](github.com/joho/godotenv) - Used to load the .env file
-* ![Go-JWT ](github.com/golang-jwt/jwt/v5) - The JWT library
+* ![Chi](https://github.com/go-chi/chi) - The HTTP library
+* ![Pgx](https://github.com/jackc/pgx/) - The Postgres database driver
+* ![Godotenv](https://github.com/joho/godotenv) - Used to load the .env file
+* ![Go-JWT ](https://github.com/golang-jwt/jwt) - The JWT library
 
 
 To run with make:
