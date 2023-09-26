@@ -21,7 +21,7 @@ func main() {
 	}
 
 	// Connect to our database
-	db, err := data.ConnectToDatabase()
+	db, err := data.ConnectToPostgresDatabase()
 	if err != nil {
 		log.Fatalf("Error connecting to data base: %s", err)
 	} else {
