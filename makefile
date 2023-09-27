@@ -1,10 +1,13 @@
 # Project makefile
-# Make sure to run some sort of bash
 OUTPUT = bin/horinezumi
+
+# Target commands
 BUILDCMD = go build -o $(OUTPUT) main.go
+CLEANCMD = rm -f $(OUTPUT)
 
 ifeq ($(OS), Windows_NT) # Windows
-	OUTPUT = bin\horinezumi.exe
+	OUTPUT = bin|horinezumi.exe
+	CLEANCMD = del $(OUTPUT)
 endif
 
 all: clean build
@@ -12,7 +15,7 @@ all: clean build
 build:
 	$(BUILDCMD)
 clean:
-	del $(OUTPUT)
+	$(CLEANCMD)
 run:
 	go run main.go
 test:
