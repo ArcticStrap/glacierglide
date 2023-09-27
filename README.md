@@ -1,6 +1,5 @@
 # horinezumi
-Random wiki framework
-
+A currently WIP wiki framework.
 
 ## Running
 
