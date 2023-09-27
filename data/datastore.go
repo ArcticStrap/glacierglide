@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -35,6 +36,9 @@ type Datastore interface {
 	DeletePageDiff(id int64) error
 }
 
+// Datastore implementation for the Postgres database.
+
+// Fetches page id from page title
 func (db *PostgresBase) GetIdFromPageTitle(title string) (*int, error) {
 	var id int
 	err := db.conn.QueryRow(context.Background(), "SELECT page_id FROM pages WHERE title=$1", title).Scan(&id)
@@ -47,6 +51,7 @@ func (db *PostgresBase) GetIdFromPageTitle(title string) (*int, error) {
 
 // CRUD functions for Page datatype
 
+// Logs a page change into a diff.
 func (db *PostgresBase) CreatePageDiff(p *Page) error {
 	// SQL query to insert a new page_diffs row
 	query := "INSERT INTO page_diffs (page_id,change_date,change_time,editor_id,anon,description,content) VALUES ($1, $2, $3, $4, $5, $6, $7)"
@@ -92,7 +97,7 @@ func (db *PostgresBase) DeletePageDiff(id int64) error {
 
 func (db *PostgresBase) ReadPage(title string) (*Page, error) {
 	// SQL query to fetch the page by ID
-	query := `SELECT id, title, content FROM pages WHERE id=$1`
+	query := `SELECT title, content FROM pages WHERE page_id=$1`
 
 	pageID, err := db.GetIdFromPageTitle(title)
 	if err != nil {
@@ -111,7 +116,7 @@ func (db *PostgresBase) ReadPage(title string) (*Page, error) {
 
 func (db *PostgresBase) CreatePage(v *Page) error {
 	// Execute create request
-	_, err := db.conn.Exec(context.Background(), "INSERT INTO pages (title, content) VALUES ($1, $2)", v.Title, v.Content)
+	_, err := db.conn.Exec(context.Background(), "INSERT INTO pages (title, content) VALUES ($1, $2)", strings.ToLower(v.Title), v.Content)
 	if err != nil {
 		return err
 	}

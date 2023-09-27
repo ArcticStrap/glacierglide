@@ -56,7 +56,7 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore) {
 
 		// Check if password is valid
 		if !u.ValidPassword(loginReq.Password) {
-			jsonresp.JsonERR(w, 400, "%s", fmt.Errorf("authentication error"))
+			jsonresp.JsonERR(w, 400, "Error with logging into user: %s", fmt.Errorf("authentication error"))
 			return
 		}
 
