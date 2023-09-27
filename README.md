@@ -5,7 +5,7 @@ Random wiki framework
 ## Running
 
 ### Environment variables
-You need a .env file with 2 variables:
+You need a .env file with 3 variables:
     ADDR: The web address to listen and serve
     PAGEDATAURL: The secret url to your database.
     JWTCODE: The JWT secret.
@@ -21,7 +21,13 @@ Make sure to get the dependencies first:
 To run with make:
 `make run`
 
-To build the project
-`make` or `make build`
+To build the project:
+`make`
+
+To clean the project:
+`make clean`
+
+To run tests:
+`make test`
 
 I debug run with VScode
