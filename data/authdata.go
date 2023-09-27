@@ -16,7 +16,7 @@ func CreateJWT(u *User) (string, error) {
 	}
 
 	jwtcode := os.Getenv("JWTCODE")
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString([]byte(jwtcode))
 }

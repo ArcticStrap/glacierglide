@@ -3,25 +3,36 @@ package data
 import (
 	"context"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Created for use in future updates when we plan on implementing different databses (e.g. MariaDB/MySQL and MongoDB)
 type Datastore interface {
+	// Initalizers
 	Close()
-	CreatePage(v *Page) error
-	CreatePageDiff(p *Page) error
 	CreateTables() error
-	CreateUser(username string, password string) (*User, error)
-	DeletePage(title string) error
-	DeletePageDiff(id int64) error
-	DeleteUser(username string) error
-	GetIdFromPageTitle(title string) (*int, error)
-	GetUser(username string) (*User, error)
-	GetUserIdFromName(username string) (*int, error)
+
+	// CRUD functions for page
+	CreatePage(v *Page) error
 	ReadPage(title string) (*Page, error)
-	ReadPageDiff(id int64) (*PageDiff, error)
 	UpdatePage(p *Page) error
+	DeletePage(title string) error
+
+	// Small gets
+	GetIdFromPageTitle(title string) (*int, error)
+	GetUserIdFromName(username string) (*int, error)
+
+	// CRUD for user
+	CreateUser(username string, password string) (*User, error)
+	GetUser(username string) (*User, error)
 	UpdateUser(u *User, newName string, newPass string) error
+	DeleteUser(username string) error
+
+	// CRUD for page diff
+	CreatePageDiff(p *Page) error
+	ReadPageDiff(id int64) (*PageDiff, error)
+	DeletePageDiff(id int64) error
 }
 
 func (db *PostgresBase) GetIdFromPageTitle(title string) (*int, error) {
@@ -170,7 +181,7 @@ func (db *PostgresBase) GetUser(username string) (*User, error) {
 	var u User
 
 	// Execute the query and scan the result into the Page struct
-	if err := db.conn.QueryRow(context.Background(), query, pageID).Scan(&u.Username, u.Password, u.CreationDate); err != nil {
+	if err := db.conn.QueryRow(context.Background(), query, pageID).Scan(&u.Username, &u.Password, &u.CreationDate); err != nil {
 		return nil, err
 	}
 
@@ -185,8 +196,16 @@ func (db *PostgresBase) CreateUser(username, password string) (*User, error) {
 		CreationDate: time.Now().UTC(),
 	}
 
+	// Hash the password
+	hashPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
+	newUser.Password = string(hashPass)
+
 	// Execute create request
-	_, err := db.conn.Exec(context.Background(), "INSERT INTO users (username, password, creation_date) VALUES ($1, $2, $3)", username, password, newUser.CreationDate)
+	_, err = db.conn.Exec(context.Background(), "INSERT INTO users (username, password, creation_date) VALUES ($1, $2, $3)", username, newUser.Password, newUser.CreationDate)
 	if err != nil {
 		return nil, err
 	}

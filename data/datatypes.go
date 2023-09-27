@@ -1,6 +1,15 @@
 package data
 
-import "time"
+import (
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
+)
+
+type AccountReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
 
 type Page struct {
 	Title   string `json:"title"`
@@ -12,6 +21,10 @@ type User struct {
 	Username     string
 	Password     string
 	CreationDate time.Time
+}
+
+func (u *User) ValidPassword(pw string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(pw)) == nil
 }
 
 type PageDiff struct {

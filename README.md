@@ -8,6 +8,7 @@ Random wiki framework
 You need a .env file with 2 variables:
     ADDR: The web address to listen and serve
     PAGEDATAURL: The secret url to your database.
+    JWTCODE: The JWT secret.
 
 ### Dependencies
 Make sure to get the dependencies first:
