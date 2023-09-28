@@ -39,7 +39,7 @@ func (b *PostgresBase) CreateTables() error {
 			page_id INT REFERENCES pages(page_id),
 			change_date DATE NOT NULL,
 			change_time TIME NOT NULL,
-			editor_id INT REFERENCES users(user_id),
+			editor_id INT,
 			anon BOOLEAN DEFAULT FALSE,
 			description TEXT,
 			content TEXT

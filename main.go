@@ -27,7 +27,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error connecting to data base: %s", err)
 	} else {
-		log.Printf("Successfully connected to data base")
+		log.Printf("Successfully connected to database")
 	}
 	defer db.Close()
 

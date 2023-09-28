@@ -6,7 +6,7 @@ BUILDCMD = go build -o $(OUTPUT) main.go
 CLEANCMD = rm -f $(OUTPUT)
 
 ifeq ($(OS), Windows_NT) # Windows
-	OUTPUT = bin|horinezumi.exe
+	OUTPUT = bin\horinezumi.exe
 	CLEANCMD = del $(OUTPUT)
 endif
 
@@ -19,4 +19,4 @@ clean:
 run:
 	go run main.go
 test:
-	go test -v
+	go test -v ./...
