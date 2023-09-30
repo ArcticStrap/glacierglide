@@ -23,6 +23,7 @@ type Datastore interface {
 	// Small gets
 	GetIdFromPageTitle(title string) (*int, error)
 	GetUserIdFromName(username string) (*int, error)
+	FetchPageHistory(title string) ([]PageDiff, error)
 
 	// CRUD for user
 	CreateUser(username string, password string) (*User, error)
@@ -63,7 +64,7 @@ func (db *PostgresBase) CreatePageDiff(p *Page) error {
 	}
 
 	// Execute create request
-	_, err = db.conn.Exec(context.Background(), query, pId, time.Now().UTC().Format("2006-01-02"), time.Now().UTC().Format("15:04:05"), nil, false, "edit page", p.Content)
+	_, err = db.conn.Exec(context.Background(), query, pId, time.Now().UTC().Format("2006-01-02"), time.Now().UTC().Format("15:04:05"), 0, false, "edit page", p.Content)
 	if err != nil {
 		return err
 	}
@@ -73,7 +74,7 @@ func (db *PostgresBase) CreatePageDiff(p *Page) error {
 
 func (db *PostgresBase) ReadPageDiff(id int64) (*PageDiff, error) {
 	// SQL query to fetch the page by ID
-	query := `SELECT page_id,change_date,change_time,editor_id,anon,description,diff_id FROM page_diffs WHERE id=$1`
+	query := `SELECT page_id,change_date,change_time,editor_id,anon,description,diff_id FROM page_diffs WHERE diff_id=$1`
 
 	var pageDiff PageDiff
 
@@ -160,6 +161,41 @@ func (db *PostgresBase) DeletePage(title string) error {
 	}
 
 	return nil
+}
+
+func (db *PostgresBase) FetchPageHistory(title string) ([]PageDiff, error) {
+	// History var
+	pageHisory := []PageDiff{}
+
+	// Get page info
+	pgID, err := db.GetIdFromPageTitle(title)
+	if err != nil {
+		return nil, err
+	}
+
+	// Query rows
+	rows, err := db.conn.Query(context.Background(), "SELECT * FROM page_diffs WHERE page_id=$1", *pgID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	ok := true
+	for rows.Next() {
+		var pd PageDiff
+		err = rows.Scan(&pd.DiffId, &pd.PageId, &pd.Date, &pd.Time, &pd.UserId, &pd.Anon, &pd.Description, &pd.Content)
+		if err != nil {
+			ok = false
+			break
+		}
+
+		pageHisory = append(pageHisory, pd)
+	}
+	if !ok {
+		return nil, err
+	}
+
+	return pageHisory, nil
 }
 
 // CRUD functions for user accounts

@@ -16,6 +16,8 @@ build:
 	$(BUILDCMD)
 clean:
 	$(CLEANCMD)
+dversion:
+	migrate -database $(URL) -path data/migrations version
 run:
 	go run main.go
 test:

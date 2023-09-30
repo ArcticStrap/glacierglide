@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -28,12 +29,25 @@ func (u *User) ValidPassword(pw string) bool {
 }
 
 type PageDiff struct {
-	DiffId      int64
-	PageId      int64
-	Date        time.Time
-	Time        time.Time
-	UserId      int64
-	Anon        bool
-	Description string
-	Content     string
+	DiffId      int64     `pgx:"diff_id"     json:"diffId"`
+	PageId      int64     `pgx:"page_id"     json:"pageId"`
+	Date        time.Time `pgx:"change_date" json:"changeDate"`
+	Time        time.Time `pgx:"change_time" json:"changeTime"`
+	UserId      int64     `pgx:"editor_id"   json:"editorId"`
+	Anon        bool      `pgx:"anon"        json:"anon"`
+	Description string    `pgx:"description" json:"description"`
+	Content     string    `pgx:"content"     json:"content"`
+}
+
+func (pd PageDiff) MarshalJSON() ([]byte, error) {
+	type Alias PageDiff
+	return json.Marshal(&struct {
+		Date string `json:"changeDate"`
+		Time string `json:"changeTime"`
+		*Alias
+	}{
+		Date:  pd.Date.Format("2006-01-02"), // format date as "YYYY-MM-DD"
+		Time:  pd.Time.Format("15:04:05"),   // format time as "HH:MM:SS"
+		Alias: (*Alias)(&pd),
+	})
 }

@@ -3,6 +3,7 @@ package edit
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/ChaosIsFramecode/horinezumi/data"
 	"github.com/ChaosIsFramecode/horinezumi/jsonresp"
@@ -18,12 +19,23 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
 
+				// Fetch title param
+				titleParam := chi.URLParam(r, "title")
+				// Redirect if not lowercase
+				if strings.ToLower(titleParam) != titleParam {
+					http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
+					return
+				}
+
 				// Handle request
 				newPage := new(data.Page)
 				if err := json.NewDecoder(r.Body).Decode(&newPage); err != nil {
 					jsonresp.JsonERR(w, 422, "Error with parsing json request: %s", err)
 					return
 				}
+				// Lowercase page title
+				newPage.Title = strings.ToLower(newPage.Title)
+
 				// Create page in database
 				if err := db.CreatePage(newPage); err != nil {
 					jsonresp.JsonERR(w, 422, "Error with inserting page into database: %s", err)
@@ -42,12 +54,23 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
 
+				// Fetch title param
+				titleParam := chi.URLParam(r, "title")
+				// Redirect if not lowercase
+				if strings.ToLower(titleParam) != titleParam {
+					http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
+					return
+				}
+
 				// Handle request
 				uPage := new(data.Page)
 				if err := json.NewDecoder(r.Body).Decode(&uPage); err != nil {
 					jsonresp.JsonERR(w, 422, "Error with parsing json request: %s", err)
 					return
 				}
+				// Lowercase page title
+				uPage.Title = strings.ToLower(uPage.Title)
+
 				// Update page from database
 				// Create page in database
 				if err := db.UpdatePage(uPage); err != nil {
@@ -63,6 +86,14 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 			pagerouter.Delete("/", func(w http.ResponseWriter, r *http.Request) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
+
+				// Fetch title param
+				titleParam := chi.URLParam(r, "title")
+				// Redirect if not lowercase
+				if strings.ToLower(titleParam) != titleParam {
+					http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
+					return
+				}
 
 				// Handle request
 				pageTitle := new(struct {
