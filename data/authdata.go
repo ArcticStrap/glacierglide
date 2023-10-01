@@ -23,7 +23,7 @@ func CreateJWT(u *User) (string, error) {
 
 func CallJWTAuth(db Datastore, callback http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tokenStr := r.Header.Get("jwt-token")
+		tokenStr := r.Header.Get("x-jwt-token")
 		token, err := ValidateJWT(tokenStr)
 		if err != nil || !token.Valid {
 			jsonresp.JsonERR(w, http.StatusForbidden, "Invalid token: %s", err)

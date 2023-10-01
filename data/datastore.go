@@ -55,7 +55,7 @@ func (db *PostgresBase) GetIdFromPageTitle(title string) (*int, error) {
 // Logs a page change into a diff.
 func (db *PostgresBase) CreatePageDiff(p *Page) error {
 	// SQL query to insert a new page_diffs row
-	query := "INSERT INTO page_diffs (page_id,change_date,change_time,editor_id,anon,description,content) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	query := "INSERT INTO page_diffs (page_id,change_date,change_time,editor,anon,description,content) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 
 	// Get page id
 	pId, err := db.GetIdFromPageTitle(p.Title)
@@ -64,7 +64,7 @@ func (db *PostgresBase) CreatePageDiff(p *Page) error {
 	}
 
 	// Execute create request
-	_, err = db.conn.Exec(context.Background(), query, pId, time.Now().UTC().Format("2006-01-02"), time.Now().UTC().Format("15:04:05"), 0, false, "edit page", p.Content)
+	_, err = db.conn.Exec(context.Background(), query, pId, time.Now().UTC().Format("2006-01-02"), time.Now().UTC().Format("15:04:05"), "127.0.0.1", false, "edit page", p.Content)
 	if err != nil {
 		return err
 	}
@@ -74,7 +74,7 @@ func (db *PostgresBase) CreatePageDiff(p *Page) error {
 
 func (db *PostgresBase) ReadPageDiff(id int64) (*PageDiff, error) {
 	// SQL query to fetch the page by ID
-	query := `SELECT page_id,change_date,change_time,editor_id,anon,description,diff_id FROM page_diffs WHERE diff_id=$1`
+	query := `SELECT page_id,change_date,change_time,editor,anon,description,diff_id FROM page_diffs WHERE diff_id=$1`
 
 	var pageDiff PageDiff
 

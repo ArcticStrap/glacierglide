@@ -33,7 +33,7 @@ type PageDiff struct {
 	PageId      int64     `pgx:"page_id"     json:"pageId"`
 	Date        time.Time `pgx:"change_date" json:"changeDate"`
 	Time        time.Time `pgx:"change_time" json:"changeTime"`
-	UserId      int64     `pgx:"editor_id"   json:"editorId"`
+	UserId      string    `pgx:"editor"     json:"editor"`
 	Anon        bool      `pgx:"anon"        json:"anon"`
 	Description string    `pgx:"description" json:"description"`
 	Content     string    `pgx:"content"     json:"content"`

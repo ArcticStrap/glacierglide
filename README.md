@@ -1,5 +1,5 @@
 # horinezumi
-A currently WIP wiki framework.
+A currently WIP wiki software written in go.
 
 ## Running
 
@@ -12,10 +12,13 @@ You need a .env file with 3 variables:
 ### Dependencies
 Make sure to get the dependencies first:
 * ![Chi](https://github.com/go-chi/chi) - The HTTP library
-* ![Pgx](https://github.com/jackc/pgx/) - The Postgres database driver
 * ![Godotenv](https://github.com/joho/godotenv) - Used to load the .env file
 * ![Go-JWT ](https://github.com/golang-jwt/jwt) - The JWT library
 
+#### Database drivers
+* ![Pgx](https://github.com/jackc/pgx/) - Postgres
+
+I might plan to add MariaDB soon.
 
 To run with make:
 `make run`
@@ -26,7 +29,7 @@ To build the project:
 To clean the project:
 `make clean`
 
-To run tests:
+To run unit tests:
 `make test`
 
 I debug run with VScode
