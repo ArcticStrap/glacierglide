@@ -29,18 +29,18 @@ func CreateJWT(u *User) (string, error) {
 	return token.SignedString([]byte(jwtcode))
 }
 
-func CallJWTAuth(db Datastore, callback http.HandlerFunc, userOnly bool) http.HandlerFunc {
+func CallJWTAuth(db Datastore, userOnly bool, callback http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if userOnly {
-			tokenStr := r.Header.Get("x-jwt-token")
-			token, err := ValidateJWT(tokenStr)
-			if err != nil || !token.Valid {
+		u, err := db.GetUser(r.Header.Get("username"))
+		if err != nil {
+			if userOnly {
 				jsonresp.JsonERR(w, http.StatusForbidden, "Invalid token: %s", err)
 				return
 			}
-
-			u, err := db.GetUser(r.Header.Get("username"))
-			if err != nil {
+		} else {
+			tokenStr := r.Header.Get("x-jwt-token")
+			token, err := ValidateJWT(tokenStr)
+			if err != nil || !token.Valid {
 				jsonresp.JsonERR(w, http.StatusForbidden, "Invalid token: %s", err)
 				return
 			}
@@ -57,14 +57,10 @@ func CallJWTAuth(db Datastore, callback http.HandlerFunc, userOnly bool) http.Ha
 }
 
 func ValidateJWT(tokenStr string) (*jwt.Token, error) {
-	return jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		// Validate algorithm
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
+	return jwt.ParseWithClaims(tokenStr, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 
 		// Validate claims
-		if claims, ok := token.Claims.(UserClaims); ok {
+		if claims, ok := token.Claims.(*UserClaims); ok {
 			if claims.ExpiresAt.Unix() < time.Now().Unix() {
 				return nil, fmt.Errorf("token expired")
 			}

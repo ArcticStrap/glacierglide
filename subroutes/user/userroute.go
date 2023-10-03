@@ -23,6 +23,12 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore) {
 			return
 		}
 
+		// Prevent empty account creation
+		if createReq.Username == "" || createReq.Password == "" {
+			jsonresp.JsonERR(w, 400, "%s", fmt.Errorf("invalid credentials"))
+			return
+		}
+
 		newUser, err := db.CreateUser(createReq.Username, createReq.Password)
 		if err != nil {
 			jsonresp.JsonERR(w, 400, "Error with creating user account: ", err)
@@ -44,6 +50,12 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore) {
 
 		if err := json.NewDecoder(r.Body).Decode(&loginReq); err != nil {
 			jsonresp.JsonERR(w, 400, "Error with decoding json: ", err)
+			return
+		}
+
+		// Prevent empty account login
+		if loginReq.Username == "" || loginReq.Password == "" {
+			jsonresp.JsonERR(w, 400, "%s", fmt.Errorf("invalid credentials"))
 			return
 		}
 

@@ -17,7 +17,7 @@ type Datastore interface {
 	// CRUD functions for page
 	CreatePage(v *Page) error
 	ReadPage(title string) (*Page, error)
-	UpdatePage(p *Page) error
+	UpdatePage(p *Page, editor string) error
 	DeletePage(title string) error
 
 	// Small gets
@@ -32,7 +32,7 @@ type Datastore interface {
 	DeleteUser(username string) error
 
 	// CRUD for page diff
-	CreatePageDiff(p *Page) error
+	CreatePageDiff(p *Page, editor string) error
 	ReadPageDiff(id int64) (*PageDiff, error)
 	DeletePageDiff(id int64) error
 }
@@ -53,9 +53,9 @@ func (db *PostgresBase) GetIdFromPageTitle(title string) (*int, error) {
 // CRUD functions for Page datatype
 
 // Logs a page change into a diff.
-func (db *PostgresBase) CreatePageDiff(p *Page) error {
+func (db *PostgresBase) CreatePageDiff(p *Page, editor string) error {
 	// SQL query to insert a new page_diffs row
-	query := "INSERT INTO page_diffs (page_id,change_date,change_time,editor,anon,description,content) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	query := "INSERT INTO page_diffs (page_id,change_date,change_time,editor,description,content) VALUES ($1, $2, $3, $4, $5, $6)"
 
 	// Get page id
 	pId, err := db.GetIdFromPageTitle(p.Title)
@@ -64,7 +64,7 @@ func (db *PostgresBase) CreatePageDiff(p *Page) error {
 	}
 
 	// Execute create request
-	_, err = db.conn.Exec(context.Background(), query, pId, time.Now().UTC().Format("2006-01-02"), time.Now().UTC().Format("15:04:05"), "127.0.0.1", false, "edit page", p.Content)
+	_, err = db.conn.Exec(context.Background(), query, pId, time.Now().UTC().Format("2006-01-02"), time.Now().UTC().Format("15:04:05"), editor, "edit page", p.Content)
 	if err != nil {
 		return err
 	}
@@ -125,7 +125,7 @@ func (db *PostgresBase) CreatePage(v *Page) error {
 	return nil
 }
 
-func (db *PostgresBase) UpdatePage(p *Page) error {
+func (db *PostgresBase) UpdatePage(p *Page, editor string) error {
 
 	// Fetch page id from title
 	id, err := db.GetIdFromPageTitle(p.Title)
@@ -140,7 +140,7 @@ func (db *PostgresBase) UpdatePage(p *Page) error {
 	}
 
 	// Log update
-	if err = db.CreatePageDiff(p); err != nil {
+	if err = db.CreatePageDiff(p, editor); err != nil {
 		return err
 	}
 

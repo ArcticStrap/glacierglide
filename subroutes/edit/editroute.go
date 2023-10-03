@@ -49,8 +49,8 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 				jsonresp.JsonOK(w, resp, "Page created!")
 			})
 
-			// TODO: Update page content
-			pagerouter.Put("/", func(w http.ResponseWriter, r *http.Request) {
+			// Update page content
+			pagerouter.Put("/", data.CallJWTAuth(db, false, func(w http.ResponseWriter, r *http.Request) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
 
@@ -71,16 +71,21 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 				// Lowercase page title
 				uPage.Title = strings.ToLower(uPage.Title)
 
+				// Fetch username if not anonymous
+				editor := r.Header.Get("username")
+				if editor == "" {
+					editor = "0.0.0.0"
+				}
+
 				// Update page from database
-				// Create page in database
-				if err := db.UpdatePage(uPage); err != nil {
+				if err := db.UpdatePage(uPage, editor); err != nil {
 					jsonresp.JsonERR(w, 422, "Error with inserting page into database: %s", err)
 					return
 				}
 
 				// Make response
 				jsonresp.JsonOK(w, make(map[string]string), "Page updated!")
-			})
+			}))
 
 			// TODO: Delete page
 			pagerouter.Delete("/", func(w http.ResponseWriter, r *http.Request) {
