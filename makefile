@@ -1,8 +1,9 @@
 # Project makefile
 OUTPUT = bin/horinezumi
+MAIN = ./cmd/server/main.go
 
 # Target commands
-BUILDCMD = go build -o $(OUTPUT) main.go
+BUILDCMD = go build -o $(OUTPUT) $(MAIN)
 CLEANCMD = rm -f $(OUTPUT)
 
 ifeq ($(OS), Windows_NT) # Windows
@@ -19,6 +20,6 @@ clean:
 dversion:
 	migrate -database $(URL) -path data/migrations version
 run:
-	go run main.go
+	go run $(MAIN)
 test:
 	go test -v ./...
