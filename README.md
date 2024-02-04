@@ -20,6 +20,9 @@ Make sure to get the dependencies first:
 
 I might plan to add MariaDB soon.
 
+Generate the SSL certificates before running:
+`make gencert`
+
 To run with make:
 `make run`
 

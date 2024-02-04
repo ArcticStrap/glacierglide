@@ -13,6 +13,13 @@ endif
 
 all: clean build
 
+# Setup commands
+gencert:
+	mkdir -p certs
+	openssl ecparam -genkey -name secp384r1 -out certs/key.pem
+	openssl req -new -x509 -sha256 -key certs/key.pem -out certs/cert.pem -days 3650 
+
+# Go commands
 build:
 	$(BUILDCMD)
 clean:
