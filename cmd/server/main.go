@@ -51,5 +51,12 @@ func main() {
 	user.SetupUserRoute(rt, &db)
 
 	log.Println("Running on " + os.Getenv("ADDR"))
-	http.ListenAndServeTLS(os.Getenv("ADDR"), "certs/cert.pem", "certs/key.pem", rt)
+
+	if os.Getenv("DEV") == "" {
+		http.ListenAndServeTLS(os.Getenv("ADDR"), "certs/cert.pem", "certs/key.pem", rt)
+	} else {
+		log.Println("(MODE: DEBUG)")
+		http.ListenAndServe(os.Getenv("ADDR"), rt)
+	}
+
 }
