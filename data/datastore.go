@@ -23,6 +23,7 @@ type Datastore interface {
 	// Small gets
 	GetIdFromPageTitle(title string) (*int, error)
 	GetUserIdFromName(username string) (*int, error)
+	GetUsernameFromId(id int64) (string, error)
 	FetchPageHistory(title string) ([]PageDiff, error)
 
 	// CRUD for user
@@ -210,11 +211,21 @@ func (db *PostgresBase) GetUserIdFromName(username string) (*int, error) {
 	return &id, nil
 }
 
+func (db *PostgresBase) GetUsernameFromId(id int64) (string, error) {
+	var username string
+	err := db.conn.QueryRow(context.Background(), "SELECT username FROM users WHERE user_id=$1", id).Scan(&username)
+	if err != nil {
+		return "", err
+	}
+
+	return username, nil
+}
+
 func (db *PostgresBase) GetUser(username string) (*User, error) {
 	// SQL query to fetch the user by ID
 	query := `SELECT username, password, creation_date FROM users WHERE user_id=$1`
 
-	pageID, err := db.GetUserIdFromName(username)
+	userID, err := db.GetUserIdFromName(username)
 	if err != nil {
 		return nil, err
 	}
@@ -222,9 +233,11 @@ func (db *PostgresBase) GetUser(username string) (*User, error) {
 	var u User
 
 	// Execute the query and scan the result into the Page struct
-	if err := db.conn.QueryRow(context.Background(), query, pageID).Scan(&u.Username, &u.Password, &u.CreationDate); err != nil {
+	if err := db.conn.QueryRow(context.Background(), query, userID).Scan(&u.Username, &u.Password, &u.CreationDate); err != nil {
 		return nil, err
 	}
+
+	u.UserId = int64(*userID)
 
 	return &u, nil
 }

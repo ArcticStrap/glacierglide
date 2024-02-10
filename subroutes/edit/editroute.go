@@ -96,6 +96,18 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 						jsonresp.JsonERR(w, 401, "Invalid token", nil)
 						return
 					}
+
+					claims, ok := token.Claims.(*data.UserClaims)
+					if !ok {
+						jsonresp.JsonERR(w, 401, "Invalid token claims", nil)
+						return
+					}
+
+					editor, err = db.GetUsernameFromId(claims.UserID)
+					if err != nil {
+						jsonresp.JsonERR(w, 401, "Failed to get user account: %s", err)
+						return
+					}
 				}
 
 				// Update page from database
