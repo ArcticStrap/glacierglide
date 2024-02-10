@@ -13,7 +13,6 @@ Config variables:
     DEV: "1"=development mode ""=production mode
 
 ### Dependencies
-Make sure to get the dependencies first:
 * ![Chi](https://github.com/go-chi/chi) - The HTTP library
 * ![Godotenv](https://github.com/joho/godotenv) - Used to load the .env file
 * ![Go-JWT ](https://github.com/golang-jwt/jwt) - The JWT library
@@ -22,6 +21,9 @@ Make sure to get the dependencies first:
 * ![Pgx](https://github.com/jackc/pgx/) - Postgres
 
 I might plan to add MariaDB soon.
+
+To get the Dependencies:
+`make getdeps`
 
 Generate the SSL certificates if running on HTTPS:
 `make gencert`
