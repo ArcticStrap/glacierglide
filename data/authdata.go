@@ -69,3 +69,9 @@ func ValidateJWT(tokenStr string) (*jwt.Token, error) {
 		return []byte(os.Getenv("JWTCODE")), nil
 	})
 }
+
+func ValiateClaims(c jwt.Claims) (jwt.RegisteredClaims, bool) {
+	rClaims, ok := c.(jwt.RegisteredClaims)
+
+	return rClaims, ok
+}

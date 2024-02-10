@@ -87,10 +87,15 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 				// Lowercase page title
 				uPage.Title = strings.ToLower(uPage.Title)
 
-				// Fetch username if not anonymous
-				editor := r.Header.Get("username")
-				if editor == "" {
-					editor = "0.0.0.0"
+				// TODO: Authenticate token, default to ip address
+				tokenStr := r.Header.Get("authtoken")
+				editor := "0.0.0.0"
+				if tokenStr != "" {
+					token, err := data.ValidateJWT(tokenStr)
+					if err != nil || !token.Valid {
+						jsonresp.JsonERR(w, 401, "Invalid token", nil)
+						return
+					}
 				}
 
 				// Update page from database
