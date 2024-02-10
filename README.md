@@ -1,5 +1,5 @@
 # horinezumi
-A currently WIP wiki software written in go.
+A currently WIP backend wiki framework written in Go.
 
 ## Running
 
@@ -8,6 +8,9 @@ You need a .env file with 3 variables:
     ADDR: The web address to listen and serve
     PAGEDATAURL: The secret url to your database.
     JWTCODE: The JWT secret.
+
+Config variables:
+    DEV: "1"=development mode ""=production mode
 
 ### Dependencies
 Make sure to get the dependencies first:
@@ -20,7 +23,7 @@ Make sure to get the dependencies first:
 
 I might plan to add MariaDB soon.
 
-Generate the SSL certificates before running:
+Generate the SSL certificates if running on HTTPS:
 `make gencert`
 
 To run with make:
@@ -35,4 +38,10 @@ To clean the project:
 To run unit tests:
 `make test`
 
-I debug run with VScode
+## Contributing
+
+Open to contributions. Feel free to open up an issue or pull request.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE)
