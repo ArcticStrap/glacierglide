@@ -33,8 +33,20 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 					jsonresp.JsonERR(w, 422, "Error with parsing json request: %s", err)
 					return
 				}
+
+				// Add title if nil
+				if newPage.Title == "" {
+					newPage.Title = titleParam
+				}
 				// Lowercase page title
 				newPage.Title = strings.ToLower(newPage.Title)
+
+				// Check if page already exists
+				pageExists, _ := db.ReadPage(newPage.Title)
+				if pageExists != nil {
+					jsonresp.JsonOK(w, make(map[string]string), "Page already exists!")
+					return
+				}
 
 				// Create page in database
 				if err := db.CreatePage(newPage); err != nil {
@@ -67,6 +79,10 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 				if err := json.NewDecoder(r.Body).Decode(&uPage); err != nil {
 					jsonresp.JsonERR(w, 422, "Error with parsing json request: %s", err)
 					return
+				}
+				// Add title if nil
+				if uPage.Title == "" {
+					uPage.Title = titleParam
 				}
 				// Lowercase page title
 				uPage.Title = strings.ToLower(uPage.Title)
