@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/ChaosIsFramecode/horinezumi/data"
 	"github.com/ChaosIsFramecode/horinezumi/jsonresp"
@@ -45,6 +46,13 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore) {
 		// Expect json response
 		w.Header().Set("Content-Type", "application/json")
 
+		// Check if session exists
+		_, err := r.Cookie("sessionauth")
+		if err == nil {
+			jsonresp.JsonERR(w, 401, "User already has an active session", nil)
+			return
+		}
+
 		// Decode account request
 		var loginReq data.AccountReq
 
@@ -78,9 +86,28 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore) {
 			return
 		}
 
+		// Set the session cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:     "sessionauth",
+			Value:    token,
+			HttpOnly: true,
+		})
+
 		resp := make(map[string]string)
 		resp["token"] = token
 
 		jsonresp.JsonOK(w, resp, fmt.Sprintf("Successfully logged in as user %s.", loginReq.Username))
+	})
+	rt.Post("/Logout", func(w http.ResponseWriter, _ *http.Request) {
+		http.SetCookie(w, &http.Cookie{
+			Name:     "sessionauth",
+			Value:    "",
+			Expires:  time.Unix(0, 0),
+			HttpOnly: true,
+		})
+
+		resp := make(map[string]string)
+
+		jsonresp.JsonOK(w, resp, "Logged out")
 	})
 }
