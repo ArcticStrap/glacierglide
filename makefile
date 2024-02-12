@@ -26,6 +26,7 @@ help:
 	@echo "	getdeps		Get the project dependencies"
 	@echo "	test		Run unit tests"
 	@echo "	benchmark	Run benchmarks"
+	@echo "	tidy		Tidy up mod file"
 	@echo ""
 	@echo "Variables:"
 	@echo "	DEV		Run in development mode"
@@ -51,3 +52,5 @@ test:
 	go test -v ./...
 benchmark:
 	go test -bench=. ./...
+tidy:
+	go mod tidy
