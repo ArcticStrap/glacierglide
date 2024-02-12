@@ -87,7 +87,7 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 				// Lowercase page title
 				uPage.Title = strings.ToLower(uPage.Title)
 
-				// TODO: Authenticate token, default to ip address
+				// Authenticate token, default to ip address
 				tokenStr := r.Header.Get("authtoken")
 				editor := "0.0.0.0"
 				if tokenStr != "" {
@@ -108,6 +108,9 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 						jsonresp.JsonERR(w, 401, "Failed to get user account: %s", err)
 						return
 					}
+				} else {
+					// Get ip address if not logged in
+					editor = strings.Split(r.RemoteAddr, ":")[0]
 				}
 
 				// Update page from database
