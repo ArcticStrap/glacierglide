@@ -80,7 +80,7 @@ func (db *PostgresBase) ReadPageDiff(id int64) (*PageDiff, error) {
 	var pageDiff PageDiff
 
 	// Execute the query and scan the result into the Page struct
-	if err := db.conn.QueryRow(context.Background(), query, id).Scan(&pageDiff.PageId, &pageDiff.Date, &pageDiff.Time, &pageDiff.UserId, &pageDiff.Anon, &pageDiff.Description, &pageDiff.Content); err != nil {
+	if err := db.conn.QueryRow(context.Background(), query, id).Scan(&pageDiff.PageId, &pageDiff.Date, &pageDiff.Time, &pageDiff.UserId, &pageDiff.Description, &pageDiff.Content); err != nil {
 		return nil, err
 	}
 
@@ -184,7 +184,7 @@ func (db *PostgresBase) FetchPageHistory(title string) ([]PageDiff, error) {
 	ok := true
 	for rows.Next() {
 		var pd PageDiff
-		err = rows.Scan(&pd.DiffId, &pd.PageId, &pd.Date, &pd.Time, &pd.UserId, &pd.Anon, &pd.Description, &pd.Content)
+		err = rows.Scan(&pd.DiffId, &pd.PageId, &pd.Date, &pd.Time, &pd.UserId, &pd.Description, &pd.Content)
 		if err != nil {
 			ok = false
 			break

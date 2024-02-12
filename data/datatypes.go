@@ -34,7 +34,6 @@ type PageDiff struct {
 	Date        time.Time `pgx:"change_date" json:"changeDate"`
 	Time        time.Time `pgx:"change_time" json:"changeTime"`
 	UserId      string    `pgx:"editor"     json:"editor"`
-	Anon        bool      `pgx:"anon"        json:"anon"`
 	Description string    `pgx:"description" json:"description"`
 	Content     string    `pgx:"content"     json:"content"`
 }
