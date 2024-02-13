@@ -16,6 +16,7 @@ import (
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/history"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/user"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/wiki"
+	"github.com/ChaosIsFramecode/horinezumi/subroutes/wikido"
 )
 
 func main() {
@@ -47,6 +48,7 @@ func main() {
 	rt.Get("/", http.RedirectHandler("/wiki/Main_Page", http.StatusSeeOther).ServeHTTP)
 
 	// Initalize subrouters
+  wikido.SetupDoroute(rt,&db)
 	wiki.SetupWikiroute(rt, &db)
 	edit.SetupEditRoute(rt, &db)
 	history.SetupHistoryRoute(rt, &db)
