@@ -22,7 +22,7 @@ type Datastore interface {
 
 	// Small gets
 	GetIdFromPageTitle(title string) (*int, error)
-	GetUserIdFromName(username string) (*int, error)
+	GetUserIdFromName(username string) (*int64, error)
 	GetUsernameFromId(id int64) (string, error)
 	FetchPageHistory(title string) ([]PageDiff, error)
 
@@ -201,8 +201,8 @@ func (db *PostgresBase) FetchPageHistory(title string) ([]PageDiff, error) {
 
 // CRUD functions for user accounts
 
-func (db *PostgresBase) GetUserIdFromName(username string) (*int, error) {
-	var id int
+func (db *PostgresBase) GetUserIdFromName(username string) (*int64, error) {
+	var id int64
 	err := db.conn.QueryRow(context.Background(), "SELECT user_id FROM users WHERE username=$1", username).Scan(&id)
 	if err != nil {
 		return nil, err

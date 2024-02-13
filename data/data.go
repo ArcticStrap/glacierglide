@@ -28,12 +28,6 @@ func (b *PostgresBase) CreateTables() error {
 			title TEXT NOT NULL,
 			content TEXT not null
 		);
-		CREATE TABLE IF NOT EXISTS users (
-			user_id SERIAL PRIMARY KEY,
-			username TEXT NOT NULL,
-			password TEXT NOT NULL,
-			creation_date TIMESTAMP
-		);
 		CREATE TABLE IF NOT EXISTS page_diffs (
 			diff_id SERIAL PRIMARY KEY,
 			page_id INT REFERENCES pages(page_id),
@@ -42,7 +36,18 @@ func (b *PostgresBase) CreateTables() error {
 			editor TEXT,
 			description TEXT,
 			content TEXT
-		);	
+		);
+		CREATE TABLE IF NOT EXISTS users (
+			user_id SERIAL PRIMARY KEY,
+			username TEXT NOT NULL UNIQUE,
+			password TEXT NOT NULL,
+			creation_date TIMESTAMP
+		);
+    CREATE TABLE IF NOT EXISTS user_groups (
+      user_id INT NOT NULL REFERENCES users(user_id),
+      u_group bytea NOT NULL,
+      PRIMARY KEY (user_id,u_group)
+    );
 	`)
 	if err != nil {
 		return err
