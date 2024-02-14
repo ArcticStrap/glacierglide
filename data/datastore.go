@@ -2,17 +2,23 @@ package data
 
 import (
 	"context"
+	"os"
 	"strings"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // Created for use in future updates when we plan on implementing different databses (e.g. MariaDB/MySQL and MongoDB)
 type Datastore interface {
-	// Initalizers
+	// Initalizers / Cleaners
 	Close()
 	CreateTables() error
+
+	// Metadata
+	EngineName() string
+	Version() string
 
 	// CRUD functions for page
 	CreatePage(v *Page) error
@@ -39,6 +45,72 @@ type Datastore interface {
 }
 
 // Datastore implementation for the Postgres database.
+
+type PostgresBase struct {
+	conn *pgx.Conn
+}
+
+// Postgres connections
+func ConnectToPostgresDatabase() (PostgresBase, error) {
+	conn, err := pgx.Connect(context.Background(), os.Getenv("PAGEDATAURL"))
+	if err != nil {
+		return PostgresBase{}, err
+	}
+	return PostgresBase{conn: conn}, nil
+}
+
+func (db *PostgresBase) CreateTables() error {
+	// Create the tables for pages, users, page history, and diffs if they don't exist
+	_, err := db.conn.Exec(context.Background(), `
+		CREATE TABLE IF NOT EXISTS pages (
+			page_id SERIAL PRIMARY KEY,
+			title TEXT NOT NULL,
+			content TEXT not null
+		);
+		CREATE TABLE IF NOT EXISTS page_diffs (
+			diff_id SERIAL PRIMARY KEY,
+			page_id INT REFERENCES pages(page_id),
+			change_date DATE NOT NULL,
+			change_time TIME NOT NULL,
+			editor TEXT,
+			description TEXT,
+			content TEXT
+		);
+		CREATE TABLE IF NOT EXISTS users (
+			user_id SERIAL PRIMARY KEY,
+			username TEXT NOT NULL UNIQUE,
+			password TEXT NOT NULL,
+			creation_date TIMESTAMP
+		);
+    CREATE TABLE IF NOT EXISTS user_groups (
+      user_id INT NOT NULL REFERENCES users(user_id),
+      u_group bytea NOT NULL,
+      PRIMARY KEY (user_id,u_group)
+    );
+	`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (db *PostgresBase) Close() {
+	db.conn.Close(context.Background())
+}
+
+// Metadata
+func (db *PostgresBase) EngineName() string {
+	return "PostgreSQL"
+}
+
+func (db *PostgresBase) Version() string {
+	var serverVersion string
+	err := db.conn.QueryRow(context.Background(), "SHOW server_version").Scan(&serverVersion)
+	if err != nil {
+		return ""
+	}
+	return serverVersion
+}
 
 // Fetches page id from page title
 func (db *PostgresBase) GetIdFromPageTitle(title string) (*int, error) {
