@@ -7,6 +7,8 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/ChaosIsFramecode/horinezumi/data"
+	"github.com/ChaosIsFramecode/horinezumi/mprender"
+	"github.com/ChaosIsFramecode/horinezumi/mprender/markdown"
 )
 
 func SetupWikiroute(rt *chi.Mux, db data.Datastore) {
@@ -33,6 +35,12 @@ func SetupWikiroute(rt *chi.Mux, db data.Datastore) {
 				if err != nil {
 					w.Write([]byte("Page does not exist. Try checking your spelling if otherwise."))
 					return
+				}
+
+				// Check page format
+				switch p.MPType {
+				case mprender.Markdown:
+					p.Content = markdown.ToHTML(p.Content)
 				}
 
 				w.Write([]byte("<h1>" + p.Title + "</h1><br/>" + p.Content))

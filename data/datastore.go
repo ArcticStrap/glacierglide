@@ -65,7 +65,8 @@ func (db *PostgresBase) CreateTables() error {
 		CREATE TABLE IF NOT EXISTS pages (
 			page_id SERIAL PRIMARY KEY,
 			title TEXT NOT NULL,
-			content TEXT not null
+			content TEXT NOT NULL,
+      mp_type INT NOT NULL
 		);
 		CREATE TABLE IF NOT EXISTS page_diffs (
 			diff_id SERIAL PRIMARY KEY,
@@ -84,7 +85,7 @@ func (db *PostgresBase) CreateTables() error {
 		);
     CREATE TABLE IF NOT EXISTS user_groups (
       user_id INT NOT NULL REFERENCES users(user_id),
-      u_group bytea NOT NULL,
+      u_group INT NOT NULL,
       PRIMARY KEY (user_id,u_group)
     );
 	`)
@@ -171,7 +172,7 @@ func (db *PostgresBase) DeletePageDiff(id int64) error {
 
 func (db *PostgresBase) ReadPage(title string) (*Page, error) {
 	// SQL query to fetch the page by ID
-	query := `SELECT title, content FROM pages WHERE page_id=$1`
+	query := `SELECT title, content, mp_type FROM pages WHERE page_id=$1`
 
 	pageID, err := db.GetIdFromPageTitle(title)
 	if err != nil {
@@ -181,7 +182,7 @@ func (db *PostgresBase) ReadPage(title string) (*Page, error) {
 	var page Page
 
 	// Execute the query and scan the result into the Page struct
-	if err := db.conn.QueryRow(context.Background(), query, pageID).Scan(&page.Title, &page.Content); err != nil {
+	if err := db.conn.QueryRow(context.Background(), query, pageID).Scan(&page.Title, &page.Content,&page.MPType); err != nil {
 		return nil, err
 	}
 
@@ -190,7 +191,7 @@ func (db *PostgresBase) ReadPage(title string) (*Page, error) {
 
 func (db *PostgresBase) CreatePage(v *Page) error {
 	// Execute create request
-	_, err := db.conn.Exec(context.Background(), "INSERT INTO pages (title, content) VALUES ($1, $2)", strings.ToLower(v.Title), v.Content)
+	_, err := db.conn.Exec(context.Background(), "INSERT INTO pages (title, content, mp_type) VALUES ($1, $2, $3)", strings.ToLower(v.Title), v.Content, v.MPType)
 	if err != nil {
 		return err
 	}
