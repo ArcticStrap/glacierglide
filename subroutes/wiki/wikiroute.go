@@ -11,7 +11,7 @@ import (
 	"github.com/ChaosIsFramecode/horinezumi/mprender/markdown"
 )
 
-func SetupWikiroute(rt *chi.Mux, db data.Datastore) {
+func SetupWikiRoute(rt *chi.Mux, db data.Datastore) {
 	// Add view subroute
 	rt.Route("/wiki", func(wikirouter chi.Router) {
 		// Redirect root to main page

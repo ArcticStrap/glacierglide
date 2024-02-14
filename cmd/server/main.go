@@ -48,8 +48,8 @@ func main() {
 	rt.Get("/", http.RedirectHandler("/wiki/Main_Page", http.StatusSeeOther).ServeHTTP)
 
 	// Initalize subrouters
-  wikido.SetupDoroute(rt,&db)
-	wiki.SetupWikiroute(rt, &db)
+  wikido.SetupDoRoute(rt,&db)
+	wiki.SetupWikiRoute(rt, &db)
 	edit.SetupEditRoute(rt, &db)
 	history.SetupHistoryRoute(rt, &db)
 	user.SetupUserRoute(rt, &db)
