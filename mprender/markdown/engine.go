@@ -58,9 +58,9 @@ func Tokenize(content string) []Token {
 				break
 			}
 		} else if boldMatch := boldRegex.FindStringSubmatch(line); len(boldMatch) == 2 {
-			tokens = append(tokens, Token{Type: Bold, Value: boldMatch[1]})
+			tokens = append(tokens, Token{Type: Bold, Value: boldMatch[0]})
 		} else if italicMatch := italicRegex.FindStringSubmatch(line); len(italicMatch) == 2 {
-			tokens = append(tokens, Token{Type: Italic, Value: italicMatch[1]})
+			tokens = append(tokens, Token{Type: Italic, Value: italicMatch[0]})
 		} else {
 			// Assume its a paragraph
 			tokens = append(tokens, Token{Type: Paragraph, Value: line})
