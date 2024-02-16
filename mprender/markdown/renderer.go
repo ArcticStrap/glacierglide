@@ -3,7 +3,7 @@ package markdown
 import "fmt"
 
 func ToHTML(content string) string {
-	tokens := Tokenize(content)
+	tokens := Tokenize([]byte(content))
 	htmlOut := ""
 
 	for _, v := range tokens {
