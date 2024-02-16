@@ -4,30 +4,36 @@ import "regexp"
 
 // Struct setup
 
-type TokenType int
+type Block interface {
+}
 
-const (
-	Header1 TokenType = iota
-	Header2
-	Header3
-	Header4
-	Header5
-	Header6
-	Bold
-	Italic
-	Paragraph
-)
-
-type Token struct {
-	Type  TokenType
+type Part struct {
 	Value string
 }
 
-func Tokenize(content []byte) []Token {
+type Header struct {
+	Part
+
+	Level int
+}
+
+type Bold struct {
+	Part
+}
+
+type Italic struct {
+	Part
+}
+
+type Paragraph struct {
+	Part
+}
+
+func Tokenize(content []byte) []Block {
 	if len(content) == 0 {
 		return nil
 	}
-	var tokens []Token
+	var blocks []Block
 
 	headerRegex := regexp.MustCompile(`^(#+)\s+(.*)$`)
 	//italicRegex := regexp.MustCompile(`\*(.*?)\*`)
@@ -47,30 +53,32 @@ func Tokenize(content []byte) []Token {
 				// Check header level
 				switch len(headerMatch[1]) {
 				case 1:
-					tokens = append(tokens, Token{Type: Header1, Value: headerMatch[2]})
+					blocks = append(blocks, Header{Part: Part{Value: headerMatch[2]}, Level: 1})
 					break
 				case 2:
-					tokens = append(tokens, Token{Type: Header2, Value: headerMatch[2]})
+					blocks = append(blocks, Header{Part: Part{Value: headerMatch[2]}, Level: 2})
 					break
 				case 3:
-					tokens = append(tokens, Token{Type: Header3, Value: headerMatch[2]})
+					blocks = append(blocks, Header{Part: Part{Value: headerMatch[2]}, Level: 3})
 					break
 				case 4:
-					tokens = append(tokens, Token{Type: Header4, Value: headerMatch[2]})
+					blocks = append(blocks, Header{Part: Part{Value: headerMatch[2]}, Level: 4})
 					break
 				case 5:
-					tokens = append(tokens, Token{Type: Header5, Value: headerMatch[2]})
+					blocks = append(blocks, Header{Part: Part{Value: headerMatch[2]}, Level: 5})
 					break
 				case 6:
-					tokens = append(tokens, Token{Type: Header6, Value: headerMatch[2]})
+					blocks = append(blocks, Header{Part: Part{Value: headerMatch[2]}, Level: 6})
 					break
 				default:
-					tokens = append(tokens, Token{Type: Paragraph, Value: headerMatch[2]})
+					blocks = append(blocks, Paragraph{Part: Part{Value: headerMatch[2]}})
 					break
 				}
 				bStart = i
 				parseMode = false
 				continue
+			} else {
+				blocks = append(blocks, Paragraph{Part: Part{Value: string(substr)}})
 			}
 		}
 
@@ -80,5 +88,5 @@ func Tokenize(content []byte) []Token {
 		}
 	}
 
-	return tokens
+	return blocks
 }

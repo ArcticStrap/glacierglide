@@ -1,44 +1,40 @@
 package markdown
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 func ToHTML(content string) string {
-	tokens := Tokenize([]byte(content))
+	blocks := Tokenize([]byte(content))
 	htmlOut := ""
 
-	for _, v := range tokens {
+	for _, v := range blocks {
 		tTag := "p"
-		switch v.Type {
-		case Header1:
-			tTag = "h1"
-			break
-		case Header2:
-			tTag = "h2"
-			break
-		case Header3:
-			tTag = "h3"
-			break
-		case Header4:
-			tTag = "h4"
-			break
-		case Header5:
-			tTag = "h5"
-			break
-		case Header6:
-			tTag = "h6"
+    var vValue string
+    switch vPart := v.(type) {
+		case Header:
+			tTag = "h" + strconv.Itoa(vPart.Level)
+      vValue = vPart.Value
 			break
 		case Bold:
 			tTag = "strong"
+      vValue = vPart.Value
+			break
 		case Italic:
 			tTag = "em"
+      vValue = vPart.Value
+			break
 		case Paragraph:
 			tTag = "p"
+      vValue = vPart.Value
 			break
 		default:
 			tTag = "p"
+      vValue = "ERROR: COULD NOT DETERMINE TYPE of Part"
 			break
 		}
-		htmlOut += fmt.Sprintf("<%s>%s</%s>\n", tTag, v.Value, tTag)
+		htmlOut += fmt.Sprintf("<%s>%s</%s>\n", tTag, vValue, tTag)
 	}
 
 	return htmlOut
