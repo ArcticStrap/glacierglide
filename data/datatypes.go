@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/ChaosIsFramecode/horinezumi/mprender"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -16,7 +15,7 @@ type AccountReq struct {
 type Page struct {
 	Title   string `json:"title"`
 	Content string `json:"content"`
-	MPType  mprender.MPType `json:"mpType"`
+	MPType  int `json:"mpType"`
 }
 
 type User struct {

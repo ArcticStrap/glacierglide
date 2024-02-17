@@ -8,10 +8,6 @@ func TestMarkdownEngine(t *testing.T) {
 	tokens := Tokenize([]byte(test_case))
 	if len(tokens) != 6 {
 		t.Fatalf("Tokenizer did not detect header syntax: %d != 2", len(tokens))
-	} else {
-		for i, v := range tokens {
-			t.Logf("TOKEN %d: TYPE: %d, VALUE: %s", i, v.Type, v.Value)
-		}
 	}
 
   t.Log(ToHTML(test_case))

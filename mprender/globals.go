@@ -1,8 +1,6 @@
 package mprender
 
-type MPType int
-
 const (
-	Markdown MPType = iota
+	Markdown int = iota
 	HTML
 )
