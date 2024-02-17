@@ -18,7 +18,7 @@ Config variables:
 * ![Go-JWT ](https://github.com/golang-jwt/jwt) - The JWT library
 
 #### Database drivers
-* ![Pgx](https://github.com/jackc/pgx/) - Postgres
+* ![Pgx](https://github.com/jackc/pgx/) - PostgreSQL
 
 I might plan to add MariaDB soon.
 

@@ -87,8 +87,6 @@ func ParseInline(line []byte) []Block {
 				i = offset + 3
 			}
 			bStart = i
-		} else {
-			i++
 		}
 	}
 
@@ -103,10 +101,6 @@ func ParseInline(line []byte) []Block {
 
 	return pChildren
 }
-
-/*func ParseBlockScope(content []byte) Block {
-
-}*/
 
 func Tokenize(content []byte) []Block {
 	if len(content) == 0 {
