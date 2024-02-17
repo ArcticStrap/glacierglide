@@ -37,34 +37,66 @@ type PlainText struct {
 }
 
 func ParseInline(line []byte) []Block {
-	italicRegex := regexp.MustCompile(`\*\s*([^\s\*]*[^\*]*[^\s\*])\s*\*`)
-	boldRegex := regexp.MustCompile(`\*\*\s*([^\s\*]*[^\*]*[^\s\*])\s*\*\*`)
 	var pChildren []Block
 
 	bStart := 0
-	parseMode := false
 	for i := 0; i <= len(line); i++ {
-		substr := string(line[bStart:i])
-		println(substr)
-		if italicMatch := italicRegex.FindStringSubmatch(substr); len(italicMatch) > 1 {
-			pChildren = append(pChildren, Italic{Part{Value: italicMatch[1]}})
-			bStart = i
-			parseMode = false
-			continue
-		}
-
-		if boldMatch := boldRegex.FindStringSubmatch(substr); len(boldMatch) > 1 {
-			pChildren = append(pChildren, Bold{Part{Value: boldMatch[1]}})
-			bStart = i
-			parseMode = false
-			continue
-		}
-
-		if len(substr) != 0 && substr[len(substr)-1] == '*' && !parseMode && i > bStart+1 {
-			pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
-
-			bStart = i - 1
-			parseMode = true
+		if i < len(line) && line[i] == '*' {
+			// Check for single, double, or triple emphasis
+			if i+1 < len(line) && line[i+1] == '*' {
+				// Double emphasis
+				if i+2 < len(line) && line[i+2] == '*' {
+					// Bold Italic
+					offset := i + 3
+					for offset < len(line) {
+						if offset < len(line) && line[offset] == '*' {
+							if offset+1 < len(line) && line[offset+1] == '*' {
+								if offset+2 < len(line) && line[offset+2] == '*' {
+									break
+								}
+							}
+						}
+					}
+					if offset != 0 {
+						pChildren = append(pChildren, Bold{Part{Value: "", Children: []Block{Italic{Part{Value: string(line[i+3 : offset])}}}}})
+					}
+					i = offset + 3
+					bStart = i
+				} else {
+					// Bold
+					offset := i + 2
+					for offset < len(line) {
+						if offset < len(line) && line[offset] == '*' {
+							if offset+1 < len(line) && line[offset+1] == '*' {
+								break
+							}
+						}
+						offset++
+					}
+					if offset != 0 {
+						pChildren = append(pChildren, Bold{Part{Value: string(line[i+2 : offset])}})
+					}
+					i = offset + 2
+					bStart = i
+				}
+			} else {
+				// Italic
+				offset := i + 1
+				for offset < len(line) {
+					if offset < len(line) && line[offset] == '*' {
+						break
+					}
+					offset++
+				}
+				if offset != 0 {
+					pChildren = append(pChildren, Italic{Part{Value: string(line[i+1 : offset])}})
+				}
+				i = offset + 1
+				bStart = i
+			}
+		} else {
+			// Add remaining text
+			pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart])}})
 		}
 	}
 	return pChildren
