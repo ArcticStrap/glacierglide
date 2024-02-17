@@ -57,6 +57,8 @@ func ParseInline(line []byte) []Block {
 							}
 						}
 					}
+					// Appened inactive chars
+					pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
 					if offset != 0 && offset < len(line) {
 						pChildren = append(pChildren, Bold{Part{Value: "", Children: []Block{Italic{Part{Value: string(line[i+3 : offset])}}}}})
 					}
@@ -73,6 +75,8 @@ func ParseInline(line []byte) []Block {
 						}
 						offset++
 					}
+					// Appened inactive chars
+					pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
 					if offset != 0 && offset < len(line) {
 						pChildren = append(pChildren, Bold{Part{Value: string(line[i+2 : offset])}})
 					}
@@ -88,6 +92,8 @@ func ParseInline(line []byte) []Block {
 					}
 					offset++
 				}
+				// Appened inactive chars
+				pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
 				if offset != 0 && offset < len(line) {
 					pChildren = append(pChildren, Italic{Part{Value: string(line[i+1 : offset])}})
 				}
