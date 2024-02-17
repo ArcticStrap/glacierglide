@@ -6,25 +6,25 @@ import (
 )
 
 func renderInline(p *Part) string {
-  renderedLine := ""
-  for _,v := range p.Children {
-    switch vEle := v.(type) {
-    case Italic:
-      renderedLine += fmt.Sprintf("<em>%s</em>",vEle.Value)
-      break 
-    case Bold:
-      renderedLine += fmt.Sprintf("<strong>%s</em>",vEle.Value)
-      break
-    case PlainText:
-      renderedLine += vEle.Value
-      break
-    default:
-      renderedLine += "ERROR: COULD NOT DETERMINE TYPE OF ELEMENT"
-      break
-    }
-  }
+	renderedLine := ""
+	for _, v := range p.Children {
+		switch vEle := v.(type) {
+		case Italic:
+			renderedLine += fmt.Sprintf("<em>%s</em>", vEle.Value)
+			break
+		case Bold:
+			renderedLine += fmt.Sprintf("<strong>%s</strong>", vEle.Value)
+			break
+		case PlainText:
+			renderedLine += vEle.Value
+			break
+		default:
+			renderedLine += "ERROR: COULD NOT DETERMINE TYPE OF ELEMENT"
+			break
+		}
+	}
 
-  return renderedLine
+	return renderedLine
 }
 
 func ToHTML(content string) string {
@@ -33,20 +33,19 @@ func ToHTML(content string) string {
 
 	for _, v := range blocks {
 		tTag := "p"
-    var vValue string
-    switch vPart := v.(type) {
+		var vValue string
+		switch vPart := v.(type) {
 		case Header:
 			tTag = "h" + strconv.Itoa(vPart.Level)
-      vValue = vPart.Value
+			vValue = vPart.Value
 			break
 		case Paragraph:
 			tTag = "p"
-      println("CHILDREN: ",len(vPart.Children))
-      vValue = renderInline(&vPart.Part)
+			vValue = renderInline(&vPart.Part)
 			break
 		default:
 			tTag = "p"
-      vValue = "ERROR: COULD NOT DETERMINE TYPE OF BLOCK"
+			vValue = "ERROR: COULD NOT DETERMINE TYPE OF BLOCK"
 			break
 		}
 		htmlOut += fmt.Sprintf("<%s>%s</%s>\n", tTag, vValue, tTag)

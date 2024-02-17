@@ -10,5 +10,5 @@ func TestMarkdownEngine(t *testing.T) {
 		t.Fatalf("Tokenizer did not detect header syntax: %d != 2", len(tokens))
 	}
 
-  t.Log(ToHTML(test_case))
+	t.Log(ToHTML(test_case))
 }
