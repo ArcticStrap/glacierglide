@@ -40,71 +40,67 @@ func ParseInline(line []byte) []Block {
 	var pChildren []Block
 
 	bStart := 0
-	for i := 0; i <= len(line); i++ {
-		if i < len(line) && line[i] == '*' {
-			// Check for single, double, or triple emphasis
-			if i+1 < len(line) && line[i+1] == '*' {
-				// Double emphasis
-				if i+2 < len(line) && line[i+2] == '*' {
-					// Bold Italic
-					offset := i + 3
-					for offset < len(line) {
-						if offset < len(line) && line[offset] == '*' {
-							if offset+1 < len(line) && line[offset+1] == '*' {
-								if offset+2 < len(line) && line[offset+2] == '*' {
-									break
-								}
-							}
-						}
-					}
-					// Appened inactive chars
-					pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
-					if offset != 0 && offset < len(line) {
-						pChildren = append(pChildren, Bold{Part{Value: "", Children: []Block{Italic{Part{Value: string(line[i+3 : offset])}}}}})
-					}
-					i = offset + 3
-					bStart = i
-				} else {
-					// Bold
-					offset := i + 2
-					for offset < len(line) {
-						if offset < len(line) && line[offset] == '*' {
-							if offset+1 < len(line) && line[offset+1] == '*' {
-								break
-							}
-						}
-						offset++
-					}
-					// Appened inactive chars
-					pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
-					if offset != 0 && offset < len(line) {
-						pChildren = append(pChildren, Bold{Part{Value: string(line[i+2 : offset])}})
-					}
-					i = offset + 2
-					bStart = i
-				}
-			} else {
-				// Italic
+	for i := 0; i < len(line); i++ {
+		if line[i] == '*' {
+			// Count consecutive asteriks
+			aCount := 1
+			for i+aCount < len(line) && line[i+aCount] == '*' {
+				aCount++
+			}
+			if aCount > 3 {
+				aCount = 3
+			}
+
+			switch aCount {
+			case 1:
 				offset := i + 1
-				for offset < len(line) {
-					if offset < len(line) && line[offset] == '*' {
-						break
-					}
+				for offset < len(line) && line[offset] != '*' {
 					offset++
 				}
-				// Appened inactive chars
+				// Append inactive plain text
 				pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
-				if offset != 0 && offset < len(line) {
+				if offset != 0 && offset < len(line) && line[offset] == '*' {
 					pChildren = append(pChildren, Italic{Part{Value: string(line[i+1 : offset])}})
 				}
 				i = offset + 1
-				bStart = i
+			case 2:
+				offset := i + 2
+				for offset < len(line) && line[offset] != '*' {
+					offset++
+				}
+				// Append inactive plain text
+				pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
+				if offset != 0 && offset < len(line) && line[offset] == '*' {
+					pChildren = append(pChildren, Bold{Part{Value: string(line[i+2 : offset])}})
+				}
+				i = offset + 2
+			case 3:
+				offset := i + 3
+				for offset < len(line) && line[offset] != '*' {
+					offset++
+				}
+				// Append inactive plain text
+				pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
+				if offset != 0 && offset < len(line) && line[offset] == '*' {
+					pChildren = append(pChildren, Bold{Part{Value: "", Children: []Block{Italic{Part{Value: string(line[i+2 : offset])}}}}})
+				}
+				i = offset + 3
 			}
+			bStart = i
 		} else {
-			// Add remaining text
-			pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart])}})
+			i++
 		}
 	}
+
+	// Append remaining text if any
+	charCount := len(line)
+	if bStart < charCount {
+		if line[charCount-1] == ' ' || line[charCount-1] == '\n' {
+			charCount--
+		}
+		pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:charCount])}})
+	}
+
 	return pChildren
 }
 
