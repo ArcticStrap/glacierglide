@@ -61,30 +61,59 @@ func ParseInline(line []byte) []Block {
 				pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
 				if offset != 0 && offset < len(line) && line[offset] == '*' {
 					pChildren = append(pChildren, Italic{Part{Value: string(line[i+1 : offset])}})
+				} else {
+					pChildren = append(pChildren, PlainText{Part{Value: string(line[i+1 : offset])}})
 				}
 				i = offset + 1
+				break
 			case 2:
 				offset := i + 2
-				for offset < len(line) && line[offset] != '*' {
+				for offset < len(line) {
+					if line[offset] == '*' {
+						if offset+1 < len(line) && line[offset+1] == '*' {
+							break
+						}
+					}
 					offset++
 				}
 				// Append inactive plain text
 				pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
 				if offset != 0 && offset < len(line) && line[offset] == '*' {
 					pChildren = append(pChildren, Bold{Part{Value: string(line[i+2 : offset])}})
+				} else {
+					pChildren = append(pChildren, PlainText{Part{Value: string(line[i+2 : offset])}})
 				}
 				i = offset + 2
+				break
 			case 3:
 				offset := i + 3
-				for offset < len(line) && line[offset] != '*' {
+				for offset < len(line) {
+					if line[offset] == '*' {
+						if offset+1 < len(line) && line[offset+1] == '*' {
+							if offset+2 < len(line) && line[offset+2] == '*' {
+								break
+							}
+						}
+					}
 					offset++
 				}
 				// Append inactive plain text
 				pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
+
 				if offset != 0 && offset < len(line) && line[offset] == '*' {
-					pChildren = append(pChildren, Bold{Part{Value: "", Children: []Block{Italic{Part{Value: string(line[i+2 : offset])}}}}})
+					if offset+2 < len(line) && line[offset+1] == '*' && line[offset+2] == '*' {
+						pChildren = append(pChildren, Bold{Part{Value: "", Children: ParseInline(line[i+2 : offset+1])}})
+					} else if offset+1 < len(line) && line[offset+1] == '*' {
+						pChildren = append(pChildren, Italic{Part{Value: string(line[i+3 : offset])}})
+					} else {
+						pChildren = append(pChildren, Bold{Part{Value: string(line[i+3 : offset])}})
+					}
+				} else {
+					pChildren = append(pChildren, PlainText{Part{Value: string(line[i+3 : offset])}})
 				}
+
 				i = offset + 3
+				break
 			}
 			bStart = i
 		}

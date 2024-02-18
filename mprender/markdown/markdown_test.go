@@ -44,7 +44,7 @@ func TestMarkdownEngine(t *testing.T) {
 		},
 		{
 			input:    "This is ***bold* and *italic*** text.",
-			expected: "<p>This is <strong><em>bold</em> and  <em>italic</em></strong> text.</p>\n",
+			expected: "<p>This is <strong><em>bold</em> and <em>italic</em></strong> text.</p>\n",
 		},
 		{
 			input:    "Plain text",
