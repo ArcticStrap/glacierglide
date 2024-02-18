@@ -60,6 +60,7 @@ func (sc *SignalConnector) Fire(signalType string, signalData interface{}) {
 	}
 }
 
+// UNSTABLE: DO NOT USE UNTIL FURTHER TESTING IS CONDUCTED
 func (sc *SignalConnector) Wait(signalType string) {
 	sc.mu.Lock()
 	defer sc.mu.Unlock()
