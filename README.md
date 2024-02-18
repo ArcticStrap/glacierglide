@@ -14,7 +14,6 @@ Config variables:
 
 ### Dependencies
 * ![Chi](https://github.com/go-chi/chi) - The HTTP library
-* ![Godotenv](https://github.com/joho/godotenv) - Used to load the .env file
 * ![Go-JWT ](https://github.com/golang-jwt/jwt) - The JWT library
 
 #### Database drivers

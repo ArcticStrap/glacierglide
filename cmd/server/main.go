@@ -9,7 +9,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/joho/godotenv"
 
 	"github.com/ChaosIsFramecode/horinezumi/data"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/edit"
@@ -17,11 +16,12 @@ import (
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/user"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/wiki"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/wikido"
+	"github.com/ChaosIsFramecode/horinezumi/utils/environment"
 )
 
 func main() {
 	// Load .env variables
-	err := godotenv.Load(".env")
+	err := environment.Load()
 	if err != nil {
 		log.Fatalf("Error loading environment variables: %s", err)
 	}
@@ -48,7 +48,7 @@ func main() {
 	rt.Get("/", http.RedirectHandler("/wiki/Main_Page", http.StatusSeeOther).ServeHTTP)
 
 	// Initalize subrouters
-  wikido.SetupDoRoute(rt,&db)
+	wikido.SetupDoRoute(rt, &db)
 	wiki.SetupWikiRoute(rt, &db)
 	edit.SetupEditRoute(rt, &db)
 	history.SetupHistoryRoute(rt, &db)
