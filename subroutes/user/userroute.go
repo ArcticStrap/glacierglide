@@ -14,51 +14,52 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func SetupUserRoute(rt *chi.Mux, db data.Datastore,sc *appsignals.SignalConnector) {
+func SetupUserRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnector) {
 	rt.Post("/CreateAccount", func(w http.ResponseWriter, r *http.Request) {
 		// Expect json response
 		w.Header().Set("Content-Type", "application/json")
 
-    // Check if creating an account if possible
-    userGroups := userutils.GetUserGroups(r.RemoteAddr)
-    proceed := false
-    for _,v := range userGroups {
-      if wikiconfig.UserGroups[v]["createaccount"] {
-        proceed = true
-        break
-      }
-    }
-    if !proceed {
-      jsonresp.JsonERR(w,401,"Error with creating user account: %s",fmt.Errorf("Permission denied"))
-      return
-    }
+		// Check if creating an account if possible
+		userGroups := userutils.GetUserGroups(r.RemoteAddr)
+		proceed := false
+		for _, v := range userGroups {
+			if wikiconfig.UserGroups[v]["createaccount"] {
+				proceed = true
+				break
+			}
+		}
+		if !proceed {
+			jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with creating user account: %s", fmt.Errorf("Permission denied"))
+			return
+		}
 
 		// Decode account request
 		var createReq data.AccountReq
 
 		if err := json.NewDecoder(r.Body).Decode(&createReq); err != nil {
-			jsonresp.JsonERR(w, 400, "Error with decoding json: ", err)
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with decoding json: ", err)
 			return
 		}
 
 		// Prevent empty account creation
 		if createReq.Username == "" || createReq.Password == "" {
-			jsonresp.JsonERR(w, 400, "%s", fmt.Errorf("invalid credentials"))
+			jsonresp.JsonERR(w, http.StatusBadRequest, "%s", fmt.Errorf("invalid credentials"))
 			return
 		}
 
 		newUser, err := db.CreateUser(createReq.Username, createReq.Password)
 		if err != nil {
-			jsonresp.JsonERR(w, 400, "Error with creating user account: ", err)
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with creating user account: ", err)
 		}
 
 		resp := make(map[string]string)
 		resp["password"] = createReq.Password
 		resp["creation-date"] = newUser.CreationDate.Format("2006-01-02 15:04:05") + " UTC"
 
-    sc.Fire("onCreateAccount",[2]string{createReq.Username,createReq.Password})
-
 		jsonresp.JsonOK(w, resp, fmt.Sprintf("User account %s has been created", newUser.Username))
+
+		// Fire event
+		sc.Fire("onCreateAccount", [1]string{createReq.Username})
 	})
 
 	rt.Post("/Login", func(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +69,7 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore,sc *appsignals.SignalConnecto
 		// Check if session exists
 		_, err := r.Cookie("sessionauth")
 		if err == nil {
-			jsonresp.JsonERR(w, 401, "User already has an active session", nil)
+			jsonresp.JsonERR(w, http.StatusUnauthorized, "User already has an active session", nil)
 			return
 		}
 
@@ -76,32 +77,32 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore,sc *appsignals.SignalConnecto
 		var loginReq data.AccountReq
 
 		if err := json.NewDecoder(r.Body).Decode(&loginReq); err != nil {
-			jsonresp.JsonERR(w, 400, "Error with decoding json: ", err)
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with decoding json: ", err)
 			return
 		}
 
 		// Prevent empty account login
 		if loginReq.Username == "" || loginReq.Password == "" {
-			jsonresp.JsonERR(w, 400, "%s", fmt.Errorf("invalid credentials"))
+			jsonresp.JsonERR(w, http.StatusBadRequest, "%s", fmt.Errorf("invalid credentials"))
 			return
 		}
 
 		// Get user
 		u, err := db.GetUser(loginReq.Username)
 		if err != nil {
-			jsonresp.JsonERR(w, 400, "Error with fetching user info: ", err)
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with fetching user info: ", err)
 			return
 		}
 
 		// Check if password is valid
 		if !u.ValidPassword(loginReq.Password) {
-			jsonresp.JsonERR(w, 400, "Error with logging into user: %s", fmt.Errorf("authentication error"))
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with logging into user: %s", fmt.Errorf("authentication error"))
 			return
 		}
 
 		token, err := data.CreateJWT(u)
 		if err != nil {
-			jsonresp.JsonERR(w, 400, "Error with fetching auth token: ", err)
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with fetching auth token: ", err)
 			return
 		}
 

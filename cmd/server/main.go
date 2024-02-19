@@ -54,7 +54,7 @@ func main() {
 	// Initalize subrouters
 	wikido.SetupDoRoute(rt, &db)
 	wiki.SetupWikiRoute(rt, &db)
-	edit.SetupEditRoute(rt, &db)
+	edit.SetupEditRoute(rt, &db,sc)
 	history.SetupHistoryRoute(rt, &db)
 	user.SetupUserRoute(rt, &db,sc)
 

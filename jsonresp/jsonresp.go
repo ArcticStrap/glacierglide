@@ -10,7 +10,7 @@ import (
 // Gives the http 200 OK response to a ResponseWriter
 func JsonOK(w http.ResponseWriter, resp map[string]string, message string) {
 	// Write OK CODE
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 
 	// Make response
 	resp["message"] = message
