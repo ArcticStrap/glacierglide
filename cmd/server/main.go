@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/ChaosIsFramecode/horinezumi/appsignals"
 	"github.com/ChaosIsFramecode/horinezumi/data"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/edit"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/history"
@@ -41,6 +42,9 @@ func main() {
 
 	rt := chi.NewRouter()
 
+  // Initalize the app signal system
+  sc := appsignals.NewSignalConnector()
+
 	// Use logger
 	rt.Use(middleware.Logger)
 
@@ -52,7 +56,7 @@ func main() {
 	wiki.SetupWikiRoute(rt, &db)
 	edit.SetupEditRoute(rt, &db)
 	history.SetupHistoryRoute(rt, &db)
-	user.SetupUserRoute(rt, &db)
+	user.SetupUserRoute(rt, &db,sc)
 
 	log.Println("Running on " + os.Getenv("ADDR"))
 

@@ -6,15 +6,32 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ChaosIsFramecode/horinezumi/appsignals"
 	"github.com/ChaosIsFramecode/horinezumi/data"
 	"github.com/ChaosIsFramecode/horinezumi/jsonresp"
+	"github.com/ChaosIsFramecode/horinezumi/utils/userutils"
+	"github.com/ChaosIsFramecode/horinezumi/wikiconfig"
 	"github.com/go-chi/chi/v5"
 )
 
-func SetupUserRoute(rt *chi.Mux, db data.Datastore) {
+func SetupUserRoute(rt *chi.Mux, db data.Datastore,sc *appsignals.SignalConnector) {
 	rt.Post("/CreateAccount", func(w http.ResponseWriter, r *http.Request) {
 		// Expect json response
 		w.Header().Set("Content-Type", "application/json")
+
+    // Check if creating an account if possible
+    userGroups := userutils.GetUserGroups(r.RemoteAddr)
+    proceed := false
+    for _,v := range userGroups {
+      if wikiconfig.UserGroups[v]["createaccount"] {
+        proceed = true
+        break
+      }
+    }
+    if !proceed {
+      jsonresp.JsonERR(w,401,"Error with creating user account: %s",fmt.Errorf("Permission denied"))
+      return
+    }
 
 		// Decode account request
 		var createReq data.AccountReq
@@ -38,6 +55,8 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore) {
 		resp := make(map[string]string)
 		resp["password"] = createReq.Password
 		resp["creation-date"] = newUser.CreationDate.Format("2006-01-02 15:04:05") + " UTC"
+
+    sc.Fire("onCreateAccount",[2]string{createReq.Username,createReq.Password})
 
 		jsonresp.JsonOK(w, resp, fmt.Sprintf("User account %s has been created", newUser.Username))
 	})
