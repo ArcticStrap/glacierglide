@@ -10,7 +10,9 @@ You need a .env file with 3 variables:
     JWTCODE: The JWT secret.
 
 Config variables:
-    DEV: "1"=development mode ""=production mode
+    DEV: 
+    - "1": development mode 
+    - "": production mode
 
 ### Dependencies
 * ![Chi](https://github.com/go-chi/chi) - The HTTP library

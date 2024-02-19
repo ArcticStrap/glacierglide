@@ -1,4 +1,6 @@
 # Project makefile
+
+# Locations
 OUTPUT = bin/horinezumi
 MAIN = ./cmd/server/main.go
 
@@ -11,7 +13,11 @@ ifeq ($(OS), Windows_NT) # Windows
 	CLEANCMD = del $(OUTPUT)
 endif
 
-all: clean build
+# Targets
+.PHONY: all help gencert getdeps build clean dversion run test benchmark tidy
+
+# Default target
+all: help
 
 # General commands
 help:
@@ -19,11 +25,11 @@ help:
 	@echo ""
 	@echo "Targets:"
 	@echo "	gencert		Generate SSL certificate"
+	@echo "	getdeps		Get the project dependencies"
 	@echo "	build		Build the project"
 	@echo "	clean		Clean the project"
 	@echo "	dversion	Display databse migration version"
 	@echo "	run		Run the project"
-	@echo "	getdeps		Get the project dependencies"
 	@echo "	test		Run unit tests"
 	@echo "	benchmark	Run benchmarks"
 	@echo "	tidy		Tidy up mod file"
@@ -35,22 +41,30 @@ help:
 gencert:
 	mkdir -p certs
 	openssl ecparam -genkey -name secp384r1 -out certs/key.pem
-	openssl req -new -x509 -sha256 -key certs/key.pem -out certs/cert.pem -days 3650 
+	openssl req -new -x509 -sha256 -key certs/key.pem -out certs/cert.pem -days 3650
+
 getdeps:
 	go mod download
 
 # Go commands
 build:
 	$(BUILDCMD)
+
 clean:
 	$(CLEANCMD)
+
 dversion:
 	migrate -database $(URL) -path data/migrations version
+
 run:
 	go run $(MAIN)
+
 test:
 	go test -v ./...
+
 benchmark:
 	go test -bench=. ./...
+
 tidy:
 	go mod tidy
+
