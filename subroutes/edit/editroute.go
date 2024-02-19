@@ -14,7 +14,6 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 	// Setup subrouter for wiki editing
 	rt.Route("/e", func(editrouter chi.Router) {
 		editrouter.Route("/{title}", func(pagerouter chi.Router) {
-			// TODO: Create page
 			pagerouter.Post("/", func(w http.ResponseWriter, r *http.Request) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
@@ -123,7 +122,6 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore) {
 				jsonresp.JsonOK(w, make(map[string]string), "Page updated!")
 			}))
 
-			// TODO: Delete page
 			pagerouter.Delete("/", func(w http.ResponseWriter, r *http.Request) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
