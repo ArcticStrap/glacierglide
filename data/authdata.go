@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+  "strings"
 	"time"
 
 	"github.com/ChaosIsFramecode/horinezumi/jsonresp"
@@ -74,4 +75,26 @@ func ValiateClaims(c jwt.Claims) (jwt.RegisteredClaims, bool) {
 	rClaims, ok := c.(jwt.RegisteredClaims)
 
 	return rClaims, ok
+}
+
+
+func GetLoginStatus(tokenStr string, r *http.Request, db Datastore) (string, error) {
+	if tokenStr != "" {
+		token, err := ValidateJWT(tokenStr)
+		if err != nil || !token.Valid {
+			return "", err
+		}
+
+		claims, ok := token.Claims.(*UserClaims)
+		if !ok {
+			return "", err
+		}
+
+		editor, err := db.GetUsernameFromId(claims.UserID)
+		if err != nil {
+			return "", err
+		}
+		return editor, nil
+	}
+	return strings.Split(r.RemoteAddr, ":")[0], nil
 }

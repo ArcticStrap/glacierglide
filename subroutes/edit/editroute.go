@@ -14,26 +14,6 @@ import (
 )
 
 // Authenticate token, default to ip address if empty token.
-func GetLoginStatus(tokenStr string, r *http.Request, db data.Datastore) (string, error) {
-	if tokenStr != "" {
-		token, err := data.ValidateJWT(tokenStr)
-		if err != nil || !token.Valid {
-			return "", err
-		}
-
-		claims, ok := token.Claims.(*data.UserClaims)
-		if !ok {
-			return "", err
-		}
-
-		editor, err := db.GetUsernameFromId(claims.UserID)
-		if err != nil {
-			return "", err
-		}
-		return editor, nil
-	}
-	return strings.Split(r.RemoteAddr, ":")[0], nil
-}
 
 func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnector) {
 	// Setup subrouter for wiki editing
@@ -52,10 +32,25 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 				}
 
 				// Get editor name
-				editor, err := GetLoginStatus(r.Header.Get("authtoken"), r, db)
+				editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
 				}
+
+        // Check if creating a page is possible
+        userGroups := userutils.GetUserGroups(r.RemoteAddr)
+        proceed := false
+				for _, v := range userGroups {
+					if wikiconfig.UserGroups[v]["create"] {
+						proceed = true
+						break
+					}
+				}
+				if !proceed {
+					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with deleting page: Permission denied", nil)
+					return
+				}
+
 
 				// Handle request
 				newPage := new(data.Page)
@@ -108,9 +103,23 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 				}
 
 				// Get editor name
-				editor, err := GetLoginStatus(r.Header.Get("authtoken"), r, db)
+				editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
+				}
+
+        // Check if editing a page is possible
+        userGroups := userutils.GetUserGroups(r.RemoteAddr)
+        proceed := false
+				for _, v := range userGroups {
+					if wikiconfig.UserGroups[v]["edit"] {
+						proceed = true
+						break
+					}
+				}
+				if !proceed {
+					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with deleting page: Permission denied", nil)
+					return
 				}
 
 				// Handle request
@@ -152,11 +161,11 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 				}
 
 				// Get editor name
-				editor, err := GetLoginStatus(r.Header.Get("authtoken"), r, db)
+				editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
 				}
-				// Check if creating an account if possible
+				// Check if deleting a page is possible
 				userGroups := userutils.GetUserGroups(r.RemoteAddr)
 				proceed := false
 				for _, v := range userGroups {

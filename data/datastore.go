@@ -88,6 +88,16 @@ func (db *PostgresBase) CreateTables() error {
       u_group INT NOT NULL,
       PRIMARY KEY (user_id,u_group)
     );
+    CREATE TABLE IF NOT EXISTS suspensions (
+      sus_id SERIAL PRIMARY KEY,
+      sus_target TEXT NOT NULL,
+      sus_ends INT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS locks (
+      lock_id SERIAL PRIMARY KEY,
+      page_id INT REFERENCES pages(page_id),
+      min_group INT
+    );
 	`)
 	if err != nil {
 		return err
