@@ -51,3 +51,13 @@ func (pd PageDiff) MarshalJSON() ([]byte, error) {
 		Alias: (*Alias)(&pd),
 	})
 }
+
+type SusReq struct {
+  Target string `json:"target"`
+  Duration int64 `json:"duration"`
+}
+
+type LockReq struct {
+  Title string `json:"title"`
+  MinimumGroup int64 `json:"minGroup"`
+}

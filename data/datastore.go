@@ -42,6 +42,14 @@ type Datastore interface {
 	CreatePageDiff(p *Page, editor string) error
 	ReadPageDiff(id int64) (*PageDiff, error)
 	DeletePageDiff(id int64) error
+
+	// Moderation actions
+	GetLockStatus(p string) (int, error)
+	LockPage(p string, min_group int) error
+	UnlockPage(p string, min_group int) error
+
+	IsSuspended(u string) (bool, error)
+	SuspendUser(u string, duration int64) error
 }
 
 // Datastore implementation for the Postgres database.
@@ -192,7 +200,7 @@ func (db *PostgresBase) ReadPage(title string) (*Page, error) {
 	var page Page
 
 	// Execute the query and scan the result into the Page struct
-	if err := db.conn.QueryRow(context.Background(), query, pageID).Scan(&page.Title, &page.Content,&page.MPType); err != nil {
+	if err := db.conn.QueryRow(context.Background(), query, pageID).Scan(&page.Title, &page.Content, &page.MPType); err != nil {
 		return nil, err
 	}
 
@@ -375,6 +383,113 @@ func (db *PostgresBase) DeleteUser(username string) error {
 
 	// Execute delete request
 	_, err = db.conn.Exec(context.Background(), "DELETE FROM users WHERE user_id=$1", *id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Moderation actions
+
+func (db *PostgresBase) GetLockStatus(p string) (int, error) {
+	// Fetch page id
+	id, err := db.GetIdFromPageTitle(p)
+	if err != nil {
+		return 0, err
+	}
+
+	// Query rows
+	rows, err := db.conn.Query(context.Background(), "SELECT min_group FROM locks WHERE page_id=$1", *id)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+
+	min_group := 0
+
+	ok := true
+	for rows.Next() {
+		err = rows.Scan(&min_group)
+		if err != nil {
+			ok = false
+			break
+		}
+	}
+	if !ok {
+		return 0, err
+	}
+
+	return min_group, nil
+}
+
+func (db *PostgresBase) LockPage(p string, min_group int) error {
+	// Fetch page id
+	id, err := db.GetIdFromPageTitle(p)
+	if err != nil {
+		return err
+	}
+
+	// Execute request
+	_, err = db.conn.Exec(context.Background(), "INSERT INTO locks (page_id,min_group) VALUES ($1,$2)", *id, min_group)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *PostgresBase) UnlockPage(p string, min_group int) error {
+	// Fetch page id
+	id, err := db.GetIdFromPageTitle(p)
+	if err != nil {
+		return err
+	}
+
+	// Execute request
+	_, err = db.conn.Exec(context.Background(), "DELETE FROM locks WHERE page_id=$1", *id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (db *PostgresBase) IsSuspended(u string) (bool, error) {
+	rows, err := db.conn.Query(context.Background(), "SELECT sus_ends FROM suspensions WHERE sus_target=$1", u)
+	if err != nil {
+		return false, err
+	}
+
+	var sDuration int64
+
+	ok := true
+	for rows.Next() {
+		err = rows.Scan(&sDuration)
+		if err != nil {
+			ok = false
+			break
+		}
+	}
+	if !ok {
+		return false, err
+	}
+
+	var blocked = time.Now().Unix() < sDuration
+	// Remove block from database if done
+	if !blocked {
+		_, err := db.conn.Exec(context.Background(), "DELETE FROM locks WHERE sus_target=$1", u)
+		if err != nil {
+			return false, err
+		}
+	}
+
+	return blocked, nil
+}
+
+func (db *PostgresBase) SuspendUser(u string, duration int64) error {
+	// Execute request
+	_, err := db.conn.Exec(context.Background(), "INSERT INTO suspensions (sus_target,sus_ends) VALUES ($1,$2)", u, time.Now().Unix()+duration)
 	if err != nil {
 		return err
 	}
