@@ -42,8 +42,8 @@ func main() {
 
 	rt := chi.NewRouter()
 
-  // Initalize the app signal system
-  sc := appsignals.NewSignalConnector()
+	// Initalize the app signal system
+	sc := appsignals.NewSignalConnector()
 
 	// Use logger
 	rt.Use(middleware.Logger)
@@ -54,9 +54,9 @@ func main() {
 	// Initalize subrouters
 	wikido.SetupDoRoute(rt, &db)
 	wiki.SetupWikiRoute(rt, &db)
-	edit.SetupEditRoute(rt, &db,sc)
+	edit.SetupEditRoute(rt, &db, sc)
 	history.SetupHistoryRoute(rt, &db)
-	user.SetupUserRoute(rt, &db,sc)
+	user.SetupUserRoute(rt, &db, sc)
 
 	log.Println("Running on " + os.Getenv("ADDR"))
 

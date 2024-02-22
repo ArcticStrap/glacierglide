@@ -10,7 +10,6 @@ import (
 	"github.com/ChaosIsFramecode/horinezumi/data"
 	"github.com/ChaosIsFramecode/horinezumi/jsonresp"
 	"github.com/ChaosIsFramecode/horinezumi/utils/userutils"
-	"github.com/ChaosIsFramecode/horinezumi/wikiconfig"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -21,14 +20,9 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 
 		// Check if creating an account is possible
 		userGroups := userutils.GetUserGroups(r.RemoteAddr)
-		proceed := false
-		for _, v := range userGroups {
-			if wikiconfig.UserGroups[v]["createaccount"] {
-				proceed = true
-				break
-			}
-		}
-		if !proceed {
+		proceed := userutils.UserCan("createaccount",userGroups)
+		
+    if !proceed {
 			jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with creating user account: %s", fmt.Errorf("Permission denied"))
 			return
 		}
@@ -50,6 +44,7 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 		newUser, err := db.CreateUser(createReq.Username, createReq.Password)
 		if err != nil {
 			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with creating user account: ", err)
+      return
 		}
 
 		resp := make(map[string]string)

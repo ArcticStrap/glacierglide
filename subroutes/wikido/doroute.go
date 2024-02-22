@@ -12,7 +12,6 @@ import (
 	"github.com/ChaosIsFramecode/horinezumi/data"
 	"github.com/ChaosIsFramecode/horinezumi/jsonresp"
 	"github.com/ChaosIsFramecode/horinezumi/utils/userutils"
-	"github.com/ChaosIsFramecode/horinezumi/wikiconfig"
 	"github.com/ChaosIsFramecode/horinezumi/wikiinfo"
 )
 
@@ -35,27 +34,23 @@ func SetupDoRoute(rt *chi.Mux, db data.Datastore) {
 			}
 
 			// Get editor name
-			_, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
+			editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 			if err != nil {
 				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
+        return
 			}
 			// Check if suspending a user is possible
-			userGroups := userutils.GetUserGroups(r.RemoteAddr)
-			proceed := false
-			for _, v := range userGroups {
-				if wikiconfig.UserGroups[v]["suspend"] {
-					proceed = true
-					break
-				}
-			}
-			if !proceed {
-				jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with locking page: Permission denied", nil)
+			userGroups := userutils.GetUserGroups(editor)
+			proceed := userutils.UserCan("suspend",userGroups)
+			
+      if !proceed {
+				jsonresp.JsonERR(w, http.StatusUnauthorized, "Error suspending user: Permission denied", nil)
 				return
 			}
 
 			err = db.SuspendUser(bReq.Target, bReq.Duration)
 			if err != nil {
-				jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with locking page: %s", err)
+				jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with suspending user: %s", err)
 				return
 			}
 
@@ -77,20 +72,16 @@ func SetupDoRoute(rt *chi.Mux, db data.Datastore) {
 				return
 			}
 			// Get editor name
-			_, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
+			editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 			if err != nil {
 				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
+        return
 			}
 			// Check if locking a page is possible
-			userGroups := userutils.GetUserGroups(r.RemoteAddr)
-			proceed := false
-			for _, v := range userGroups {
-				if wikiconfig.UserGroups[v]["lock"] {
-					proceed = true
-					break
-				}
-			}
-			if !proceed {
+			userGroups := userutils.GetUserGroups(editor)
+			proceed := userutils.UserCan("lock",userGroups)
+			
+      if !proceed {
 				jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with locking page: Permission denied", nil)
 				return
 			}

@@ -33,6 +33,7 @@ func SetupHistoryRoute(rt *chi.Mux, db data.Datastore) {
 				pH, err := db.FetchPageHistory(titleParam)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with fetching page history: %s", err)
+          return
 				}
 
 				// Convert list to json

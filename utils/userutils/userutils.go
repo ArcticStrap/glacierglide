@@ -10,5 +10,14 @@ func GetUserGroups(username string) []string {
 		return []string{"*"}
 	}
 
-	return []string{"*",wikiconfig.DefaultLoginGroup}
+	return []string{"*", wikiconfig.DefaultLoginGroup}
+}
+
+func UserCan(action string, userGroups []string) bool {
+	for _, v := range userGroups {
+		if wikiconfig.UserGroups[v][action] {
+			return true
+		}
+	}
+	return false
 }

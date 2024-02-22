@@ -9,7 +9,6 @@ import (
 	"github.com/ChaosIsFramecode/horinezumi/data"
 	"github.com/ChaosIsFramecode/horinezumi/jsonresp"
 	"github.com/ChaosIsFramecode/horinezumi/utils/userutils"
-	"github.com/ChaosIsFramecode/horinezumi/wikiconfig"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -35,21 +34,28 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 				editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
+          return
 				}
 
         // Check if creating a page is possible
-        userGroups := userutils.GetUserGroups(r.RemoteAddr)
-        proceed := false
-				for _, v := range userGroups {
-					if wikiconfig.UserGroups[v]["create"] {
-						proceed = true
-						break
-					}
-				}
+        userGroups := userutils.GetUserGroups(editor)
+        proceed := userutils.UserCan("create",userGroups)
+        
 				if !proceed {
-					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with deleting page: Permission denied", nil)
+					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with creating page: Permission denied", nil)
 					return
 				}
+
+        // Check if user is suspended
+        proceed,err = db.IsSuspended(editor)
+        if err != nil {
+          jsonresp.JsonERR(w,http.StatusBadRequest,"Error with creating page: %s",err)
+          return
+        }
+        if !proceed {
+          jsonresp.JsonERR(w,http.StatusUnauthorized,"This user is temprorarily suspended.",nil)
+          return
+        }
 
 
 				// Handle request
@@ -106,21 +112,47 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 				editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
+          return
 				}
 
         // Check if editing a page is possible
-        userGroups := userutils.GetUserGroups(r.RemoteAddr)
-        proceed := false
-				for _, v := range userGroups {
-					if wikiconfig.UserGroups[v]["edit"] {
-						proceed = true
-						break
-					}
-				}
+        userGroups := userutils.GetUserGroups(editor)
+        proceed := userutils.UserCan("edit",userGroups)
+
 				if !proceed {
-					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with deleting page: Permission denied", nil)
+					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with editing page: Permission denied", nil)
 					return
 				}
+
+        // Check if editor has sufficient permissions to edit
+        minGroup, err := db.GetLockStatus(titleParam)
+        if err != nil {
+					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with editing page: %s", err)
+          return
+        }
+
+        proceed = false
+        for i := 0; i < len(userGroups); i++ {
+          if i >= minGroup {
+            proceed = true
+            break
+          }
+        }
+        if !proceed {
+          jsonresp.JsonERR(w,http.StatusUnauthorized,"This page has been locked. User has insufficient permissions to edit",nil)
+          return
+        }
+        
+        // Check if user is suspended
+        proceed,err = db.IsSuspended(editor)
+        if err != nil {
+          jsonresp.JsonERR(w,http.StatusBadRequest,"Error with editing page: %s",err)
+          return
+        }
+        if !proceed {
+          jsonresp.JsonERR(w,http.StatusUnauthorized,"This user is temprorarily suspended.",nil)
+          return
+        }
 
 				// Handle request
 				uPage := new(data.Page)
@@ -164,20 +196,27 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 				editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
+          return
 				}
 				// Check if deleting a page is possible
-				userGroups := userutils.GetUserGroups(r.RemoteAddr)
-				proceed := false
-				for _, v := range userGroups {
-					if wikiconfig.UserGroups[v]["delete"] {
-						proceed = true
-						break
-					}
-				}
-				if !proceed {
+				userGroups := userutils.GetUserGroups(editor)
+				proceed := userutils.UserCan("delete",userGroups)
+        if !proceed {
 					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with deleting page: Permission denied", nil)
 					return
 				}
+        
+        // Check if user is suspended
+        proceed,err = db.IsSuspended(editor)
+        if err != nil {
+          jsonresp.JsonERR(w,http.StatusBadRequest,"Error with deleting page: %s",err)
+          return
+        }
+        if !proceed {
+          jsonresp.JsonERR(w,http.StatusUnauthorized,"This user is temprorarily suspended.",nil)
+          return
+        }
+
 				// Handle request
 				pageTitle := new(struct {
 					Title string `json:"title"`

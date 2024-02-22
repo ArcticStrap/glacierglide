@@ -478,7 +478,7 @@ func (db *PostgresBase) IsSuspended(u string) (bool, error) {
 	var blocked = time.Now().Unix() < sDuration
 	// Remove block from database if done
 	if !blocked {
-		_, err := db.conn.Exec(context.Background(), "DELETE FROM locks WHERE sus_target=$1", u)
+		_, err := db.conn.Exec(context.Background(), "DELETE FROM suspensions WHERE sus_target=$1", u)
 		if err != nil {
 			return false, err
 		}
