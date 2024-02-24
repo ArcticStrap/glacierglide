@@ -29,6 +29,9 @@ To get the Dependencies:
 Generate the SSL certificates if running on HTTPS:
 `make gencert`
 
+To generate the database schemas:
+`make genschema`
+
 To run with make:
 `make run`
 

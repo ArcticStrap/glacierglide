@@ -36,10 +36,6 @@ func main() {
 	}
 	defer db.Close()
 
-	if err = db.CreateTables(); err != nil {
-		log.Fatalf("Failed to create table: %s", err)
-	}
-
 	rt := chi.NewRouter()
 
 	// Initalize the app signal system

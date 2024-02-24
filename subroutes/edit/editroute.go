@@ -38,7 +38,7 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 				}
 
         // Check if creating a page is possible
-        userGroups := userutils.GetUserGroups(editor)
+        userGroups := db.GetUserGroups(editor)
         proceed := userutils.UserCan("create",userGroups)
         
 				if !proceed {
@@ -116,7 +116,7 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 				}
 
         // Check if editing a page is possible
-        userGroups := userutils.GetUserGroups(editor)
+        userGroups := db.GetUserGroups(editor)
         proceed := userutils.UserCan("edit",userGroups)
 
 				if !proceed {
@@ -199,7 +199,7 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
           return
 				}
 				// Check if deleting a page is possible
-				userGroups := userutils.GetUserGroups(editor)
+				userGroups := db.GetUserGroups(editor)
 				proceed := userutils.UserCan("delete",userGroups)
         if !proceed {
 					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with deleting page: Permission denied", nil)

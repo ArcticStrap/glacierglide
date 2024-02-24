@@ -19,7 +19,7 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 		w.Header().Set("Content-Type", "application/json")
 
 		// Check if creating an account is possible
-		userGroups := userutils.GetUserGroups(r.RemoteAddr)
+		userGroups := db.GetUserGroups(r.RemoteAddr)
 		proceed := userutils.UserCan("createaccount",userGroups)
 		
     if !proceed {

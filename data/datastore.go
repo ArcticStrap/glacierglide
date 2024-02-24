@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ChaosIsFramecode/horinezumi/utils/iputils"
+	"github.com/ChaosIsFramecode/horinezumi/wikiconfig"
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -37,6 +39,7 @@ type Datastore interface {
 	GetUser(username string) (*User, error)
 	UpdateUser(u *User, newName string, newPass string) error
 	DeleteUser(username string) error
+	GetUserGroups(username string) []string
 
 	// CRUD for page diff
 	CreatePageDiff(p *Page, editor string) error
@@ -388,6 +391,14 @@ func (db *PostgresBase) DeleteUser(username string) error {
 	}
 
 	return nil
+}
+
+func (db *PostgresBase) GetUserGroups(username string) []string {
+	if iputils.NameIsIP(username) {
+		return []string{"*"}
+	}
+
+	return []string{"*", wikiconfig.DefaultLoginGroup}
 }
 
 // Moderation actions

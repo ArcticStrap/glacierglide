@@ -40,7 +40,7 @@ func SetupDoRoute(rt *chi.Mux, db data.Datastore) {
         return
 			}
 			// Check if suspending a user is possible
-			userGroups := userutils.GetUserGroups(editor)
+			userGroups := db.GetUserGroups(editor)
 			proceed := userutils.UserCan("suspend",userGroups)
 			
       if !proceed {
@@ -78,7 +78,7 @@ func SetupDoRoute(rt *chi.Mux, db data.Datastore) {
         return
 			}
 			// Check if locking a page is possible
-			userGroups := userutils.GetUserGroups(editor)
+			userGroups := db.GetUserGroups(editor)
 			proceed := userutils.UserCan("lock",userGroups)
 			
       if !proceed {

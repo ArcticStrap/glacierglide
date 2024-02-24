@@ -26,6 +26,7 @@ help:
 	@echo "Targets:"
 	@echo "	gencert		Generate SSL certificate"
 	@echo "	getdeps		Get the project dependencies"
+	@echo "	genschema		Generate database schemas"
 	@echo "	build		Build the project"
 	@echo "	clean		Clean the project"
 	@echo "	dversion	Display databse migration version"
@@ -42,6 +43,9 @@ gencert:
 	mkdir -p certs
 	openssl ecparam -genkey -name secp384r1 -out certs/key.pem
 	openssl req -new -x509 -sha256 -key certs/key.pem -out certs/cert.pem -days 3650
+
+genschema:
+	go run ./cmd/genschema/main.go
 
 getdeps:
 	go mod download
