@@ -34,29 +34,33 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 				editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
-          return
+					return
 				}
 
-        // Check if creating a page is possible
-        userGroups := db.GetUserGroups(editor)
-        proceed := userutils.UserCan("create",userGroups)
-        
+				// Check if creating a page is possible
+				userGroups, err := db.GetUserGroups(editor)
+				if err != nil {
+					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
+					return
+				}
+
+				proceed := userutils.UserCan("create", userGroups)
+
 				if !proceed {
 					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with creating page: Permission denied", nil)
 					return
 				}
 
-        // Check if user is suspended
-        proceed,err = db.IsSuspended(editor)
-        if err != nil {
-          jsonresp.JsonERR(w,http.StatusBadRequest,"Error with creating page: %s",err)
-          return
-        }
-        if !proceed {
-          jsonresp.JsonERR(w,http.StatusUnauthorized,"This user is temprorarily suspended.",nil)
-          return
-        }
-
+				// Check if user is suspended
+				blocked, err := db.IsSuspended(editor)
+				if err != nil {
+					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with creating page: %s", err)
+					return
+				}
+				if blocked {
+					jsonresp.JsonERR(w, http.StatusUnauthorized, "This user is temprorarily suspended.", nil)
+					return
+				}
 
 				// Handle request
 				newPage := new(data.Page)
@@ -112,47 +116,51 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 				editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
-          return
+					return
 				}
 
-        // Check if editing a page is possible
-        userGroups := db.GetUserGroups(editor)
-        proceed := userutils.UserCan("edit",userGroups)
+				// Check if editing a page is possible
+				userGroups, err := db.GetUserGroups(editor)
+				if err != nil {
+					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
+					return
+				}
+				proceed := userutils.UserCan("edit", userGroups)
 
 				if !proceed {
 					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with editing page: Permission denied", nil)
 					return
 				}
 
-        // Check if editor has sufficient permissions to edit
-        minGroup, err := db.GetLockStatus(titleParam)
-        if err != nil {
+				// Check if editor has sufficient permissions to edit
+				minGroup, err := db.GetLockStatus(titleParam)
+				if err != nil {
 					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with editing page: %s", err)
-          return
-        }
+					return
+				}
 
-        proceed = false
-        for i := 0; i < len(userGroups); i++ {
-          if i >= minGroup {
-            proceed = true
-            break
-          }
-        }
-        if !proceed {
-          jsonresp.JsonERR(w,http.StatusUnauthorized,"This page has been locked. User has insufficient permissions to edit",nil)
-          return
-        }
-        
-        // Check if user is suspended
-        proceed,err = db.IsSuspended(editor)
-        if err != nil {
-          jsonresp.JsonERR(w,http.StatusBadRequest,"Error with editing page: %s",err)
-          return
-        }
-        if !proceed {
-          jsonresp.JsonERR(w,http.StatusUnauthorized,"This user is temprorarily suspended.",nil)
-          return
-        }
+				proceed = false
+				for i := 0; i < len(userGroups); i++ {
+					if i >= minGroup {
+						proceed = true
+						break
+					}
+				}
+				if !proceed {
+					jsonresp.JsonERR(w, http.StatusUnauthorized, "This page has been locked. User has insufficient permissions to edit", nil)
+					return
+				}
+
+				// Check if user is suspended
+				blocked, err := db.IsSuspended(editor)
+				if err != nil {
+					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with editing page: %s", err)
+					return
+				}
+				if blocked {
+					jsonresp.JsonERR(w, http.StatusUnauthorized, "This user is temprorarily suspended.", nil)
+					return
+				}
 
 				// Handle request
 				uPage := new(data.Page)
@@ -196,26 +204,30 @@ func SetupEditRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 				editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
-          return
+					return
 				}
 				// Check if deleting a page is possible
-				userGroups := db.GetUserGroups(editor)
-				proceed := userutils.UserCan("delete",userGroups)
-        if !proceed {
+				userGroups, err := db.GetUserGroups(editor)
+				if err != nil {
+					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
+					return
+				}
+				proceed := userutils.UserCan("delete", userGroups)
+				if !proceed {
 					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with deleting page: Permission denied", nil)
 					return
 				}
-        
-        // Check if user is suspended
-        proceed,err = db.IsSuspended(editor)
-        if err != nil {
-          jsonresp.JsonERR(w,http.StatusBadRequest,"Error with deleting page: %s",err)
-          return
-        }
-        if !proceed {
-          jsonresp.JsonERR(w,http.StatusUnauthorized,"This user is temprorarily suspended.",nil)
-          return
-        }
+
+				// Check if user is suspended
+				blocked, err := db.IsSuspended(editor)
+				if err != nil {
+					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with deleting page: %s", err)
+					return
+				}
+				if blocked {
+					jsonresp.JsonERR(w, http.StatusUnauthorized, "This user is temprorarily suspended.", nil)
+					return
+				}
 
 				// Handle request
 				pageTitle := new(struct {

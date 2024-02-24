@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ChaosIsFramecode/horinezumi/utils/iputils"
+	"github.com/ChaosIsFramecode/horinezumi/utils/userutils"
 	"github.com/ChaosIsFramecode/horinezumi/wikiconfig"
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -39,7 +40,7 @@ type Datastore interface {
 	GetUser(username string) (*User, error)
 	UpdateUser(u *User, newName string, newPass string) error
 	DeleteUser(username string) error
-	GetUserGroups(username string) []string
+	GetUserGroups(username string) ([]string, error)
 
 	// CRUD for page diff
 	CreatePageDiff(p *Page, editor string) error
@@ -393,12 +394,41 @@ func (db *PostgresBase) DeleteUser(username string) error {
 	return nil
 }
 
-func (db *PostgresBase) GetUserGroups(username string) []string {
+func (db *PostgresBase) GetUserGroups(username string) ([]string, error) {
 	if iputils.NameIsIP(username) {
-		return []string{"*"}
+		return []string{"*"}, nil
 	}
 
-	return []string{"*", wikiconfig.DefaultLoginGroup}
+	// Fetch user id from name
+	id, err := db.GetUserIdFromName(username)
+	if err != nil {
+		return nil, err
+	}
+
+	var groups = []string{"*", wikiconfig.DefaultLoginGroup}
+
+	// Execute request
+	rows, err := db.conn.Query(context.Background(), "SELECT u_group FROM user_groups WHERE user_id=$1", *id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	ok := true
+	for rows.Next() {
+		var gID int
+		err = rows.Scan(&gID)
+		if err != nil {
+			ok = false
+			break
+		}
+		groups = append(groups, userutils.GroupFromIndex(gID))
+	}
+	if !ok {
+		return nil, err
+	}
+
+	return groups, nil
 }
 
 // Moderation actions

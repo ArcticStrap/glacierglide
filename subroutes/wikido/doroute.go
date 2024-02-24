@@ -40,8 +40,12 @@ func SetupDoRoute(rt *chi.Mux, db data.Datastore) {
         return
 			}
 			// Check if suspending a user is possible
-			userGroups := db.GetUserGroups(editor)
-			proceed := userutils.UserCan("suspend",userGroups)
+			userGroups, err := db.GetUserGroups(editor)
+			if err != nil {
+			  jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
+        return
+		  }
+      proceed := userutils.UserCan("suspend",userGroups)
 			
       if !proceed {
 				jsonresp.JsonERR(w, http.StatusUnauthorized, "Error suspending user: Permission denied", nil)
@@ -78,8 +82,12 @@ func SetupDoRoute(rt *chi.Mux, db data.Datastore) {
         return
 			}
 			// Check if locking a page is possible
-			userGroups := db.GetUserGroups(editor)
-			proceed := userutils.UserCan("lock",userGroups)
+			userGroups, err := db.GetUserGroups(editor)
+			if err != nil {
+			  jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
+        return
+		  }
+      proceed := userutils.UserCan("lock",userGroups)
 			
       if !proceed {
 				jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with locking page: Permission denied", nil)

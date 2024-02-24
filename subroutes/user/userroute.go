@@ -19,10 +19,14 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 		w.Header().Set("Content-Type", "application/json")
 
 		// Check if creating an account is possible
-		userGroups := db.GetUserGroups(r.RemoteAddr)
-		proceed := userutils.UserCan("createaccount",userGroups)
-		
-    if !proceed {
+		userGroups, err := db.GetUserGroups(r.RemoteAddr)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
+			return
+		}
+		proceed := userutils.UserCan("createaccount", userGroups)
+
+		if !proceed {
 			jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with creating user account: %s", fmt.Errorf("Permission denied"))
 			return
 		}
@@ -44,7 +48,7 @@ func SetupUserRoute(rt *chi.Mux, db data.Datastore, sc *appsignals.SignalConnect
 		newUser, err := db.CreateUser(createReq.Username, createReq.Password)
 		if err != nil {
 			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with creating user account: ", err)
-      return
+			return
 		}
 
 		resp := make(map[string]string)
