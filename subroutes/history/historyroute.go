@@ -19,26 +19,21 @@ func SetupHistoryRoute(rt *chi.Mux, db data.Datastore) {
 			w.Header().Set("Content-Type", "application/json")
 
 			titleParam := chi.URLParam(r, "title")
-			if titleParam == "Main_Page" {
-				// Main page
-				w.Write([]byte("Nothing to see"))
-			} else {
-				// Redirect if not lowercase
-				if strings.ToLower(titleParam) != titleParam {
-					http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
-					return
-				}
-
-				// Fetch page history
-				pH, err := db.FetchPageHistory(titleParam)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with fetching page history: %s", err)
-					return
-				}
-
-				// Convert list to json
-				json.NewEncoder(w).Encode(pH)
+			// Redirect if not lowercase
+			if strings.ToLower(titleParam) != titleParam {
+				http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
+				return
 			}
+
+			// Fetch page history
+			pH, err := db.FetchPageHistory(titleParam)
+			if err != nil {
+				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with fetching page history: %s", err)
+				return
+			}
+
+			// Convert list to json
+			json.NewEncoder(w).Encode(pH)
 		})
 	})
 }
