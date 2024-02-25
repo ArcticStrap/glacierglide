@@ -20,31 +20,26 @@ func SetupWikiRoute(rt *chi.Mux, db data.Datastore) {
 		// Page view handler
 		wikirouter.Get("/{title}", func(w http.ResponseWriter, r *http.Request) {
 			titleParam := chi.URLParam(r, "title")
-			if titleParam == "Main_Page" {
-				// Main page
-				w.Write([]byte("Welcome to 堀ネズミ!"))
-			} else {
-				// Redirect if not lowercase
-				if strings.ToLower(titleParam) != titleParam {
-					http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
-					return
-				}
-
-				// Check if page exists
-				p, err := db.ReadPage(titleParam)
-				if err != nil {
-					w.Write([]byte("Page does not exist. Try checking your spelling if otherwise."))
-					return
-				}
-
-				// Check page format
-				switch p.MPType {
-				case mprender.Markdown:
-					p.Content = markdown.ToHTML(p.Content)
-				}
-
-				w.Write([]byte("<h1>" + p.Title + "</h1><br/>" + p.Content))
+			// Redirect if not lowercase
+			if strings.ToLower(titleParam) != titleParam {
+				http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
+				return
 			}
+
+			// Check if page exists
+			p, err := db.ReadPage(titleParam)
+			if err != nil {
+				w.Write([]byte("Page does not exist. Try checking your spelling if otherwise."))
+				return
+			}
+
+			// Check page format
+			switch p.MPType {
+			case mprender.Markdown:
+				p.Content = markdown.ToHTML(p.Content)
+			}
+
+			w.Write([]byte("<h1>" + p.Title + "</h1><br/>" + p.Content))
 		})
 	})
 }

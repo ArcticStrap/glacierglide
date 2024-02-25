@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Load .env variables
-	err := environment.Load() 
+	err := environment.Load()
 	if err != nil {
 		log.Fatalf("Error loading environment variables: %s", err)
 	}
@@ -24,9 +24,9 @@ func main() {
 	if err = db.CreateTables(); err != nil {
 		log.Fatalf("Failed to create table: %s", err)
 	} else {
-    log.Println("Successfully created databse schemas")
-  }
+		log.Println("Successfully created databse schemas")
+	}
 
 	db.Close()
-  log.Println("Database closed.")
+	log.Println("Database closed.")
 }

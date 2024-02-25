@@ -5,14 +5,14 @@ import (
 )
 
 func GroupFromIndex(id int) string {
-  v := 0
-  for i := range wikiconfig.UserGroups {
-    if v == id {
-      return i
-    }
-    v++
-  }
-  return ""
+	v := 0
+	for i := range wikiconfig.UserGroups {
+		if v == id {
+			return i
+		}
+		v++
+	}
+	return ""
 }
 
 func UserCan(action string, userGroups []string) bool {

@@ -7,6 +7,6 @@ package appsignals
  *  onPageUpdate(editor)
  * USER RELATED EVENTS
  *  onCreateAccount(username)
-*/
+ */
 
 type SignalHandler func(interface{})

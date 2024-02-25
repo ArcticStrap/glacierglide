@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-  "strings"
+	"strings"
 	"time"
 
 	"github.com/ChaosIsFramecode/horinezumi/jsonresp"
@@ -76,7 +76,6 @@ func ValiateClaims(c jwt.Claims) (jwt.RegisteredClaims, bool) {
 
 	return rClaims, ok
 }
-
 
 func GetLoginStatus(tokenStr string, r *http.Request, db Datastore) (string, error) {
 	if tokenStr != "" {

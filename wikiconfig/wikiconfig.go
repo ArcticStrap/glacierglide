@@ -17,7 +17,7 @@ var UserGroups map[string]map[string]bool = map[string]map[string]bool{
 	// TODO: "bot":           {},
 	"moderator": {
 		"suspend": true,
-    "lock": true,
+		"lock":    true,
 	},
 	// TODO: "techie":        {},
 	"administrator": {

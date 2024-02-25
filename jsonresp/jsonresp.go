@@ -18,7 +18,7 @@ func JsonOK(w http.ResponseWriter, resp map[string]string, message string) {
 	jsonResp, err := json.Marshal(resp)
 	if err != nil {
 		log.Printf("Error happened in JSON marshal. Err: %s", err)
-    return
+		return
 	}
 
 	w.Write(jsonResp)
@@ -38,7 +38,7 @@ func JsonERR(w http.ResponseWriter, code int, message string, msgerr error) {
 	jsonResp, err := json.Marshal(resp)
 	if err != nil {
 		log.Printf("Error happened in JSON marshal. Err: %s", err)
-    return
+		return
 	}
 
 	w.Write(jsonResp)

@@ -15,7 +15,7 @@ type AccountReq struct {
 type Page struct {
 	Title   string `json:"title"`
 	Content string `json:"content"`
-	MPType  int `json:"mpType"`
+	MPType  int    `json:"mpType"`
 }
 
 type User struct {
@@ -53,11 +53,11 @@ func (pd PageDiff) MarshalJSON() ([]byte, error) {
 }
 
 type SusReq struct {
-  Target string `json:"target"`
-  Duration int64 `json:"duration"`
+	Target   string `json:"target"`
+	Duration int64  `json:"duration"`
 }
 
 type LockReq struct {
-  Title string `json:"title"`
-  MinimumGroup int64 `json:"minGroup"`
+	Title        string `json:"title"`
+	MinimumGroup int64  `json:"minGroup"`
 }

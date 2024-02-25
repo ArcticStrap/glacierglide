@@ -37,17 +37,17 @@ func SetupDoRoute(rt *chi.Mux, db data.Datastore) {
 			editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 			if err != nil {
 				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
-        return
+				return
 			}
 			// Check if suspending a user is possible
 			userGroups, err := db.GetUserGroups(editor)
 			if err != nil {
-			  jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
-        return
-		  }
-      proceed := userutils.UserCan("suspend",userGroups)
-			
-      if !proceed {
+				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
+				return
+			}
+			proceed := userutils.UserCan("suspend", userGroups)
+
+			if !proceed {
 				jsonresp.JsonERR(w, http.StatusUnauthorized, "Error suspending user: Permission denied", nil)
 				return
 			}
@@ -79,17 +79,17 @@ func SetupDoRoute(rt *chi.Mux, db data.Datastore) {
 			editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
 			if err != nil {
 				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
-        return
+				return
 			}
 			// Check if locking a page is possible
 			userGroups, err := db.GetUserGroups(editor)
 			if err != nil {
-			  jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
-        return
-		  }
-      proceed := userutils.UserCan("lock",userGroups)
-			
-      if !proceed {
+				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
+				return
+			}
+			proceed := userutils.UserCan("lock", userGroups)
+
+			if !proceed {
 				jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with locking page: Permission denied", nil)
 				return
 			}

@@ -13,10 +13,10 @@ func renderInline(p *Part) string {
 			renderedLine += fmt.Sprintf("<em>%s</em>", vEle.Value)
 			break
 		case Bold:
-      boldText := vEle.Value
-      if len(vEle.Children) != 0 {
-        boldText = renderInline(&vEle.Part)
-      }
+			boldText := vEle.Value
+			if len(vEle.Children) != 0 {
+				boldText = renderInline(&vEle.Part)
+			}
 			renderedLine += fmt.Sprintf("<strong>%s</strong>", boldText)
 			break
 		case PlainText:
