@@ -14,7 +14,7 @@ ifeq ($(OS), Windows_NT) # Windows
 endif
 
 # Targets
-.PHONY: all help gencert getdeps build clean dversion run test benchmark tidy
+.PHONY: all help gencert genschema getdeps build clean dversion run test benchmark tidy
 
 # Default target
 all: help
@@ -26,7 +26,7 @@ help:
 	@echo "Targets:"
 	@echo "	gencert		Generate SSL certificate"
 	@echo "	getdeps		Get the project dependencies"
-	@echo "	genschema		Generate database schemas"
+	@echo "	genschema	Generate database schemas"
 	@echo "	build		Build the project"
 	@echo "	clean		Clean the project"
 	@echo "	dversion	Display databse migration version"

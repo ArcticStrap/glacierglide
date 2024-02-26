@@ -29,8 +29,8 @@ func (u *User) ValidPassword(pw string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(pw)) == nil
 }
 
-type PageDiff struct {
-	DiffId      int64     `pgx:"diff_id"     json:"diffId"`
+type PageEdit struct {
+	EditId      int64     `pgx:"edit_id"     json:"editId"`
 	PageId      int64     `pgx:"page_id"     json:"pageId"`
 	Date        time.Time `pgx:"change_date" json:"changeDate"`
 	Time        time.Time `pgx:"change_time" json:"changeTime"`
@@ -39,16 +39,16 @@ type PageDiff struct {
 	Content     string    `pgx:"content"     json:"content"`
 }
 
-func (pd PageDiff) MarshalJSON() ([]byte, error) {
-	type Alias PageDiff
+func (pe PageEdit) MarshalJSON() ([]byte, error) {
+	type Alias PageEdit
 	return json.Marshal(&struct {
 		Date string `json:"changeDate"`
 		Time string `json:"changeTime"`
 		*Alias
 	}{
-		Date:  pd.Date.Format("2006-01-02"), // format date as "YYYY-MM-DD"
-		Time:  pd.Time.Format("15:04:05"),   // format time as "HH:MM:SS"
-		Alias: (*Alias)(&pd),
+		Date:  pe.Date.Format("2006-01-02"), // format date as "YYYY-MM-DD"
+		Time:  pe.Time.Format("15:04:05"),   // format time as "HH:MM:SS"
+		Alias: (*Alias)(&pe),
 	})
 }
 

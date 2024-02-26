@@ -33,7 +33,7 @@ type Datastore interface {
 	GetIdFromPageTitle(title string) (*int, error)
 	GetUserIdFromName(username string) (*int64, error)
 	GetUsernameFromId(id int64) (string, error)
-	FetchPageHistory(title string) ([]PageDiff, error)
+	FetchPageHistory(title string) ([]PageEdit, error)
 
 	// CRUD for user
 	CreateUser(username string, password string) (*User, error)
@@ -42,10 +42,10 @@ type Datastore interface {
 	DeleteUser(username string) error
 	GetUserGroups(username string) ([]string, error)
 
-	// CRUD for page diff
-	CreatePageDiff(p *Page, editor string) error
-	ReadPageDiff(id int64) (*PageDiff, error)
-	DeletePageDiff(id int64) error
+	// CRUD for page edit
+	CreatePageEdit(p *Page, editor string) error
+	ReadPageEdit(id int64) (*PageEdit, error)
+	DeletePageEdit(id int64) error
 
 	// Moderation actions
 	GetLockStatus(p string) (int, error)
@@ -80,8 +80,8 @@ func (db *PostgresBase) CreateTables() error {
 			content TEXT NOT NULL,
       mp_type INT NOT NULL
 		);
-		CREATE TABLE IF NOT EXISTS page_diffs (
-			diff_id SERIAL PRIMARY KEY,
+		CREATE TABLE IF NOT EXISTS page_edits (
+			edit_id SERIAL PRIMARY KEY,
 			page_id INT REFERENCES pages(page_id),
 			change_date DATE NOT NULL,
 			change_time TIME NOT NULL,
@@ -149,9 +149,9 @@ func (db *PostgresBase) GetIdFromPageTitle(title string) (*int, error) {
 // CRUD functions for Page datatype
 
 // Logs a page change into a diff.
-func (db *PostgresBase) CreatePageDiff(p *Page, editor string) error {
-	// SQL query to insert a new page_diffs row
-	query := "INSERT INTO page_diffs (page_id,change_date,change_time,editor,description,content) VALUES ($1, $2, $3, $4, $5, $6)"
+func (db *PostgresBase) CreatePageEdit(p *Page, editor string) error {
+	// SQL query to insert a new page_edits row
+	query := "INSERT INTO page_edits (page_id,change_date,change_time,editor,description,content) VALUES ($1, $2, $3, $4, $5, $6)"
 
 	// Get page id
 	pId, err := db.GetIdFromPageTitle(p.Title)
@@ -168,23 +168,23 @@ func (db *PostgresBase) CreatePageDiff(p *Page, editor string) error {
 	return nil
 }
 
-func (db *PostgresBase) ReadPageDiff(id int64) (*PageDiff, error) {
+func (db *PostgresBase) ReadPageEdit(id int64) (*PageEdit, error) {
 	// SQL query to fetch the page by ID
-	query := `SELECT page_id,change_date,change_time,editor,anon,description,diff_id FROM page_diffs WHERE diff_id=$1`
+	query := `SELECT page_id,change_date,change_time,editor,anon,description,edit_id FROM page_edits WHERE edit_id=$1`
 
-	var pageDiff PageDiff
+	var pageEdit PageEdit
 
 	// Execute the query and scan the result into the Page struct
-	if err := db.conn.QueryRow(context.Background(), query, id).Scan(&pageDiff.PageId, &pageDiff.Date, &pageDiff.Time, &pageDiff.UserId, &pageDiff.Description, &pageDiff.Content); err != nil {
+	if err := db.conn.QueryRow(context.Background(), query, id).Scan(&pageEdit.PageId, &pageEdit.Date, &pageEdit.Time, &pageEdit.UserId, &pageEdit.Description, &pageEdit.Content); err != nil {
 		return nil, err
 	}
 
-	return &pageDiff, nil
+	return &pageEdit, nil
 }
 
-func (db *PostgresBase) DeletePageDiff(id int64) error {
+func (db *PostgresBase) DeletePageEdit(id int64) error {
 	// Execute delete request for page history
-	_, err := db.conn.Exec(context.Background(), "DELETE FROM page_diffs WHERE id=$1", id)
+	_, err := db.conn.Exec(context.Background(), "DELETE FROM page_edits WHERE id=$1", id)
 	if err != nil {
 		return err
 	}
@@ -236,7 +236,7 @@ func (db *PostgresBase) UpdatePage(p *Page, editor string) error {
 	}
 
 	// Log update
-	if err = db.CreatePageDiff(p, editor); err != nil {
+	if err = db.CreatePageEdit(p, editor); err != nil {
 		return err
 	}
 
@@ -259,9 +259,9 @@ func (db *PostgresBase) DeletePage(title string) error {
 	return nil
 }
 
-func (db *PostgresBase) FetchPageHistory(title string) ([]PageDiff, error) {
+func (db *PostgresBase) FetchPageHistory(title string) ([]PageEdit, error) {
 	// History var
-	pageHisory := []PageDiff{}
+	pageHistory := []PageEdit{}
 
 	// Get page info
 	pgID, err := db.GetIdFromPageTitle(title)
@@ -270,7 +270,7 @@ func (db *PostgresBase) FetchPageHistory(title string) ([]PageDiff, error) {
 	}
 
 	// Query rows
-	rows, err := db.conn.Query(context.Background(), "SELECT * FROM page_diffs WHERE page_id=$1", *pgID)
+	rows, err := db.conn.Query(context.Background(), "SELECT * FROM page_edits WHERE page_id=$1", *pgID)
 	if err != nil {
 		return nil, err
 	}
@@ -278,20 +278,20 @@ func (db *PostgresBase) FetchPageHistory(title string) ([]PageDiff, error) {
 
 	ok := true
 	for rows.Next() {
-		var pd PageDiff
-		err = rows.Scan(&pd.DiffId, &pd.PageId, &pd.Date, &pd.Time, &pd.UserId, &pd.Description, &pd.Content)
+		var pd PageEdit
+		err = rows.Scan(&pd.EditId, &pd.PageId, &pd.Date, &pd.Time, &pd.UserId, &pd.Description, &pd.Content)
 		if err != nil {
 			ok = false
 			break
 		}
 
-		pageHisory = append(pageHisory, pd)
+		pageHistory = append(pageHistory, pd)
 	}
 	if !ok {
 		return nil, err
 	}
 
-	return pageHisory, nil
+	return pageHistory, nil
 }
 
 // CRUD functions for user accounts
