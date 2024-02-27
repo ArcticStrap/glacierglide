@@ -41,80 +41,13 @@ func ParseInline(line []byte) []Block {
 
 	bStart := 0
 	for i := 0; i < len(line); i++ {
-		if line[i] == '*' {
-			// Count consecutive asteriks
-			aCount := 1
-			for i+aCount < len(line) && line[i+aCount] == '*' {
-				aCount++
+		if line[i] == '*' || line[i] == '_' {
+			parts, jump := ParseEmph(line[bStart:], i-bStart, line[i])
+			if jump == 0 {
+				continue
 			}
-			if aCount > 3 {
-				aCount = 3
-			}
-
-			switch aCount {
-			case 1:
-				offset := i + 1
-				for offset < len(line) && line[offset] != '*' {
-					offset++
-				}
-				// Append inactive plain text
-				pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
-				if offset != 0 && offset < len(line) && line[offset] == '*' {
-					pChildren = append(pChildren, Italic{Part{Value: string(line[i+1 : offset])}})
-				} else {
-					pChildren = append(pChildren, PlainText{Part{Value: string(line[i+1 : offset])}})
-				}
-				i = offset + 1
-				break
-			case 2:
-				offset := i + 2
-				for offset < len(line) {
-					if line[offset] == '*' {
-						if offset+1 < len(line) && line[offset+1] == '*' {
-							break
-						}
-					}
-					offset++
-				}
-				// Append inactive plain text
-				pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
-				if offset != 0 && offset < len(line) && line[offset] == '*' {
-					pChildren = append(pChildren, Bold{Part{Value: string(line[i+2 : offset])}})
-				} else {
-					pChildren = append(pChildren, PlainText{Part{Value: string(line[i+2 : offset])}})
-				}
-				i = offset + 2
-				break
-			case 3:
-				offset := i + 3
-				for offset < len(line) {
-					if line[offset] == '*' {
-						if offset+1 < len(line) && line[offset+1] == '*' {
-							if offset+2 < len(line) && line[offset+2] == '*' {
-								break
-							}
-						}
-					}
-					offset++
-				}
-				// Append inactive plain text
-				pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart:i])}})
-
-				if offset != 0 && offset < len(line) && line[offset] == '*' {
-					if offset+2 < len(line) && line[offset+1] == '*' && line[offset+2] == '*' {
-						pChildren = append(pChildren, Bold{Part{Value: "", Children: ParseInline(line[i+2 : offset+1])}})
-					} else if offset+1 < len(line) && line[offset+1] == '*' {
-						pChildren = append(pChildren, Italic{Part{Value: string(line[i+3 : offset])}})
-					} else {
-						pChildren = append(pChildren, Bold{Part{Value: string(line[i+3 : offset])}})
-					}
-				} else {
-					pChildren = append(pChildren, PlainText{Part{Value: string(line[i+3 : offset])}})
-				}
-
-				i = offset + 3
-				break
-			}
+			pChildren = append(pChildren, parts...)
+			i += jump
 			bStart = i
 		}
 	}
