@@ -14,6 +14,7 @@ import (
 	"github.com/ChaosIsFramecode/horinezumi/data"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/edit"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/history"
+	"github.com/ChaosIsFramecode/horinezumi/subroutes/source"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/user"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/wiki"
 	"github.com/ChaosIsFramecode/horinezumi/subroutes/wikido"
@@ -52,6 +53,7 @@ func main() {
 	wiki.SetupWikiRoute(rt, &db)
 	edit.SetupEditRoute(rt, &db, sc)
 	history.SetupHistoryRoute(rt, &db)
+  source.SetupSourceRoute(rt,&db)
 	user.SetupUserRoute(rt, &db, sc)
 
 	log.Println("Running on " + os.Getenv("ADDR"))
