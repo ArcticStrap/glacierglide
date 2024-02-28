@@ -4,14 +4,14 @@ import "regexp"
 
 // Struct setup
 
-type Block interface {
+type Chunk interface {
 }
 
 type Part struct {
 	Value string
 
 	// Metadata
-	Children []Block
+	Children []Chunk
 }
 
 type Header struct {
@@ -19,6 +19,12 @@ type Header struct {
 
 	Level int
 }
+
+type BlockQuote struct {
+	Part
+}
+
+// Emphasis
 
 type Bold struct {
 	Part
@@ -36,8 +42,8 @@ type PlainText struct {
 	Part
 }
 
-func ParseInline(line []byte) []Block {
-	var pChildren []Block
+func ParseInline(line []byte) []Chunk {
+	var pChildren []Chunk
 
 	bStart := 0
 	for i := 0; i < len(line); i++ {
@@ -64,11 +70,11 @@ func ParseInline(line []byte) []Block {
 	return pChildren
 }
 
-func Tokenize(content []byte) []Block {
+func Tokenize(content []byte) []Chunk {
 	if len(content) == 0 {
 		return nil
 	}
-	var blocks []Block
+	var blocks []Chunk
 
 	headerRegex := regexp.MustCompile(`^(#+)\s+(.*)$`)
 
@@ -112,12 +118,18 @@ func Tokenize(content []byte) []Block {
 				bStart = i
 				parseMode = false
 				continue
+			} else if substr[0] == '>' {
+				parts := ParseBlockQuote(substr[bStart:])
+				blocks = append(blocks, parts...)
+				bStart = i
+				parseMode = false
+				continue
 			} else {
 				blocks = append(blocks, Paragraph{Part: Part{Value: string(substr), Children: ParseInline(substr)}})
 			}
 		}
 
-		if len(substr) != 0 && substr[len(substr)-1] == '#' && !parseMode {
+		if len(substr) != 0 && (substr[len(substr)-1] == '#' || substr[len(substr)-1] == '>') && !parseMode {
 			bStart = i - 1
 			parseMode = true
 		}

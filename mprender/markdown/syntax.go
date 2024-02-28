@@ -1,7 +1,27 @@
 package markdown
 
-func ParseEmph(text []byte, start int,eChar byte) ([]Block, int) {
-	pChildren := []Block{}
+func ParseBlockQuote(text []byte) []Chunk {
+	if len(text) < 2 {
+		return nil
+	}
+	pChildren := []Chunk{}
+
+	for i := 0; i < len(text); i++ {
+		if (text[i] == '\n' && i-1 >= 0 && text[i-1] == '\n') || i == len(text)-1 {
+			sCount := 1
+			if text[1] == ' ' {
+				sCount++
+			}
+			pChildren = append(pChildren, BlockQuote{Part{Value: string(text[sCount:i])}})
+			break
+		}
+	}
+
+	return pChildren
+}
+
+func ParseEmph(text []byte, start int, eChar byte) ([]Chunk, int) {
+	pChildren := []Chunk{}
 	i := start
 	for ; i < len(text); i++ {
 		// Count consecutive asteriks
