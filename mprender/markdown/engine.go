@@ -79,7 +79,6 @@ func Tokenize(content []byte) []Chunk {
 	headerRegex := regexp.MustCompile(`^(#+)\s+(.*)$`)
 
 	bStart := 0
-	parseMode := false
 
 	for i := 0; i <= len(content); i++ {
 		substr := content[bStart:i]
@@ -115,23 +114,13 @@ func Tokenize(content []byte) []Chunk {
 					blocks = append(blocks, Paragraph{Part: Part{Value: headerMatch[2]}})
 					break
 				}
-				bStart = i
-				parseMode = false
-				continue
 			} else if substr[0] == '>' {
 				parts := ParseBlockQuote(substr[bStart:])
 				blocks = append(blocks, parts...)
-				bStart = i
-				parseMode = false
-				continue
 			} else {
 				blocks = append(blocks, Paragraph{Part: Part{Value: string(substr), Children: ParseInline(substr)}})
 			}
-		}
-
-		if len(substr) != 0 && (substr[len(substr)-1] == '#' || substr[len(substr)-1] == '>') && !parseMode {
-			bStart = i - 1
-			parseMode = true
+			bStart = i
 		}
 	}
 
