@@ -10,14 +10,14 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/ChaosIsFramecode/horinezumi/api/edit"
+	"github.com/ChaosIsFramecode/horinezumi/api/history"
+	"github.com/ChaosIsFramecode/horinezumi/api/source"
+	"github.com/ChaosIsFramecode/horinezumi/api/user"
+	"github.com/ChaosIsFramecode/horinezumi/api/wiki"
+	"github.com/ChaosIsFramecode/horinezumi/api/wikido"
 	"github.com/ChaosIsFramecode/horinezumi/appsignals"
 	"github.com/ChaosIsFramecode/horinezumi/data"
-	"github.com/ChaosIsFramecode/horinezumi/subroutes/edit"
-	"github.com/ChaosIsFramecode/horinezumi/subroutes/history"
-	"github.com/ChaosIsFramecode/horinezumi/subroutes/source"
-	"github.com/ChaosIsFramecode/horinezumi/subroutes/user"
-	"github.com/ChaosIsFramecode/horinezumi/subroutes/wiki"
-	"github.com/ChaosIsFramecode/horinezumi/subroutes/wikido"
 	"github.com/ChaosIsFramecode/horinezumi/utils/environment"
 )
 
@@ -45,16 +45,15 @@ func main() {
 	// Use logger
 	rt.Use(middleware.Logger)
 
-	// Redirect root path to main page
-	rt.Get("/", http.RedirectHandler("/wiki/Main_Page", http.StatusSeeOther).ServeHTTP)
-
-	// Initalize subrouters
-	wikido.SetupDoRoute(rt, &db)
-	wiki.SetupWikiRoute(rt, &db)
-	edit.SetupEditRoute(rt, &db, sc)
-	history.SetupHistoryRoute(rt, &db)
-  source.SetupSourceRoute(rt,&db)
-	user.SetupUserRoute(rt, &db, sc)
+	rt.Route("/api", func(apiroute chi.Router) {
+		// Initalize subrouters
+		wikido.SetupDoRoute(apiroute, &db)
+		wiki.SetupWikiRoute(apiroute, &db)
+		edit.SetupEditRoute(apiroute, &db, sc)
+		history.SetupHistoryRoute(apiroute, &db)
+		source.SetupSourceRoute(apiroute, &db)
+		user.SetupUserRoute(apiroute, &db, sc)
+	})
 
 	log.Println("Running on " + os.Getenv("ADDR"))
 
