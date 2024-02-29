@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ChaosIsFramecode/horinezumi/data"
-	"github.com/ChaosIsFramecode/horinezumi/jsonresp"
+	"github.com/ArcticStrap/glacierglide/data"
+	"github.com/ArcticStrap/glacierglide/jsonresp"
 	"github.com/go-chi/chi/v5"
 )
 

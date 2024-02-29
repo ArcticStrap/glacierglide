@@ -1,4 +1,4 @@
-# horinezumi
+# GlacierGlide
 A currently WIP backend wiki framework written in Go.
 
 ## Running

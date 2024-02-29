@@ -6,9 +6,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/ChaosIsFramecode/horinezumi/data"
-	"github.com/ChaosIsFramecode/horinezumi/mprender"
-	"github.com/ChaosIsFramecode/horinezumi/mprender/markdown"
+	"github.com/ArcticStrap/glacierglide/data"
+	"github.com/ArcticStrap/glacierglide/mprender"
+	"github.com/ArcticStrap/glacierglide/mprender/markdown"
 )
 
 func SetupWikiRoute(rt chi.Router, db data.Datastore) {

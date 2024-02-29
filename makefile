@@ -1,7 +1,7 @@
 # Project makefile
 
 # Locations
-OUTPUT = bin/horinezumi
+OUTPUT = bin/glacierglide
 MAIN = ./cmd/server/main.go
 
 # Target commands
@@ -9,7 +9,7 @@ BUILDCMD = go build -o $(OUTPUT) $(MAIN)
 CLEANCMD = rm -f $(OUTPUT)
 
 ifeq ($(OS), Windows_NT) # Windows
-	OUTPUT = bin\horinezumi.exe
+	OUTPUT = bin\glacierglide.exe
 	CLEANCMD = del $(OUTPUT)
 endif
 

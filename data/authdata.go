@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ChaosIsFramecode/horinezumi/jsonresp"
+	"github.com/ArcticStrap/glacierglide/jsonresp"
 	"github.com/golang-jwt/jwt/v5"
 )
 

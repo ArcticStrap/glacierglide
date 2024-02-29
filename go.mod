@@ -1,4 +1,4 @@
-module github.com/ChaosIsFramecode/horinezumi
+module github.com/ArcticStrap/glacierglide
 
 go 1.21.1
 

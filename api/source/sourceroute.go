@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/ChaosIsFramecode/horinezumi/data"
+	"github.com/ArcticStrap/glacierglide/data"
 )
 
 func SetupSourceRoute(rt chi.Router, db data.Datastore) {

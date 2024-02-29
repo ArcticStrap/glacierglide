@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ChaosIsFramecode/horinezumi/utils/iputils"
-	"github.com/ChaosIsFramecode/horinezumi/utils/userutils"
-	"github.com/ChaosIsFramecode/horinezumi/wikiconfig"
+	"github.com/ArcticStrap/glacierglide/utils/iputils"
+	"github.com/ArcticStrap/glacierglide/utils/userutils"
+	"github.com/ArcticStrap/glacierglide/wikiconfig"
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 )

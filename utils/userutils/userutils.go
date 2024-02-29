@@ -1,7 +1,7 @@
 package userutils
 
 import (
-	"github.com/ChaosIsFramecode/horinezumi/wikiconfig"
+	"github.com/ArcticStrap/glacierglide/wikiconfig"
 )
 
 func GroupFromIndex(id int) string {

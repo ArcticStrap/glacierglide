@@ -10,15 +10,15 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/ChaosIsFramecode/horinezumi/api/edit"
-	"github.com/ChaosIsFramecode/horinezumi/api/history"
-	"github.com/ChaosIsFramecode/horinezumi/api/source"
-	"github.com/ChaosIsFramecode/horinezumi/api/user"
-	"github.com/ChaosIsFramecode/horinezumi/api/wiki"
-	"github.com/ChaosIsFramecode/horinezumi/api/wikido"
-	"github.com/ChaosIsFramecode/horinezumi/appsignals"
-	"github.com/ChaosIsFramecode/horinezumi/data"
-	"github.com/ChaosIsFramecode/horinezumi/utils/environment"
+	"github.com/ArcticStrap/glacierglide/api/edit"
+	"github.com/ArcticStrap/glacierglide/api/history"
+	"github.com/ArcticStrap/glacierglide/api/source"
+	"github.com/ArcticStrap/glacierglide/api/user"
+	"github.com/ArcticStrap/glacierglide/api/wiki"
+	"github.com/ArcticStrap/glacierglide/api/wikido"
+	"github.com/ArcticStrap/glacierglide/appsignals"
+	"github.com/ArcticStrap/glacierglide/data"
+	"github.com/ArcticStrap/glacierglide/utils/environment"
 )
 
 func main() {

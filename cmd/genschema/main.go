@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/ChaosIsFramecode/horinezumi/data"
-	"github.com/ChaosIsFramecode/horinezumi/utils/environment"
+	"github.com/ArcticStrap/glacierglide/data"
+	"github.com/ArcticStrap/glacierglide/utils/environment"
 )
 
 func main() {

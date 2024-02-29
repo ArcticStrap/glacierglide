@@ -9,10 +9,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/ChaosIsFramecode/horinezumi/data"
-	"github.com/ChaosIsFramecode/horinezumi/jsonresp"
-	"github.com/ChaosIsFramecode/horinezumi/utils/userutils"
-	"github.com/ChaosIsFramecode/horinezumi/wikiinfo"
+	"github.com/ArcticStrap/glacierglide/data"
+	"github.com/ArcticStrap/glacierglide/jsonresp"
+	"github.com/ArcticStrap/glacierglide/utils/userutils"
+	"github.com/ArcticStrap/glacierglide/wikiinfo"
 )
 
 func SetupDoRoute(rt chi.Router, db data.Datastore) {
