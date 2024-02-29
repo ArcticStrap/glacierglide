@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Created for use in future updates when we plan on implementing different databses (e.g. MariaDB/MySQL and MongoDB)
+// Created for use in future updates when we plan on implementing different databses
 type Datastore interface {
 	// Initalizers / Cleaners
 	Close()

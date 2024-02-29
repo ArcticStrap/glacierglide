@@ -1,8 +1,10 @@
 package markdown
 
+import "regexp"
+
 func ParseBlockQuote(text []byte) []Chunk {
 	if len(text) < 2 {
-		return nil
+		return []Chunk{Paragraph{Part{Value: string(text)}}}
 	}
 	pChildren := []Chunk{}
 
@@ -17,6 +19,43 @@ func ParseBlockQuote(text []byte) []Chunk {
 		}
 	}
 
+	return pChildren
+}
+
+func ParseHeader(text []byte) []Chunk {
+	if len(text) < 3 {
+		return []Chunk{Paragraph{Part{Value: string(text)}}}
+	}
+	pChildren := []Chunk{}
+
+	headerRegex := regexp.MustCompile(`^(#+)\s+(.*)$`)
+
+	if headerMatch := headerRegex.FindStringSubmatch(string(text[:len(text)-1])); len(headerMatch) == 3 {
+		// Check header level
+		switch len(headerMatch[1]) {
+		case 1:
+			pChildren = append(pChildren, Header{Part: Part{Value: headerMatch[2]}, Level: 1})
+			break
+		case 2:
+			pChildren = append(pChildren, Header{Part: Part{Value: headerMatch[2]}, Level: 2})
+			break
+		case 3:
+			pChildren = append(pChildren, Header{Part: Part{Value: headerMatch[2]}, Level: 3})
+			break
+		case 4:
+			pChildren = append(pChildren, Header{Part: Part{Value: headerMatch[2]}, Level: 4})
+			break
+		case 5:
+			pChildren = append(pChildren, Header{Part: Part{Value: headerMatch[2]}, Level: 5})
+			break
+		case 6:
+			pChildren = append(pChildren, Header{Part: Part{Value: headerMatch[2]}, Level: 6})
+			break
+		default:
+			pChildren = append(pChildren, Paragraph{Part: Part{Value: headerMatch[2]}})
+			break
+		}
+	}
 	return pChildren
 }
 

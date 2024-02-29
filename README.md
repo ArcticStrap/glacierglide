@@ -21,8 +21,6 @@ Config variables:
 #### Database drivers
 * ![Pgx](https://github.com/jackc/pgx/) - PostgreSQL
 
-I might plan to add MariaDB soon.
-
 To get the Dependencies:
 `make getdeps`
 

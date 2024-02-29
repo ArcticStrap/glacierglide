@@ -1,7 +1,5 @@
 package markdown
 
-import "regexp"
-
 // Struct setup
 
 type Chunk interface {
@@ -74,55 +72,57 @@ func Tokenize(content []byte) []Chunk {
 	if len(content) == 0 {
 		return nil
 	}
-	var blocks []Chunk
 
-	headerRegex := regexp.MustCompile(`^(#+)\s+(.*)$`)
+	content = RmvCr(content)
+
+	var blocks []Chunk
 
 	bStart := 0
 
 	for i := 0; i <= len(content); i++ {
 		substr := content[bStart:i]
 
-		if len(substr) != 0 && (substr[len(substr)-1] == '\n' || substr[len(substr)-1] == '\r' || i == len(content)) {
+		if len(substr) != 0 && (substr[len(substr)-1] == '\n' || i == len(content)) {
 			// Make it so the acutal last character can render in the parser
 			if i == len(content) {
 				substr = append(substr, ' ')
 			}
 			// Find header
-			if headerMatch := headerRegex.FindStringSubmatch(string(substr[:len(substr)-1])); len(headerMatch) == 3 {
-				// Check header level
-				switch len(headerMatch[1]) {
-				case 1:
-					blocks = append(blocks, Header{Part: Part{Value: headerMatch[2]}, Level: 1})
-					break
-				case 2:
-					blocks = append(blocks, Header{Part: Part{Value: headerMatch[2]}, Level: 2})
-					break
-				case 3:
-					blocks = append(blocks, Header{Part: Part{Value: headerMatch[2]}, Level: 3})
-					break
-				case 4:
-					blocks = append(blocks, Header{Part: Part{Value: headerMatch[2]}, Level: 4})
-					break
-				case 5:
-					blocks = append(blocks, Header{Part: Part{Value: headerMatch[2]}, Level: 5})
-					break
-				case 6:
-					blocks = append(blocks, Header{Part: Part{Value: headerMatch[2]}, Level: 6})
-					break
-				default:
-					blocks = append(blocks, Paragraph{Part: Part{Value: headerMatch[2]}})
-					break
-				}
+			if substr[0] == '#' {
+				blocks = append(blocks, ParseHeader(substr)...)
 			} else if substr[0] == '>' {
-				parts := ParseBlockQuote(substr[bStart:])
-				blocks = append(blocks, parts...)
+				blocks = append(blocks, ParseBlockQuote(substr)...)
 			} else {
-				blocks = append(blocks, Paragraph{Part: Part{Value: string(substr), Children: ParseInline(substr)}})
+				blocks = append(blocks, Paragraph{Part: Part{Value: "", Children: ParseInline(substr)}})
 			}
 			bStart = i
 		}
 	}
 
 	return blocks
+}
+
+func RmvCr(str []byte) []byte {
+	wi := 0
+	strlen := len(str)
+	for i := 0; i < strlen; i++ {
+		char := str[i]
+
+		// Continue if not \r
+		if char != 13 {
+			str[wi] = char
+			wi++
+			continue
+		}
+
+		// Replace \r with \n
+		str[wi] = 10
+		wi++
+		if i < strlen-1 && str[i+1] == 10 {
+			// If CRLF, skip \n
+			i++
+		}
+	}
+
+	return str[:wi]
 }
