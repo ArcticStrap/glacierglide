@@ -10,9 +10,10 @@ You need a .env file with 3 variables:
     JWTCODE: The JWT secret.
 
 Config variables:
-    DEV: 
-    - "1": development mode 
-    - "": production mode
+```bash
+DEV: Run in development or produciton mode: Set to 1 for the former.
+WITHPOLARP: Use the PolarPages frontend. Set 1 to enable.
+```
 
 ### Dependencies
 * ![Chi](https://github.com/go-chi/chi) - The HTTP library

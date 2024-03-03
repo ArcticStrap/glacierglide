@@ -18,6 +18,7 @@ import (
 	"github.com/ArcticStrap/glacierglide/api/wikido"
 	"github.com/ArcticStrap/glacierglide/appsignals"
 	"github.com/ArcticStrap/glacierglide/data"
+	"github.com/ArcticStrap/glacierglide/polarpages"
 	"github.com/ArcticStrap/glacierglide/utils/environment"
 )
 
@@ -45,6 +46,7 @@ func main() {
 	// Use logger
 	rt.Use(middleware.Logger)
 
+	// Setup api
 	rt.Route("/api", func(apiroute chi.Router) {
 		// Initalize subrouters
 		wikido.SetupDoRoute(apiroute, &db)
@@ -55,7 +57,10 @@ func main() {
 		user.SetupUserRoute(apiroute, &db, sc)
 	})
 
-	log.Println("Running on " + os.Getenv("ADDR"))
+	// Setup client (if permitted)
+	if os.Getenv("WITHPOLARP") != "" {
+		polarpages.Setup(rt)
+	}
 
 	// Setup signal handling for cleanup
 	c := make(chan os.Signal, 1)
@@ -69,6 +74,7 @@ func main() {
 	}()
 
 	// Start up web server
+	log.Println("Running on " + os.Getenv("ADDR"))
 	if os.Getenv("DEV") == "" {
 		http.ListenAndServeTLS(os.Getenv("ADDR"), "certs/cert.pem", "certs/key.pem", rt)
 	} else {
