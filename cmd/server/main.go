@@ -59,7 +59,12 @@ func main() {
 
 	// Setup client (if permitted)
 	if os.Getenv("WITHPOLARP") != "" {
-		polarpages.Setup(rt)
+		hostAddr := "http"
+		if os.Getenv("DEV") == "" {
+			hostAddr += "s"
+		}
+		hostAddr += "://" + os.Getenv("ADDR")
+		polarpages.Setup(rt, hostAddr)
 	}
 
 	// Setup signal handling for cleanup
