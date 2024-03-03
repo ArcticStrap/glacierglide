@@ -3,12 +3,28 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{.Title}}</title>
-    <link href="css/style.css" rel="stylesheet">
+    <title>{{.Title}} - PolarPages</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <link href="/skins/{{.Theme}}/style.css" rel="stylesheet">
   </head>
   <body>
-    <div>
-      {{.Content}}
-    </div>
+    <nav>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Help</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+
+    <main>  
+      <div class="gg-page">
+        {{.Content}}
+      </div>
+    </main>
+
+    <footer>
+      <p>Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-Sharealike 4.0 License</a>.</p>
+    </footer>
   </body>
 </html>

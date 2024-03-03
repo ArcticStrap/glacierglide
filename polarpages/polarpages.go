@@ -9,33 +9,47 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func Setup(rt *chi.Mux,addr string) {
-  rt.Get("/wiki/{title}",func(w http.ResponseWriter,r *http.Request) {
-    titleParam := chi.URLParam(r,"title")
+type webPage struct {
+	Title   string
+	Content template.HTML
+	Theme   string
+}
 
-    // Get page content
-    res, err := http.Get(addr + "/api/wiki/" + titleParam)
-    if err != nil {
-      http.Error(w,err.Error(),http.StatusInternalServerError)
-      return
-    }
-    defer res.Body.Close()
+var tmpl *template.Template
 
-    // Read response
-    content, err := io.ReadAll(res.Body)
-    if err != nil {
-      http.Error(w,err.Error(),http.StatusInternalServerError)
-      return
-    }
+func Setup(rt *chi.Mux, addr string) {
+	// Parse templates
+	tmpl = template.Must(template.ParseFiles("polarpages/templates/index.html"))
 
-    // Parse template
-    tmpl := template.Must(template.ParseFiles("polarpages/templates/index.html"))
-    tmpl.Execute(w,struct{Title string 
-      Content template.HTML}{
-        Title: titleParam,
-        Content: template.HTML(content),
-      })
-  })
+	// Load skin assets
+	sfs := http.FileServer(http.Dir("polarpages/skins"))
+	rt.Handle("/skins/*", http.StripPrefix("/skins/", sfs))
 
-  log.Println("PolarPages initalized")
+	rt.Get("/wiki/{title}", func(w http.ResponseWriter, r *http.Request) {
+		titleParam := chi.URLParam(r, "title")
+
+		// Get page content
+		res, err := http.Get(addr + "/api/wiki/" + titleParam)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer res.Body.Close()
+
+		// Read response
+		content, err := io.ReadAll(res.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Parse template
+		tmpl.Execute(w, webPage{
+			Title:   titleParam,
+			Content: template.HTML(content),
+			Theme:   "common",
+		})
+	})
+
+	log.Println("PolarPages initalized")
 }

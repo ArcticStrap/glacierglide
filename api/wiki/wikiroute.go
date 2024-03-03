@@ -3,6 +3,8 @@ package wiki
 import (
 	"net/http"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/go-chi/chi/v5"
 
@@ -32,6 +34,13 @@ func SetupWikiRoute(rt chi.Router, db data.Datastore) {
 				w.Write([]byte("Page does not exist. Try checking your spelling if otherwise."))
 				return
 			}
+
+      // Capitalize first letter
+      sr, size := utf8.DecodeRuneInString(p.Title)
+      if sr != utf8.RuneError {
+        p.Title = string(unicode.ToUpper(sr)) + p.Title[size:]
+      }
+
 
 			// Check page format
 			switch p.MPType {
