@@ -25,6 +25,16 @@ func Setup(rt *chi.Mux, addr string) {
 	sfs := http.FileServer(http.Dir("polarpages/skins"))
 	rt.Handle("/skins/*", http.StripPrefix("/skins/", sfs))
 
+	// Not found (404) handler
+	rt.NotFound(func(w http.ResponseWriter, _ *http.Request) {
+		tmpl.Execute(w, webPage{
+			Title:   "Page Not Found (404)",
+			Content: "Page not found. Try checking your spelling if otherwise",
+			Theme:   "common",
+		})
+	})
+
+	// Wiki routing
 	rt.Get("/wiki/{title}", func(w http.ResponseWriter, r *http.Request) {
 		titleParam := chi.URLParam(r, "title")
 

@@ -7,13 +7,13 @@
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <link href="/skins/{{.Theme}}/style.css" rel="stylesheet">
   </head>
-  <body>
+  <body hx-target="this">
     <nav>
       <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Help</a></li>
-        <li><a href="#">Contact</a></li>
+        <li><a hx-get="/wiki/main_page">Home</a></li>
+        <li><a hx-get="/wiki/project:About">About</a></li>
+        <li><a hx-get="/wiki/project:Help">Help</a></li>
+        <li><a hx-get="/wiki/project:Contact">Contact</a></li>
       </ul>
     </nav>
 
