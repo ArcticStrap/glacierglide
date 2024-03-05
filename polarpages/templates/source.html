@@ -21,20 +21,21 @@
     <main>
       <nav id="gg-page-nav" style="display: none;">
         <ul>
-          <li><a href="#" onclick="toggleView()">Read Page</a></li>
-          <li><a hx-get="/s/{{.Title}}">View Source</a></li>
+          <li><a hx-get="/wiki/{{.Title}}">Read Page</a></li>
+          <li><a href="#" onclick="toggleView()">View Source</a></li>
         </ul>
       </nav>
+
       <div class="gg-page">
-        <h1>{{.Title}}</h1>
-        {{.Content}}
+        <h1>{{.Title}} - Page Source</h1>
+        <textarea class="gg-page-source" readonly="" rows="25">{{.Content}}</textarea>
       </div>
     </main>
 
     <footer>
       <p>Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-Sharealike 4.0 License</a>.</p>
     </footer>
-
+    
     <script>
       let toggleView = () => {
         document.getElementById("gg-page-nav").style.display = document.getElementById("gg-page-nav").style.display === "none" ? "block" : "none";

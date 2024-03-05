@@ -1,3 +1,5 @@
+/* Common theme css */
+
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 /* Basic elements */
@@ -50,6 +52,42 @@ blockquote {
   border-left: 10px solid #333;
   margin: 1.5em 10px;
   padding: 0.5em 10px;
+}
+
+/* Page editing */
+.gg-edit-buttons {
+  text-align: center;
+  width: 100%
+  margin-top: 20px;
+}
+
+.gg-edit-button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin-right: 5px;
+  margin-left: 5px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.gg-edit-button:hover {
+  background-color: #0056b3;
+}
+
+.gg-edit-button:active {
+  transform: translateY(1px);
+}
+
+/* Page Source */
+.gg-page-source {
+  width: 100%;
+  min-height: 100%
+  padding: 0.1em;
+  resize: none;
 }
 
 footer {
