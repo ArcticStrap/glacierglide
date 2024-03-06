@@ -109,6 +109,7 @@ func SetupUserRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 		http.SetCookie(w, &http.Cookie{
 			Name:     "sessionauth",
 			Value:    token,
+			Expires:  time.Unix(time.Now().Unix()+86400, 0), // Expire in 24 hours
 			HttpOnly: true,
 		})
 
