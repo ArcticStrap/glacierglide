@@ -21,7 +21,7 @@ func SetupDoRoute(rt chi.Router, db data.Datastore) {
 		// GENERAL REQUESTS
 		// Version info
 		dorouter.Get("/version", func(w http.ResponseWriter, _ *http.Request) {
-			w.Write([]byte(fmt.Sprintf("Core\nHorinezumi: Version %s\nGo: Version %s\n%s: Version %s", wikiinfo.Version, runtime.Version(), db.EngineName(), db.Version())))
+			w.Write([]byte(fmt.Sprintf("Core\nGlacierGlide: Version %s\nGo: Version %s\n%s: Version %s", wikiinfo.Version, runtime.Version(), db.EngineName(), db.Version())))
 		})
 		// MODERATION REQUESTS
 		// TODO
