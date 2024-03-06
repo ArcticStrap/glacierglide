@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{.Title}} - PolarPages</title>
+    <title>{{block "gg-title" .}}{{end}}</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="/skins/{{.Theme}}/index.js"></script>
     <link href="/skins/{{.Theme}}/style.css" rel="stylesheet">
   </head>
   <body hx-target="this">
@@ -14,31 +15,15 @@
         <li><a hx-get="/wiki/project:About">About</a></li>
         <li><a hx-get="/wiki/project:Help">Help</a></li>
         <li><a hx-get="/wiki/project:Contact">Contact</a></li>
-        <li><a href="#" onclick="toggleView()">Toggle View</a></li>
+        <li><a onclick="toggleView()">Toggle View</a></li>
       </ul>
     </nav>
 
-    <main>
-      <nav id="gg-page-nav" style="display: none;">
-        <ul>
-          <li><a href="#" onclick="toggleView()">Read Page</a></li>
-          <li><a hx-get="/s/{{.Title}}">View Source</a></li>
-        </ul>
-      </nav>
-      <div class="gg-page">
-        <h1>{{.Title}}</h1>
-        {{.Content}}
-      </div>
-    </main>
+    {{block "gg-main" .}}{{end}}
 
     <footer>
       <p>Content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-Sharealike 4.0 License</a>.</p>
     </footer>
 
-    <script>
-      let toggleView = () => {
-        document.getElementById("gg-page-nav").style.display = document.getElementById("gg-page-nav").style.display === "none" ? "block" : "none";
-      };
-    </script>
   </body>
 </html>

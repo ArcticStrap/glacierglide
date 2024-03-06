@@ -6,15 +6,14 @@
   <main>
     <nav id="gg-page-nav" style="display: none;">
       <ul>
-        <li><a hx-get="/wiki/{{.Title}}">Read Page</a></li>
-        <li><a href="#" onclick="toggleView()">View Source</a></li>
+        <li><a href="#" onclick="toggleView()">Read Page</a></li>
+        <li><a hx-get="/s/{{.Title}}">View Source</a></li>
         <li><a hx-get="/e/{{.Title}}">Edit Page</a></li>
       </ul>
     </nav>
-
     <div class="gg-page">
-      <h1>{{.Title}} - Page Source</h1>
-      <textarea class="gg-page-source" readonly="" rows="25">{{.Content}}</textarea>
+      <h1>{{.Title}}</h1>
+      {{.Content}}
     </div>
   </main>
 {{ end }}
