@@ -9,8 +9,11 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func SetupWikiHandler(rt *chi.Mux, addr string, tmpl *template.Template) {
-	// Not found (404) handler
+func SetupWikiHandler(rt *chi.Mux, addr string) {
+	// Initalize templates
+  tmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/wiki.html"))
+	
+  // Not found (404) handler
 	rt.NotFound(func(w http.ResponseWriter, _ *http.Request) {
 		tmpl.Execute(w, models.WebPage{
 			Title:   "Page Not Found (404)",

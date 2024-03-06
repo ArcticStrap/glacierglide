@@ -10,8 +10,11 @@ import (
 )
 
 
-func SetupEditHandler(rt *chi.Mux, addr string, tmpl *template.Template) {
-	// Wiki routing
+func SetupEditHandler(rt *chi.Mux, addr string) {
+	// Inialize templates
+  tmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/edit.html"))
+	
+  // Edit routing
 	rt.Get("/e/{title}", func(w http.ResponseWriter, r *http.Request) {
 		titleParam := chi.URLParam(r, "title")
 

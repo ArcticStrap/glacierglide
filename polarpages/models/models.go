@@ -9,3 +9,7 @@ type WebPage struct {
 	Content template.HTML
 	Theme   string
 }
+
+type StaticPage struct {
+  Theme string
+}

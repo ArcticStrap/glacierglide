@@ -66,7 +66,7 @@ blockquote {
   padding: 10px 20px;
   margin-right: 5px;
   margin-left: 5px;
-  background-color: #007bff;
+  background-color: #5294e2;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -88,6 +88,64 @@ blockquote {
   min-height: 100%
   padding: 0.1em;
   resize: none;
+}
+
+/* Login Form */
+.gg-login {
+  max-width: 400px;
+  margin: 50px auto;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.gg-login h1 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.gg-form-group {
+  margin-bottom: 20px;
+}
+
+.gg-form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.gg-form-group input[type="text"]
+.gg-form-group input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #5294e2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.gg-form-group button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #5294e2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: block;
+}
+
+.gg-form-group button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.gg-form-group button[type="submit"]:active {
+  transform: translateY(1px);
 }
 
 footer {

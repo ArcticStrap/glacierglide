@@ -1,0 +1,24 @@
+{{ define "gg-title" }}
+Login - PolarPages
+{{ end }}
+
+{{ define "gg-main" }}
+<main>
+ <div class="gg-login">
+  <h1>Login</h1>
+  <form id="gg-login-form" hx-post="/api/login">
+    <div class="gg-form-group">
+      <label for="username">Username</label>
+      <input type="text" name="username" id="username" required>
+    </div>
+    <div class="gg-form-group">
+      <label for="password">Password</label>
+      <input type="text" name="password" id="password" required>
+    </div>
+    <div class="gg-form-group">
+       <button type="submit">Login</button>
+    </div>
+  </form>
+ </div>
+</main>
+{{ end }}

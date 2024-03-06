@@ -9,9 +9,11 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+func SetupSourceHandler(rt *chi.Mux, addr string) {
+	// Initalize templates
+	tmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/source.html"))
 
-func SetupSourceHandler(rt *chi.Mux, addr string, tmpl *template.Template) {
-	// Wiki routing
+	// Source routing
 	rt.Get("/s/{title}", func(w http.ResponseWriter, r *http.Request) {
 		titleParam := chi.URLParam(r, "title")
 
