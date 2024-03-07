@@ -48,6 +48,51 @@ const sendEditRequest = () => {
     })
 }
 
+const ggCreateAccount = () => {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirm-password').value;
+
+  if (username === '' || password === '') {
+    return;
+  }
+
+  // Check if password is confirmed
+  if (password !== confirmPassword) {
+    return;
+  }
+  
+  const requestBody = {
+    username: username,
+    password: password
+  };
+
+  fetch('/api/CreateAccount', {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(requestBody)
+  })
+    .then(response => {
+      if (!response.ok) {
+        console.log(response.json())
+        throw new Error("Response not ok");
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Succesfully created user account " + username);
+      console.log(data);
+
+      // Redirect to main page if succesful
+      window.location.href = '/wiki/main_page';
+    })
+    .catch(error => {
+      console.error(error)
+    })
+}
+
 const ggLogin = () => {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;

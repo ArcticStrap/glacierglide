@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ArcticStrap/glacierglide/appsignals"
@@ -19,7 +20,7 @@ func SetupUserRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 		w.Header().Set("Content-Type", "application/json")
 
 		// Check if creating an account is possible
-		userGroups, err := db.GetUserGroups(r.RemoteAddr)
+		userGroups, err := db.GetUserGroups(strings.Split(r.RemoteAddr, ":")[0])
 		if err != nil {
 			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
 			return

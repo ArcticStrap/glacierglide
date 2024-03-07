@@ -1,12 +1,12 @@
 {{ define "gg-title" }}
-Login - PolarPages
+Create Account - PolarPages
 {{ end }}
 
 {{ define "gg-main" }}
 <main>
  <div class="gg-login">
   <h1>Create Account</h1>
-  <form id="gg-login-form" hx-post="/api/login">
+  <form id="gg-login-form" onsubmit="ggCreateAccount(); return false;">
     <div class="gg-form-group">
       <label for="username">Username</label>
       <input type="text" name="username" id="username" required>
