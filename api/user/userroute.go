@@ -66,7 +66,7 @@ func SetupUserRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 		w.Header().Set("Content-Type", "application/json")
 
 		// Check if session exists
-		_, err := r.Cookie("sessionauth")
+		_, err := r.Cookie("gg_session")
 		if err == nil {
 			jsonresp.JsonERR(w, http.StatusUnauthorized, "User already has an active session", nil)
 			return
@@ -107,7 +107,7 @@ func SetupUserRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 
 		// Set the session cookie
 		http.SetCookie(w, &http.Cookie{
-			Name:     "sessionauth",
+			Name:     "gg_session",
 			Value:    token,
 			Expires:  time.Unix(time.Now().Unix()+86400, 0), // Expire in 24 hours
 			HttpOnly: true,
@@ -120,7 +120,7 @@ func SetupUserRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 	})
 	rt.Post("/Logout", func(w http.ResponseWriter, _ *http.Request) {
 		http.SetCookie(w, &http.Cookie{
-			Name:     "sessionauth",
+			Name:     "gg_session",
 			Value:    "",
 			Expires:  time.Unix(0, 0),
 			HttpOnly: true,

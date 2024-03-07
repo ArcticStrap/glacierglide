@@ -127,7 +127,7 @@ blockquote {
   transition: background-color 0.3s ease;
 }
 
-.gg-form-group button[type="submit"] {
+.gg-form-group button {
   width: 100%;
   padding: 10px;
   font-size: 16px;
@@ -140,11 +140,11 @@ blockquote {
   display: block;
 }
 
-.gg-form-group button[type="submit"]:hover {
+.gg-form-group button:hover {
   background-color: #0056b3;
 }
 
-.gg-form-group button[type="submit"]:active {
+.gg-form-group button:active {
   transform: translateY(1px);
 }
 

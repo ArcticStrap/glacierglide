@@ -6,7 +6,7 @@ Login - PolarPages
 <main>
  <div class="gg-login">
   <h1>Login</h1>
-  <form id="gg-login-form" hx-post="/api/login">
+  <form id="gg-login-form" onsubmit="ggLogin(); return false;">
     <div class="gg-form-group">
       <label for="username">Username</label>
       <input type="text" name="username" id="username" required>

@@ -31,7 +31,13 @@ func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 				}
 
 				// Get editor name
-				editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
+				authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
+				if err != nil {
+					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with determining session: %s", err)
+					return
+				}
+
+				editor, err := data.GetLoginStatus(authtoken, r, db)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
 					return
@@ -113,7 +119,13 @@ func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 				}
 
 				// Get editor name
-				editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
+				authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
+				if err != nil {
+					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with determining session: %s", err)
+					return
+				}
+
+				editor, err := data.GetLoginStatus(authtoken, r, db)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
 					return
@@ -201,11 +213,18 @@ func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 				}
 
 				// Get editor name
-				editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
+				authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
+				if err != nil {
+					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with determining session: %s", err)
+					return
+				}
+
+				editor, err := data.GetLoginStatus(authtoken, r, db)
 				if err != nil {
 					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
 					return
 				}
+
 				// Check if deleting a page is possible
 				userGroups, err := db.GetUserGroups(editor)
 				if err != nil {

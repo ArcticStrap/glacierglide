@@ -34,12 +34,19 @@ func SetupDoRoute(rt chi.Router, db data.Datastore) {
 			}
 
 			// Get editor name
-			editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
+			authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
+			if err != nil {
+				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with determining session: %s", err)
+				return
+			}
+
+			editor, err := data.GetLoginStatus(authtoken, r, db)
 			if err != nil {
 				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
 				return
 			}
-			// Check if suspending a user is possible
+			
+      // Check if suspending a user is possible
 			userGroups, err := db.GetUserGroups(editor)
 			if err != nil {
 				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
@@ -76,7 +83,13 @@ func SetupDoRoute(rt chi.Router, db data.Datastore) {
 				return
 			}
 			// Get editor name
-			editor, err := data.GetLoginStatus(r.Header.Get("authtoken"), r, db)
+			authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
+			if err != nil {
+				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with determining session: %s", err)
+				return
+			}
+
+			editor, err := data.GetLoginStatus(authtoken, r, db)
 			if err != nil {
 				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
 				return
