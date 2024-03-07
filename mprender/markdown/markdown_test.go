@@ -34,10 +34,10 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "###### Header 6",
 			expected: "<h6>Header 6</h6>\n",
 		},
-    {
-      input: "> This is a quote block.",
-      expected: "<blockquote>This is a quote block.</blockquote>\n",
-    },
+		{
+			input:    "> This is a quote block.",
+			expected: "<blockquote>This is a quote block.</blockquote>\n",
+		},
 		{
 			input:    "This is *italic* text.",
 			expected: "<p>This is <em>italic</em> text.</p>\n",

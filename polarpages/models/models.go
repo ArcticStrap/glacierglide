@@ -1,7 +1,7 @@
 package models
 
 import (
-  "html/template"
+	"html/template"
 )
 
 type WebPage struct {
@@ -11,5 +11,5 @@ type WebPage struct {
 }
 
 type StaticPage struct {
-  Theme string
+	Theme string
 }

@@ -46,14 +46,14 @@ func JsonERR(w http.ResponseWriter, code int, message string, msgerr error) {
 }
 
 // Error handler for cookies
-func FetchCookieValue(name string, r *http.Request) (string,error) {
-  cookie, err := r.Cookie(name)
-  if err != nil {
-    if errors.Is(err,http.ErrNoCookie) {
-      return "", nil
-    }
-    return "", err
-  }
+func FetchCookieValue(name string, r *http.Request) (string, error) {
+	cookie, err := r.Cookie(name)
+	if err != nil {
+		if errors.Is(err, http.ErrNoCookie) {
+			return "", nil
+		}
+		return "", err
+	}
 
-  return cookie.Value, nil
+	return cookie.Value, nil
 }

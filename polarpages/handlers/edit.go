@@ -9,12 +9,11 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-
 func SetupEditHandler(rt *chi.Mux, addr string) {
 	// Inialize templates
-  tmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/edit.html"))
-	
-  // Edit routing
+	tmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/edit.html"))
+
+	// Edit routing
 	rt.Get("/e/{title}", func(w http.ResponseWriter, r *http.Request) {
 		titleParam := chi.URLParam(r, "title")
 

@@ -11,7 +11,8 @@ import (
 func SetupUserHandler(rt *chi.Mux) {
 	// Initalize templates
 	caTmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/createaccount.html"))
-	lTmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/login.html"))
+	liTmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/login.html"))
+	loTmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/logout.html"))
 	// User routing
 	rt.Get("/CreateAccount", func(w http.ResponseWriter, _ *http.Request) {
 		// Parse template
@@ -22,8 +23,13 @@ func SetupUserHandler(rt *chi.Mux) {
 
 	rt.Get("/Login", func(w http.ResponseWriter, _ *http.Request) {
 		// Parse template
-		lTmpl.Execute(w, models.StaticPage{
+		liTmpl.Execute(w, models.StaticPage{
 			Theme: "common",
 		})
+	})
+
+	rt.Get("/Logout", func(w http.ResponseWriter, _ *http.Request) {
+		http.Post("/api/Logout", "application/json", nil)
+		loTmpl.Execute(w, nil)
 	})
 }

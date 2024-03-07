@@ -19,7 +19,7 @@ func Setup(rt *chi.Mux, addr string) {
 	handlers.SetupWikiHandler(rt, addr)
 	handlers.SetupEditHandler(rt, addr)
 	handlers.SetupSourceHandler(rt, addr)
-  handlers.SetupUserHandler(rt)
+	handlers.SetupUserHandler(rt)
 
 	log.Println("PolarPages initalized")
 }

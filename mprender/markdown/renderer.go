@@ -43,10 +43,10 @@ func ToHTML(content string) string {
 			tTag = "h" + strconv.Itoa(vPart.Level)
 			vValue = vPart.Value
 			break
-    case BlockQuote:
-      tTag = "blockquote"
-      vValue = vPart.Value
-      break
+		case BlockQuote:
+			tTag = "blockquote"
+			vValue = vPart.Value
+			break
 		case Paragraph:
 			tTag = "p"
 			vValue = renderInline(&vPart.Part)

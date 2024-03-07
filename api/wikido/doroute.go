@@ -45,8 +45,8 @@ func SetupDoRoute(rt chi.Router, db data.Datastore) {
 				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
 				return
 			}
-			
-      // Check if suspending a user is possible
+
+			// Check if suspending a user is possible
 			userGroups, err := db.GetUserGroups(editor)
 			if err != nil {
 				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
