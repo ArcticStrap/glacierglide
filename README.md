@@ -49,4 +49,4 @@ Open to contributions. Feel free to open up an issue or pull request.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE)
+This project is licensed under the [BSD 3 Clause License](LICENSE)
