@@ -5,6 +5,16 @@ package markdown
 type Chunk interface {
 }
 
+// Base
+
+type Paragraph struct {
+	Part
+}
+
+type PlainText struct {
+	Part
+}
+
 type Part struct {
 	Value string
 
@@ -22,6 +32,17 @@ type BlockQuote struct {
 	Part
 }
 
+// Code
+type Code struct {
+	Part
+}
+
+type CodeBlock struct {
+	Part
+
+	Language string
+}
+
 // Emphasis
 
 type Bold struct {
@@ -32,11 +53,24 @@ type Italic struct {
 	Part
 }
 
-type Paragraph struct {
+// Links
+type Link struct {
 	Part
+
+	Path string
 }
 
-type PlainText struct {
+type Email Link
+type Image Link
+
+// Lists
+type List struct {
+	Part
+
+	Ordered bool
+}
+
+type ListItem struct {
 	Part
 }
 

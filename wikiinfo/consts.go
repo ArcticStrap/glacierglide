@@ -1,3 +1,3 @@
 package wikiinfo
 
-const Version = "0.07"
+const Version = "0.08"
