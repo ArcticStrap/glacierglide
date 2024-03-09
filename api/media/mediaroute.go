@@ -3,7 +3,7 @@ package media
 import (
 	"github.com/go-chi/chi/v5"
 
-	"github.com/ChaosIsFramecode/horinezumi/data"
+	"github.com/ArcticStrap/glacierglide/data"
 )
 
 func SetupMediaRoute(rt chi.Router, _ data.Datastore) {

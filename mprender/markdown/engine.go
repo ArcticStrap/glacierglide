@@ -91,7 +91,11 @@ func Tokenize(content []byte) []Chunk {
 			if substr[0] == '#' {
 				blocks = append(blocks, ParseHeader(substr)...)
 			} else if substr[0] == '>' {
-				blocks = append(blocks, ParseBlockQuote(substr)...)
+				nBlocks, jump := ParseBlockQuote(content[bStart:])
+				blocks = append(blocks, nBlocks...)
+				bStart += jump
+				i = bStart
+				continue
 			} else {
 				blocks = append(blocks, Paragraph{Part: Part{Value: "", Children: ParseInline(substr)}})
 			}

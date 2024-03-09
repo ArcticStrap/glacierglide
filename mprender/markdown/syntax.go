@@ -2,24 +2,51 @@ package markdown
 
 import "regexp"
 
-func ParseBlockQuote(text []byte) []Chunk {
+func ParseBlockQuote(text []byte) ([]Chunk, int) {
 	if len(text) < 2 {
-		return []Chunk{Paragraph{Part{Value: string(text)}}}
+		return []Chunk{Paragraph{Part{Value: string(text)}}}, 0
 	}
 	pChildren := []Chunk{}
+	var pBytes []byte
+	i := 0
 
-	for i := 0; i < len(text); i++ {
-		if (text[i] == '\n' && i-1 >= 0 && text[i-1] == '\n') || i == len(text)-1 {
-			sCount := 1
-			if text[1] == ' ' {
-				sCount++
+	for ; i < len(text); i++ {
+		if text[i] == ' ' {
+			for i < len(text) && text[i] == ' ' {
+				i++
 			}
-			pChildren = append(pChildren, BlockQuote{Part{Value: string(text[sCount:i])}})
-			break
+			if i >= len(text) {
+				break
+			}
+		}
+		if text[i] == '>' {
+			// Add new line if not first blockquote
+			if i != 0 {
+				pBytes = append(pBytes, '\n')
+			}
+
+			// Skip > and spaces
+			for i < len(text) && (text[i] == '>' || text[i] == ' ') {
+				i++
+			}
+			// Process content
+			for i < len(text) && text[i] != '\n' {
+				pBytes = append(pBytes, text[i])
+				i++
+			}
+
+			if i < len(text) {
+				if text[i] == '\n' && i+1 < len(text) && text[i+1] == '\n' {
+					i++
+					break
+				}
+			}
 		}
 	}
 
-	return pChildren
+	pChildren = append(pChildren, BlockQuote{Part{Value: string(pBytes)}})
+
+	return pChildren, i
 }
 
 func ParseHeader(text []byte) []Chunk {

@@ -35,8 +35,24 @@ func TestMarkdownEngine(t *testing.T) {
 			expected: "<h6>Header 6</h6>\n",
 		},
 		{
-			input:    "> This is a quote block.",
-			expected: "<blockquote>This is a quote block.</blockquote>\n",
+			input:    "> Single-line blockquote",
+			expected: "<blockquote>Single-line blockquote</blockquote>\n",
+		},
+		{
+			input:    "> First line of a multi-line\n> blockquote\n> Last line of a multi-line blockquote",
+			expected: "<blockquote>First line of a multi-line\nblockquote\nLast line of a multi-line blockquote</blockquote>\n",
+		},
+		/*{
+			input:    "> Blockquote with **bold** and *italic* text.",
+			expected: "<blockquote>Blockquote with <strong>bold</strong> and <em>italic</em> text.</blockquote>\n",
+		},
+		{
+			input:    "> Nested blockquote\n>> Nested within the first one",
+			expected: "<blockquote>Nested blockquote\n<blockquote>Nested within the first one</blockquote>\n</blockquote>\n",
+		},*/
+		{
+			input:    "> Blockquote with\n> multiple\n> lines\n> of text",
+			expected: "<blockquote>Blockquote with\nmultiple\nlines\nof text</blockquote>\n",
 		},
 		{
 			input:    "This is *italic* text.",
