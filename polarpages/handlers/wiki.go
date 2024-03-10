@@ -9,9 +9,17 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+func mpRedir(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/wiki/Main_Page", http.StatusSeeOther)
+}
+
 func SetupWikiHandler(rt *chi.Mux, addr string) {
 	// Initalize templates
 	tmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/wiki.html"))
+
+	// Redirects to main page
+	rt.Get("/", mpRedir)
+	rt.Get("/wiki", mpRedir)
 
 	// Not found (404) handler
 	rt.NotFound(func(w http.ResponseWriter, _ *http.Request) {
