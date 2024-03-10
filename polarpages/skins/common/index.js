@@ -35,6 +35,30 @@ const sendEditRequest = () => {
     body: JSON.stringify(data),
   })
     .then(response => {
+      if (response.status === 404) {
+        return createPage(data)
+      } else if (!response.ok) {
+        throw new Error("Response not ok");
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log(data)
+    })
+    .catch(error => {
+      console.error(error)
+    })
+}
+
+const createPage = (data) => {
+  fetch("/api/e/" + data.Title, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then(response => {
       if (!response.ok) {
         throw new Error("Response not ok");
       }

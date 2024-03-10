@@ -10,7 +10,7 @@ import (
 )
 
 func mpRedir(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/wiki/Main_Page", http.StatusSeeOther)
+	http.Redirect(w, r, "/wiki/main_page", http.StatusSeeOther)
 }
 
 func SetupWikiHandler(rt *chi.Mux, addr string) {

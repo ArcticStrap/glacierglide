@@ -23,12 +23,7 @@ func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 				w.Header().Set("Content-Type", "application/json")
 
 				// Fetch title param
-				titleParam := chi.URLParam(r, "title")
-				// Redirect if not lowercase
-				if strings.ToLower(titleParam) != titleParam {
-					http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
-					return
-				}
+				titleParam := strings.ToLower(chi.URLParam(r, "title"))
 
 				// Get editor name
 				authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
@@ -111,10 +106,11 @@ func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 				w.Header().Set("Content-Type", "application/json")
 
 				// Fetch title param
-				titleParam := chi.URLParam(r, "title")
-				// Redirect if not lowercase
-				if strings.ToLower(titleParam) != titleParam {
-					http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
+				titleParam := strings.ToLower(chi.URLParam(r, "title"))
+
+				// Check if page exists
+				if _, err := db.GetIdFromPageTitle(titleParam); err != nil {
+					jsonresp.JsonERR(w, http.StatusNotFound, "Page does not exist.", nil)
 					return
 				}
 
@@ -158,6 +154,7 @@ func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 						break
 					}
 				}
+
 				if !proceed {
 					jsonresp.JsonERR(w, http.StatusUnauthorized, "This page has been locked. User has insufficient permissions to edit", nil)
 					return
@@ -205,12 +202,7 @@ func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 				w.Header().Set("Content-Type", "application/json")
 
 				// Fetch title param
-				titleParam := chi.URLParam(r, "title")
-				// Redirect if not lowercase
-				if strings.ToLower(titleParam) != titleParam {
-					http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
-					return
-				}
+				titleParam := strings.ToLower(chi.URLParam(r, "title"))
 
 				// Get editor name
 				authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
@@ -248,16 +240,8 @@ func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 					return
 				}
 
-				// Handle request
-				pageTitle := new(struct {
-					Title string `json:"title"`
-				})
-				if err := json.NewDecoder(r.Body).Decode(&pageTitle); err != nil {
-					jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error with parsing json request: %s", err)
-					return
-				}
 				// Delete page from database
-				if err := db.DeletePage(pageTitle.Title); err != nil {
+				if err := db.DeletePage(titleParam); err != nil {
 					jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error deleting page from database: %s", err)
 					return
 				}
