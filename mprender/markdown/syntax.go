@@ -170,3 +170,42 @@ func ParseEmph(text []byte, start int, eChar byte) ([]Chunk, int) {
 	}
 	return pChildren, i - start
 }
+
+func ParseQuickLink(text []byte, start int) ([]Chunk, int) {
+	pChildren := []Chunk{}
+
+	i := start
+
+	// Email flag
+	email := false
+
+	// Append inactive plain text
+	if start > 0 {
+		pChildren = append(pChildren, PlainText{Part{Value: string(text[0:i])}})
+	}
+
+	for ; i < len(text); i++ {
+		if text[i] == '>' {
+			break
+		} else if text[i] == '@' {
+			email = true
+		}
+	}
+
+	if i > len(text) || text[i] != '>' {
+		if start+1 < len(text) {
+			pChildren = append(pChildren, PlainText{Part{Value: string(text[start+1:])}})
+		}
+		return pChildren, len(text)
+	}
+
+	if start+1 < i {
+		if email {
+			pChildren = append(pChildren, Email{Part: Part{Value: string(text[start+1 : i])}, Path: string(text[start+1 : i])})
+		} else {
+			pChildren = append(pChildren, Link{Part: Part{Value: string(text[start+1 : i])}, Path: string(text[start+1 : i])})
+		}
+	}
+
+	return pChildren, (i - start) + 1
+}

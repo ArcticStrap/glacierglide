@@ -19,6 +19,10 @@ func renderInline(p *Part) string {
 			}
 			renderedLine += fmt.Sprintf("<strong>%s</strong>", boldText)
 			break
+    case Email:
+      renderedLine += fmt.Sprintf("<a href=\"mailto:%s\">%s</a>",vEle.Path,vEle.Value)
+    case Link:
+      renderedLine += fmt.Sprintf("<a href=\"%s\">%s</a>",vEle.Path,vEle.Value)
 		case PlainText:
 			renderedLine += vEle.Value
 			break
