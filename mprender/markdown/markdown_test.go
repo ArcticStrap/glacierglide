@@ -66,14 +66,18 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "This is ***bold* and *italic*** text.",
 			expected: "<p>This is <strong><em>bold</em> and <em>italic</em></strong> text.</p>\n",
 		},
-    {
-      input:    "This is a link: <https://wikipedia.org>.",
-      expected: "<p>This is a link: <a href=\"https://wikipedia.org\">https://wikipedia.org</a>.</p>\n",
-    },
-    {
-      input:    "This is an email: <business@arcticstrap.net>.",
-      expected: "<p>This is an email: <a href=\"mailto:business@arcticstrap.net\">business@arcticstrap.net</a>.</p>\n",
-    },
+		{
+			input:    "This is a link: <https://wikipedia.org>.",
+			expected: "<p>This is a link: <a href=\"https://wikipedia.org\">https://wikipedia.org</a>.</p>\n",
+		},
+		{
+			input:    "This is not a link: <>.",
+			expected: "<p>This is not a link: <>.</p>\n",
+		},
+		{
+			input:    "This is an email: <business@arcticstrap.net>.",
+			expected: "<p>This is an email: <a href=\"mailto:business@arcticstrap.net\">business@arcticstrap.net</a>.</p>\n",
+		},
 		{
 			input:    "Plain text",
 			expected: "<p>Plain text</p>\n",

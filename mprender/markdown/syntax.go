@@ -192,11 +192,9 @@ func ParseQuickLink(text []byte, start int) ([]Chunk, int) {
 		}
 	}
 
-	if i > len(text) || text[i] != '>' {
-		if start+1 < len(text) {
-			pChildren = append(pChildren, PlainText{Part{Value: string(text[start+1:])}})
-		}
-		return pChildren, len(text)
+  if i > len(text) || text[i] != '>' || len(text[start:i]) < 3 {
+		pChildren = append(pChildren, PlainText{Part{Value: string(text[start:i+1])}})
+		return pChildren, (i-start)+1
 	}
 
 	if start+1 < i {
