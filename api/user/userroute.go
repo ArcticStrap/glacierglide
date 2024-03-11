@@ -31,7 +31,7 @@ func SetupUserRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 			return
 		}
 
-    userGroups, err := db.GetUserGroups(editor)
+		userGroups, err := db.GetUserGroups(editor)
 		if err != nil {
 			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
 			return

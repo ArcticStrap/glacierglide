@@ -19,10 +19,10 @@ func renderInline(p *Part) string {
 			}
 			renderedLine += fmt.Sprintf("<strong>%s</strong>", boldText)
 			break
-    case Email:
-      renderedLine += fmt.Sprintf("<a href=\"mailto:%s\">%s</a>",vEle.Path,vEle.Value)
-    case Link:
-      renderedLine += fmt.Sprintf("<a href=\"%s\">%s</a>",vEle.Path,vEle.Value)
+		case Email:
+			renderedLine += fmt.Sprintf("<a href=\"mailto:%s\">%s</a>", vEle.Path, vEle.Value)
+		case Link:
+			renderedLine += fmt.Sprintf("<a href=\"%s\">%s</a>", vEle.Path, vEle.Value)
 		case PlainText:
 			renderedLine += vEle.Value
 			break
@@ -51,6 +51,21 @@ func ToHTML(content string) string {
 			tTag = "blockquote"
 			vValue = vPart.Value
 			break
+		case List:
+			if vPart.Ordered {
+				tTag = "ol"
+			} else {
+				tTag = "ul"
+			}
+			for i, ele := range vPart.Children {
+				if i == 0 {
+					vValue += "\n"
+				}
+				switch li := ele.(type) {
+				case ListItem:
+					vValue += fmt.Sprintf("<li>%s</li>\n", li.Value)
+				}
+			}
 		case Paragraph:
 			tTag = "p"
 			vValue = renderInline(&vPart.Part)

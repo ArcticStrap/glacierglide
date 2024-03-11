@@ -11,13 +11,11 @@ func ParseBlockQuote(text []byte) ([]Chunk, int) {
 	i := 0
 
 	for ; i < len(text); i++ {
-		if text[i] == ' ' {
-			for i < len(text) && text[i] == ' ' {
-				i++
-			}
-			if i >= len(text) {
-				break
-			}
+		for i < len(text) && text[i] == ' ' {
+			i++
+		}
+		if i >= len(text) {
+			break
 		}
 		if text[i] == '>' {
 			// Add new line if not first blockquote
@@ -171,6 +169,83 @@ func ParseEmph(text []byte, start int, eChar byte) ([]Chunk, int) {
 	return pChildren, i - start
 }
 
+func ParseOList(text []byte) (Chunk, int) {
+	pList := List{Part: Part{Children: []Chunk{}}, Ordered: true}
+	i := 0
+	for ; i < len(text); i++ {
+		for i < len(text) && text[i] == ' ' {
+			i++
+		}
+		if i >= len(text) {
+			break
+		}
+		for i < len(text) && text[i] >= '0' && text[i] <= '9' {
+			i++
+		}
+		if i >= len(text) {
+			break
+		}
+		if text[i] == '.' {
+			for i < len(text) && (text[i] == '.' || text[i] == ' ') {
+				i++
+			}
+			start := i
+
+			for i < len(text) && text[i] != '\n' {
+				i++
+			}
+
+			pList.Children = append(pList.Children, ListItem{Part{Value: string(text[start:i])}})
+			if i < len(text) {
+				if text[i] == '\n' && i+1 < len(text) && text[i+1] == '\n' {
+          i++ 
+          break
+				}
+			}
+    }
+	}
+
+	return pList, i
+}
+
+func ParseUList(text []byte) (Chunk, int) {
+	if len(text) < 2 {
+		return Paragraph{Part{Value: string(text)}}, 0
+	}
+
+	pList := List{Part: Part{Children: []Chunk{}}, Ordered: false}
+	i := 0
+
+	for ; i < len(text); i++ {
+		for i < len(text) && text[i] == ' ' {
+			i++
+		}
+		if i >= len(text) {
+			break
+		}
+		if text[i] == '-' {
+			for i < len(text) && (text[i] == '-' || text[i] == ' ') {
+				i++
+			}
+			start := i
+
+			for i < len(text) && text[i] != '\n' {
+				i++
+			}
+
+			pList.Children = append(pList.Children, ListItem{Part{Value: string(text[start:i])}})
+			if i < len(text) {
+				if text[i] == '\n' && i+1 < len(text) && text[i+1] != '-' {
+					i++
+					break
+				}
+			}
+		}
+	}
+
+	return pList, i
+}
+
 func ParseQuickLink(text []byte, start int) ([]Chunk, int) {
 	pChildren := []Chunk{}
 
@@ -192,9 +267,9 @@ func ParseQuickLink(text []byte, start int) ([]Chunk, int) {
 		}
 	}
 
-  if i > len(text) || text[i] != '>' || len(text[start:i]) < 3 {
-		pChildren = append(pChildren, PlainText{Part{Value: string(text[start:i+1])}})
-		return pChildren, (i-start)+1
+	if i > len(text) || text[i] != '>' || len(text[start:i]) < 3 {
+		pChildren = append(pChildren, PlainText{Part{Value: string(text[start : i+1])}})
+		return pChildren, (i - start) + 1
 	}
 
 	if start+1 < i {

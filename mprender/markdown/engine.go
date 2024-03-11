@@ -130,12 +130,24 @@ func Tokenize(content []byte) []Chunk {
 			if i == len(content) {
 				substr = append(substr, ' ')
 			}
-			// Find header
+			// Find blocks
 			if substr[0] == '#' {
 				blocks = append(blocks, ParseHeader(substr)...)
 			} else if substr[0] == '>' {
 				nBlocks, jump := ParseBlockQuote(content[bStart:])
 				blocks = append(blocks, nBlocks...)
+				bStart += jump
+				i = bStart
+				continue
+			} else if substr[0] == '-' {
+				nBlock, jump := ParseUList(content[bStart:])
+				blocks = append(blocks, nBlock)
+				bStart += jump
+				i = bStart
+				continue
+			} else if substr[0] == '1' && 1 < len(substr)-1 && substr[1] == '.' {
+				nBlock, jump := ParseOList(content[bStart:])
+				blocks = append(blocks, nBlock)
 				bStart += jump
 				i = bStart
 				continue

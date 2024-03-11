@@ -55,6 +55,14 @@ func TestMarkdownEngine(t *testing.T) {
 			expected: "<blockquote>Blockquote with\nmultiple\nlines\nof text</blockquote>\n",
 		},
 		{
+			input:    "This is an ordered list:\n1. one\n2. two\n3. three",
+			expected: "<p>This is an ordered list:</p>\n<ol>\n<li>one</li>\n<li>two</li>\n<li>three</li>\n</ol>\n",
+		},
+		{
+			input:    "This is an unordered list:\n- 1\n- 2\n- 3",
+			expected: "<p>This is an unordered list:</p>\n<ul>\n<li>1</li>\n<li>2</li>\n<li>3</li>\n</ul>\n",
+		},
+		{
 			input:    "This is *italic* text.",
 			expected: "<p>This is <em>italic</em> text.</p>\n",
 		},
