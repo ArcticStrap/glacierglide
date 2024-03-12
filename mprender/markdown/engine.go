@@ -28,6 +28,9 @@ type Header struct {
 	Level int
 }
 
+type HorizontalRule struct {
+}
+
 type BlockQuote struct {
 	Part
 }
@@ -140,6 +143,21 @@ func Tokenize(content []byte) []Chunk {
 				i = bStart
 				continue
 			} else if substr[0] == '-' {
+				// Check for potential horizontal rule
+				if 1 < len(substr)-1 && substr[1] == '-' {
+					if 2 < len(substr)-1 && substr[2] == '-' {
+						jump := 2
+						for jump < len(substr) && (substr[jump] == '-' || substr[jump] == ' ') {
+							jump++
+						}
+						blocks = append(blocks, HorizontalRule{})
+						bStart += jump
+						i = bStart
+						continue
+					}
+				}
+
+				// Parse unordered list if otherwise
 				nBlock, jump := ParseUList(content[bStart:])
 				blocks = append(blocks, nBlock)
 				bStart += jump
