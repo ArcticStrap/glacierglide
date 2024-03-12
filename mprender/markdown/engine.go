@@ -144,7 +144,11 @@ func Tokenize(content []byte) []Chunk {
 			}
 			// Find blocks
 			if substr[0] == '#' {
-				blocks = append(blocks, ParseHeader(substr)...)
+				nBlock := ParseHeader(substr)
+				blocks = append(blocks, nBlock)
+				bStart += len(substr)
+				i = bStart
+				continue
 			} else if substr[0] == '>' {
 				nBlocks, jump := ParseBlockQuote(content[bStart:])
 				blocks = append(blocks, nBlocks...)

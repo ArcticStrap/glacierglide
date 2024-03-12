@@ -9,7 +9,7 @@ func renderInline(p *Part) string {
 	renderedLine := ""
 	for _, v := range p.Children {
 		switch vEle := v.(type) {
-    case Code:
+		case Code:
 			renderedLine += fmt.Sprintf("<code>%s</code>", vEle.Value)
 			break
 		case Italic:

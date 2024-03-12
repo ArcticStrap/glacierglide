@@ -1,7 +1,5 @@
 package markdown
 
-import "regexp"
-
 func ParseCode(text []byte, start int) ([]Chunk, int) {
 	if len(text) < 2 {
 		return []Chunk{Paragraph{Part{Value: string(text)}}}, 0
@@ -85,41 +83,26 @@ func ParseBlockQuote(text []byte) ([]Chunk, int) {
 	return pChildren, i
 }
 
-func ParseHeader(text []byte) []Chunk {
+func ParseHeader(text []byte) Chunk {
 	if len(text) < 3 {
-		return []Chunk{Paragraph{Part{Value: string(text)}}}
+		return Paragraph{Part{Value: string(text)}}
 	}
-	pChildren := []Chunk{}
 
-	headerRegex := regexp.MustCompile(`^(#+)\s+(.*)$`)
+	i := 0
+	level := 0
 
-	if headerMatch := headerRegex.FindStringSubmatch(string(text[:len(text)-1])); len(headerMatch) == 3 {
-		// Check header level
-		switch len(headerMatch[1]) {
-		case 1:
-			pChildren = append(pChildren, Header{Part: Part{Value: headerMatch[2]}, Level: 1})
-			break
-		case 2:
-			pChildren = append(pChildren, Header{Part: Part{Value: headerMatch[2]}, Level: 2})
-			break
-		case 3:
-			pChildren = append(pChildren, Header{Part: Part{Value: headerMatch[2]}, Level: 3})
-			break
-		case 4:
-			pChildren = append(pChildren, Header{Part: Part{Value: headerMatch[2]}, Level: 4})
-			break
-		case 5:
-			pChildren = append(pChildren, Header{Part: Part{Value: headerMatch[2]}, Level: 5})
-			break
-		case 6:
-			pChildren = append(pChildren, Header{Part: Part{Value: headerMatch[2]}, Level: 6})
-			break
-		default:
-			pChildren = append(pChildren, Paragraph{Part: Part{Value: headerMatch[2]}})
-			break
+	for ; i < len(text); i++ {
+		for i < len(text) && text[i] == '#' {
+			i++
+			level++
 		}
+		if text[i] != ' ' || level > 6 {
+			return Paragraph{Part{Value: string(text)}}
+		}
+		return Header{Part: Part{Value: string(text[i+1 : len(text)-1])}, Level: level}
 	}
-	return pChildren
+
+	return Paragraph{Part{Value: string(text)}}
 }
 
 func ParseEmph(text []byte, start int, eChar byte) ([]Chunk, int) {
