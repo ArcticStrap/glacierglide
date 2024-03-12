@@ -34,10 +34,10 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "###### Header 6",
 			expected: "<h6>Header 6</h6>\n",
 		},
-    {
-      input:    "Horizontal rule below\n---",
-      expected: "<p>Horizontal rule below</p>\n<hr>\n",
-    },
+		{
+			input:    "Horizontal rule below\n---",
+			expected: "<p>Horizontal rule below</p>\n<hr>\n",
+		},
 		{
 			input:    "> Single-line blockquote",
 			expected: "<blockquote>Single-line blockquote</blockquote>\n",

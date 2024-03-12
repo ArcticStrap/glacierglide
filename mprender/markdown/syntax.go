@@ -198,11 +198,11 @@ func ParseOList(text []byte) (Chunk, int) {
 			pList.Children = append(pList.Children, ListItem{Part{Value: string(text[start:i])}})
 			if i < len(text) {
 				if text[i] == '\n' && i+1 < len(text) && text[i+1] == '\n' {
-          i++ 
-          break
+					i++
+					break
 				}
 			}
-    }
+		}
 	}
 
 	return pList, i

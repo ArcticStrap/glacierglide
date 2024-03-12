@@ -47,9 +47,9 @@ func ToHTML(content string) string {
 			tTag = "h" + strconv.Itoa(vPart.Level)
 			vValue = vPart.Value
 			break
-    case HorizontalRule:
-      tTag = "hr"
-      htmlOut += "<hr>\n"
+		case HorizontalRule:
+			tTag = "hr"
+			htmlOut += "<hr>\n"
 		case BlockQuote:
 			tTag = "blockquote"
 			vValue = vPart.Value
@@ -78,9 +78,9 @@ func ToHTML(content string) string {
 			vValue = "ERROR: COULD NOT DETERMINE TYPE OF BLOCK"
 			break
 		}
-    if tTag != "hr" {
-		  htmlOut += fmt.Sprintf("<%s>%s</%s>\n", tTag, vValue, tTag)
-    }
+		if tTag != "hr" {
+			htmlOut += fmt.Sprintf("<%s>%s</%s>\n", tTag, vValue, tTag)
+		}
 	}
 
 	return htmlOut

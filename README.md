@@ -1,5 +1,10 @@
 # GlacierGlide
-A currently WIP backend wiki framework written in Go.
+
+![Penguin knowledge](./docs/static/banner.png)
+
+GlacierGlide is an prototype-stage backend wiki framework written in Go. Basic features are still in development.
+
+---
 
 ## Running
 
