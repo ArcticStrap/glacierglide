@@ -267,6 +267,70 @@ func ParseUList(text []byte) (Chunk, int) {
 	return pList, i
 }
 
+func ParseLink(text []byte, start int) ([]Chunk, int) {
+	pChildren := []Chunk{}
+
+	i := start
+
+	prefix := byte(' ')
+	var title string
+	var path string
+
+	// Append inactive plain text
+	if start > 0 {
+		pChildren = append(pChildren, PlainText{Part{Value: string(text[0:i])}})
+	}
+
+	if start-1 > 0 {
+		prefix = text[start-1]
+	}
+
+	// Skip '[' char
+	i++
+
+	tStart := i
+	for i < len(text) && text[i] != ']' {
+		i++
+	}
+
+	if i-1 > tStart {
+		title = string(text[tStart:i])
+	}
+
+	if i+1 < len(text) && text[i+1] != '(' {
+		pChildren = append(pChildren, PlainText{Part{Value: string(text[start:])}})
+		return pChildren, i - start
+	}
+
+	i += 2
+
+	pStart := i
+	for i < len(text) && text[i] != ')' {
+		i++
+	}
+
+	if i-1 > pStart {
+		path = string(text[pStart:i])
+	}
+
+	switch prefix {
+	case '!':
+		pChildren = append(pChildren, Image{Part: Part{Value: title}, Path: path})
+		break
+	case ' ':
+		pChildren = append(pChildren, Link{Part: Part{Value: title}, Path: path})
+		break
+	// Append as plain text if invalid prefix
+	default:
+		pChildren = append(pChildren, PlainText{Part{Value: string(text[start:])}})
+		break
+	}
+
+	i++
+
+	return pChildren, i - start
+}
+
 func ParseQuickLink(text []byte, start int) ([]Chunk, int) {
 	pChildren := []Chunk{}
 

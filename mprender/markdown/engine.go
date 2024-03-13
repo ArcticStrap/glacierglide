@@ -108,6 +108,15 @@ func ParseInline(line []byte) []Chunk {
 			pChildren = append(pChildren, parts...)
 			i += jump
 			bStart = i
+		} else if line[i] == '[' {
+			parts, jump := ParseLink(line[bStart:], i-bStart)
+			if jump == 0 {
+				continue
+			}
+
+			pChildren = append(pChildren, parts...)
+			i += jump
+			bStart = i
 		}
 	}
 

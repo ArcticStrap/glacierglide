@@ -83,8 +83,12 @@ func TestMarkdownEngine(t *testing.T) {
 			expected: "<p>This is <strong><em>bold</em> and <em>italic</em></strong> text.</p>\n",
 		},
 		{
-			input:    "This is a link: <https://wikipedia.org>.",
-			expected: "<p>This is a link: <a href=\"https://wikipedia.org\">https://wikipedia.org</a>.</p>\n",
+			input:    "This is a link to [wikipedia](https://wikipedia.org).",
+			expected: "<p>This is a link to <a href=\"https://wikipedia.org\">wikipedia</a>.</p>\n",
+		},
+		{
+			input:    "This is a quick link: <https://wikipedia.org>.",
+			expected: "<p>This is a quick link: <a href=\"https://wikipedia.org\">https://wikipedia.org</a>.</p>\n",
 		},
 		{
 			input:    "This is not a link: <>.",
