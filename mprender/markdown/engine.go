@@ -83,7 +83,13 @@ func ParseInline(line []byte) []Chunk {
 
 	bStart := 0
 	for i := 0; i < len(line); i++ {
-		if line[i] == '*' || line[i] == '_' {
+		if line[i] == '\\' {
+			// Ignore syntax if escape char is found
+			if i+1 < len(line) {
+				i++
+				bStart++
+			}
+		} else if line[i] == '*' || line[i] == '_' {
 			parts, jump := ParseEmph(line[bStart:], i-bStart, line[i])
 			if jump == 0 {
 				continue
@@ -152,6 +158,13 @@ func Tokenize(content []byte) []Chunk {
 			if i == len(content) {
 				substr = append(substr, ' ')
 			}
+
+			// Append as paragraph if escape char found
+			if substr[0] == '\\' {
+				blocks = append(blocks, Paragraph{Part: Part{Value: "", Children: ParseInline(substr[0:])}})
+				continue
+			}
+
 			// Find blocks
 			if substr[0] == '#' {
 				nBlock := ParseHeader(substr)
