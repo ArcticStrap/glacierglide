@@ -275,6 +275,7 @@ func ParseLink(text []byte, start int) ([]Chunk, int) {
 	prefix := byte(' ')
 	var title string
 	var path string
+  var alt string
 
 	// Append inactive plain text
 	if start > 0 {
@@ -305,7 +306,7 @@ func ParseLink(text []byte, start int) ([]Chunk, int) {
 	i += 2
 
 	pStart := i
-	for i < len(text) && text[i] != ')' {
+	for i < len(text) && text[i] != ' ' && text[i] != ')' {
 		i++
 	}
 
@@ -313,12 +314,25 @@ func ParseLink(text []byte, start int) ([]Chunk, int) {
 		path = string(text[pStart:i])
 	}
 
+  // Get alt if two args separated by space
+  if text[i] == ' ' {
+    i++
+    aStart := i
+    
+    for i < len(text) && text[i] != ')' {
+      i++
+    }
+	  if i-1 > aStart {
+		  alt = string(text[aStart:i])
+	  }
+  }
+
 	switch prefix {
 	case '!':
-		pChildren = append(pChildren, Image{Part: Part{Value: title}, Path: path})
+    pChildren = append(pChildren, Image{Part: Part{Value: title}, Path: path, Alt: alt})
 		break
 	case ' ':
-		pChildren = append(pChildren, Link{Part: Part{Value: title}, Path: path})
+    pChildren = append(pChildren, Link{Part: Part{Value: title}, Path: path, Alt: alt})
 		break
 	// Append as plain text if invalid prefix
 	default:

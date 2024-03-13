@@ -61,6 +61,7 @@ type Link struct {
 	Part
 
 	Path string
+	Alt  string
 }
 
 type Email Link
