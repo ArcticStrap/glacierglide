@@ -83,7 +83,7 @@ func ParseInline(line []byte) []Chunk {
 
 	bStart := 0
 	for i := 0; i < len(line); i++ {
-		if line[i] == '\\' {
+		if line[i] == '\\' && (i-1 <= 0 || line[i-1] != '\\') {
 			// Ignore syntax if escape char is found
 			if i+1 < len(line) {
 				i++
