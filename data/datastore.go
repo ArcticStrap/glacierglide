@@ -78,6 +78,7 @@ func (db *PostgresBase) CreateTables() error {
 			page_id SERIAL PRIMARY KEY,
 			title TEXT NOT NULL,
 			content TEXT NOT NULL,
+      namespace INT NOT NULL,
       mp_type INT NOT NULL
 		);
 		CREATE TABLE IF NOT EXISTS page_edits (
@@ -194,7 +195,7 @@ func (db *PostgresBase) DeletePageEdit(id int64) error {
 
 func (db *PostgresBase) ReadPage(title string) (*Page, error) {
 	// SQL query to fetch the page by ID
-	query := `SELECT title, content, mp_type FROM pages WHERE page_id=$1`
+	query := `SELECT title, content, namespace, mp_type FROM pages WHERE page_id=$1`
 
 	pageID, err := db.GetIdFromPageTitle(title)
 	if err != nil {
@@ -204,7 +205,7 @@ func (db *PostgresBase) ReadPage(title string) (*Page, error) {
 	var page Page
 
 	// Execute the query and scan the result into the Page struct
-	if err := db.conn.QueryRow(context.Background(), query, pageID).Scan(&page.Title, &page.Content, &page.MPType); err != nil {
+	if err := db.conn.QueryRow(context.Background(), query, pageID).Scan(&page.Title, &page.Content, &page.Namespace, &page.MPType); err != nil {
 		return nil, err
 	}
 
@@ -213,7 +214,7 @@ func (db *PostgresBase) ReadPage(title string) (*Page, error) {
 
 func (db *PostgresBase) CreatePage(v *Page) error {
 	// Execute create request
-	_, err := db.conn.Exec(context.Background(), "INSERT INTO pages (title, content, mp_type) VALUES ($1, $2, $3)", strings.ToLower(v.Title), v.Content, v.MPType)
+	_, err := db.conn.Exec(context.Background(), "INSERT INTO pages (title, content, namespace, mp_type) VALUES ($1, $2, $3, $4)", strings.ToLower(v.Title), v.Content, v.Namespace, v.MPType)
 	if err != nil {
 		return err
 	}

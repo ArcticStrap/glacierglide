@@ -3,6 +3,7 @@
 # Locations
 OUTPUT = bin/glacierglide
 MAIN = ./cmd/server/main.go
+MIGRATE = ./cmd/dbmigrate/migrate
 
 # Target commands
 BUILDCMD = go build -o $(OUTPUT) $(MAIN)
@@ -14,7 +15,7 @@ ifeq ($(OS), Windows_NT) # Windows
 endif
 
 # Targets
-.PHONY: all help gencert genschema getdeps build clean dversion run test benchmark tidy
+.PHONY: all help gencert genschema getdeps build clean migrateup migratedown migrateforce dversion run test benchmark tidy
 
 # Default target
 all: help
@@ -30,6 +31,9 @@ help:
 	@echo "	build		Build the project"
 	@echo "	clean		Clean the project"
 	@echo "	dversion	Display databse migration version"
+	@echo "	migrateup	Migrate up one version"
+	@echo "	migratedown	Migrate down one version"
+	@echo "	migrateforce	Migrate to a specific version"
 	@echo "	run		Run the project"
 	@echo "	test		Run unit tests"
 	@echo "	benchmark	Run benchmarks"
@@ -58,7 +62,14 @@ clean:
 	$(CLEANCMD)
 
 dversion:
-	migrate -database $(URL) -path data/migrations version
+	$(MIGRATE) -database $(URL) -path migrations version
+
+migrateup:
+	go run ./cmd/dbmigrate/dbmigrate.go up
+migratedown:
+	go run ./cmd/dbmigrate/dbmigrate.go down
+migrateforce:
+	go run ./cmd/dbmigrate/dbmigrate.go force $(VERSION)
 
 run:
 	go run $(MAIN)

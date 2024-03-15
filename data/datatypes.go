@@ -13,9 +13,10 @@ type AccountReq struct {
 }
 
 type Page struct {
-	Title   string `json:"title"`
-	Content string `json:"content"`
-	MPType  int    `json:"mpType"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	Namespace int    `json:"namespace"`
+	MPType    int    `json:"mpType"`
 }
 
 type User struct {
