@@ -1,5 +1,9 @@
 package wikiconfig
 
+// Main settings
+
+const WikiName string = "arcticstrap"
+
 // User related settings
 
 const DefaultLoginGroup string = "user"
