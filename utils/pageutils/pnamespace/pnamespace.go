@@ -1,4 +1,4 @@
-package namespace
+package pnamespace
 
 import "github.com/ArcticStrap/glacierglide/wikiconfig"
 
@@ -51,5 +51,40 @@ func NamespaceFromNumber(ns int) string {
 		return "category_discussion"
 	default:
 		return "main"
+	}
+}
+
+func NumberFromNamespace(ns string) int {
+	switch ns {
+	case "main":
+		return Main
+  case "discussion":
+		return MainD
+	case "user":
+		return User
+	case "user_discussion":
+		return UserD
+	case wikiconfig.WikiName:
+		return Project
+	case wikiconfig.WikiName + "_discussion":
+		return ProjectD
+	case "file":
+		return File
+	case "file_discussion":
+		return FileD
+	case "template":
+		return Template
+	case "template_discussion":
+		return TemplateD
+	case "help":
+		return Help
+	case "help_discussion":
+		return HelpD
+	case "category":
+		return Category
+	case "category_discussion":
+		return CategoryD
+	default:
+		return Main
 	}
 }

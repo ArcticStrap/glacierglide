@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ArcticStrap/glacierglide/utils/iputils"
+	"github.com/ArcticStrap/glacierglide/utils/pageutils/pnamespace"
 	"github.com/ArcticStrap/glacierglide/utils/userutils"
 	"github.com/ArcticStrap/glacierglide/wikiconfig"
 	"github.com/jackc/pgx/v5"
@@ -138,8 +139,15 @@ func (db *PostgresBase) Version() string {
 
 // Fetches page id from page title
 func (db *PostgresBase) GetIdFromPageTitle(title string) (*int, error) {
+	// Check for namespace
+	ns := 0
+	if sTitle := strings.Split(title, ":"); len(sTitle) == 2 {
+		ns = pnamespace.NumberFromNamespace(sTitle[0])
+		title = sTitle[1]
+	}
+
 	var id int
-	err := db.conn.QueryRow(context.Background(), "SELECT page_id FROM pages WHERE title=$1", title).Scan(&id)
+	err := db.conn.QueryRow(context.Background(), "SELECT page_id FROM pages WHERE title=$1 AND namespace=$2", title, ns).Scan(&id)
 	if err != nil {
 		return nil, err
 	}

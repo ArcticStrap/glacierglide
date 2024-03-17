@@ -8,6 +8,7 @@ import (
 	"github.com/ArcticStrap/glacierglide/appsignals"
 	"github.com/ArcticStrap/glacierglide/data"
 	"github.com/ArcticStrap/glacierglide/jsonresp"
+	"github.com/ArcticStrap/glacierglide/utils/pageutils/pnamespace"
 	"github.com/ArcticStrap/glacierglide/utils/userutils"
 	"github.com/go-chi/chi/v5"
 )
@@ -68,6 +69,12 @@ func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 				if err := json.NewDecoder(r.Body).Decode(&newPage); err != nil {
 					jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error with parsing json request: %s", err)
 					return
+				}
+
+				// Check for namespace
+				if sTitle := strings.Split(newPage.Title, ":"); len(sTitle) == 2 {
+					newPage.Namespace = pnamespace.NumberFromNamespace(sTitle[0])
+					newPage.Title = sTitle[1]
 				}
 
 				// Add title if nil
