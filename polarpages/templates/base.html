@@ -12,9 +12,15 @@
     <nav>
       <ul>
         <li><a hx-get="/wiki/main_page">Home</a></li>
-        <li><a hx-get="/wiki/project:About">About</a></li>
-        <li><a hx-get="/wiki/project:Help">Help</a></li>
-        <li><a hx-get="/wiki/project:Contact">Contact</a></li>
+        <li><a hx-get="/wiki/project:about">About</a></li>
+        <li><a hx-get="/wiki/project:help">Help</a></li>
+        <li><a hx-get="/wiki/project:contact">Contact</a></li>
+        {{if .LoggedIn}}
+          <li><strong>{{.Username}}</strong></li>
+          <li><a href="/Logout">Logout</a></li>
+        {{else}}
+          <li><a href="/Login">Login</a></li>
+        {{end}}
         <li><a onclick="toggleView()">Toggle View</a></li>
       </ul>
     </nav>

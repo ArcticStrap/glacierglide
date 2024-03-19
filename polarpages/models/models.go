@@ -10,6 +10,11 @@ type WebPage struct {
 	Theme   string
 }
 
+type SessionData struct {
+	LoggedIn bool
+	Username string
+}
+
 type StaticPage struct {
 	Theme string
 }

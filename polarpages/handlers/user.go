@@ -16,20 +16,26 @@ func SetupUserHandler(rt *chi.Mux) {
 	// User routing
 	rt.Get("/CreateAccount", func(w http.ResponseWriter, _ *http.Request) {
 		// Parse template
-		caTmpl.Execute(w, models.StaticPage{
+		caTmpl.Execute(w, struct {
+			models.SessionData
+			models.StaticPage
+		}{models.SessionData{LoggedIn: false}, models.StaticPage{
 			Theme: "common",
-		})
+		}})
 	})
 
 	rt.Get("/Login", func(w http.ResponseWriter, _ *http.Request) {
 		// Parse template
-		liTmpl.Execute(w, models.StaticPage{
+		liTmpl.Execute(w, struct {
+			models.SessionData
+			models.StaticPage
+		}{models.SessionData{LoggedIn: false}, models.StaticPage{
 			Theme: "common",
-		})
+		}})
 	})
 
 	rt.Get("/Logout", func(w http.ResponseWriter, _ *http.Request) {
 		http.Post("/api/Logout", "application/json", nil)
-		loTmpl.Execute(w, nil)
+		loTmpl.Execute(w, models.SessionData{LoggedIn: false})
 	})
 }

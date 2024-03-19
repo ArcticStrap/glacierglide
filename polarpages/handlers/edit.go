@@ -33,10 +33,13 @@ func SetupEditHandler(rt *chi.Mux, addr string) {
 		}
 
 		// Parse template
-		tmpl.Execute(w, models.WebPage{
+		tmpl.Execute(w, struct {
+			models.SessionData
+			models.WebPage
+		}{models.SessionData{LoggedIn: false}, models.WebPage{
 			Title:   titleParam,
 			Content: template.HTML(content),
 			Theme:   "common",
-		})
+		}})
 	})
 }

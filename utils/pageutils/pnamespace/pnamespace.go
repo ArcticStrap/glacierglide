@@ -58,7 +58,7 @@ func NumberFromNamespace(ns string) int {
 	switch ns {
 	case "main":
 		return Main
-  case "discussion":
+	case "discussion":
 		return MainD
 	case "user":
 		return User
