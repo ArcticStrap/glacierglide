@@ -1,0 +1,21 @@
+{{ define "gg-title"}}
+History for {{.Title}} - PolarPages
+{{ end }}
+
+{{ define "gg-main" }}
+  <main>
+    {{template "gg-page-nav" .}}
+    
+    <div class="gg-page">
+      <div class="gg-page-history">
+        {{ range .History }}
+          <div class="gg-page-edit">
+            <p class="gg-edit-date">{{.Time}}, {{.Date}}&emsp;</p>
+            <p class="gg-edit-editor">{{.Editor}}&emsp;</p>
+            <p class="gg-edit-summary">({{.Description}})</p>
+          </div>
+        {{ end }}
+      </div>
+    </div>
+  </main>
+{{ end }}

@@ -24,7 +24,6 @@ func SetupDoRoute(rt chi.Router, db data.Datastore) {
 			w.Write([]byte(fmt.Sprintf("Core\nGlacierGlide: Version %s\nGo: Version %s\n%s: Version %s", wikiinfo.Version, runtime.Version(), db.EngineName(), db.Version())))
 		})
 		// MODERATION REQUESTS
-		// TODO
 		dorouter.Post("/suspend", func(w http.ResponseWriter, r *http.Request) {
 			var bReq data.SusReq
 

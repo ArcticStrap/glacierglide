@@ -1,0 +1,49 @@
+{{ define "gg-page-nav" }}
+  {{ if eq .PageMode "read" }}
+    <nav id="gg-page-nav" style="display: none;">
+      <ul>
+        <li><a href="#" onclick="toggleView()">Read Page</a></li>
+        <li><a hx-get="/s/{{.Title}}">View Source</a></li>
+        <li><a hx-get="/h/{{.Title}}">View History</a></li>
+        <li><a hx-get="/e/{{.Title}}">Edit Page</a></li>
+      </ul>
+    </nav>
+  {{ else if eq .PageMode "source" }}
+    <nav id="gg-page-nav" style="display: none;">
+      <ul>
+        <li><a hx-get="/wiki/{{.Title}}">Read Page</a></li>
+        <li><a href="#" onclick="toggleView()">View Source</a></li>
+        <li><a hx-get="/h/{{.Title}}">View History</a></li>
+        <li><a hx-get="/e/{{.Title}}">Edit Page</a></li>
+      </ul>
+    </nav>
+  {{ else if eq .PageMode "edit" }}
+    <nav id="gg-page-nav" style="display: none;">
+      <ul>
+        <li><a hx-get="/wiki/{{.Title}}">Read Page</a></li>
+        <li><a hx-get="/s/{{.Title}}">View Source</a></li>
+        <li><a hx-get="/h/{{.Title}}">View History</a></li>
+        <li><a href="#" onclick="toggleView()">Edit Page</a></li>
+      </ul>
+    </nav>
+  {{ else if eq .PageMode "history" }}
+    <nav id="gg-page-nav" style="display: none;">
+      <ul>
+        <li><a hx-get="/wiki/{{.Title}}">Read Page</a></li>
+        <li><a hx-get="/s/{{.Title}}">View Source</a></li>
+        <li><a href="#" onclick="toggleView()">View History</a></li>
+        <li><a hx-get="/e/{{.Title}}">Edit Page</a></li>
+      </ul>
+    </nav>
+  {{ else }}
+    <nav id="gg-page-nav" style="display: none;">
+      <ul>
+        <li><a hx-get="/wiki/{{.Title}}">Read Page</a></li>
+        <li><a hx-get="/s/{{.Title}}">View Source</a></li>
+        <li><a hx-get="/h/{{.Title}}">View History</a></li>
+        <li><a hx-get="/e/{{.Title}}">Edit Page</a></li>
+      </ul>
+    </nav>
+
+  {{ end }}
+{{ end }}

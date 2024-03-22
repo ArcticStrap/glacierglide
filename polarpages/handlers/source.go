@@ -11,7 +11,7 @@ import (
 
 func SetupSourceHandler(rt *chi.Mux, addr string) {
 	// Initalize templates
-	tmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/source.html"))
+	tmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/source.html", "polarpages/templates/pagenav.html"))
 
 	// Source routing
 	rt.Get("/s/{title}", func(w http.ResponseWriter, r *http.Request) {
@@ -36,10 +36,11 @@ func SetupSourceHandler(rt *chi.Mux, addr string) {
 		tmpl.Execute(w, struct {
 			models.SessionData
 			models.WebPage
+			models.WebModes
 		}{models.SessionData{LoggedIn: false}, models.WebPage{
 			Title:   titleParam,
 			Content: template.HTML(content),
 			Theme:   "common",
-		}})
+		}, models.WebModes{PageMode: "source"}})
 	})
 }

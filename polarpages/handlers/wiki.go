@@ -15,7 +15,7 @@ func mpRedir(w http.ResponseWriter, r *http.Request) {
 
 func SetupWikiHandler(rt *chi.Mux, addr string) {
 	// Initalize templates
-	tmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/wiki.html"))
+	tmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/wiki.html", "polarpages/templates/pagenav.html"))
 
 	// Redirects to main page
 	rt.Get("/", mpRedir)
@@ -50,13 +50,14 @@ func SetupWikiHandler(rt *chi.Mux, addr string) {
 		}
 
 		// Parse template
-		tmpl.Execute(w, struct {
+		err = tmpl.Execute(w, struct {
 			models.SessionData
 			models.WebPage
+			models.WebModes
 		}{models.SessionData{LoggedIn: false}, models.WebPage{
 			Title:   titleParam,
 			Content: template.HTML(content),
 			Theme:   "common",
-		}})
+		}, models.WebModes{PageMode: "read"}})
 	})
 }

@@ -82,6 +82,20 @@ blockquote {
   transform: translateY(1px);
 }
 
+/* Page History*/
+.gg-page-history {
+  margin: 1em;
+  background-color: #ddd;
+}
+
+.gg-page-edit {
+  display: flex;
+  padding: 10px;
+  margin-top 0.5em;
+  margin-bottom: 0.5em;
+  border: 5px solid #333;
+}
+
 /* Page Source */
 .gg-page-source {
   width: 100%;

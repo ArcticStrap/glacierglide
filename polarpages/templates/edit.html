@@ -4,13 +4,7 @@
 
 {{ define "gg-main" }}
   <main>
-    <nav id="gg-page-nav" style="display: none;">
-      <ul>
-        <li><a hx-get="/wiki/{{.Title}}">Read Page</a></li>
-        <li><a hx-get="/s/{{.Title}}">View Source</a></li>
-        <li><a href="#" onclick="toggleView()">Edit Page</a></li>
-      </ul>
-    </nav>
+    {{template "gg-page-nav" .}}
 
     <div class="gg-page">
       <h1>Editing - {{.Title}}</h1>

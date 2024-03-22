@@ -18,6 +18,7 @@ func Setup(rt *chi.Mux, addr string) {
 	// Setup handlers
 	handlers.SetupWikiHandler(rt, addr)
 	handlers.SetupEditHandler(rt, addr)
+	handlers.SetupHistoryHandler(rt, addr)
 	handlers.SetupSourceHandler(rt, addr)
 	handlers.SetupUserHandler(rt)
 
