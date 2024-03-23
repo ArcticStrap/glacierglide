@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -23,12 +24,29 @@ func SetupDoRoute(rt chi.Router, db data.Datastore) {
 		dorouter.Get("/version", func(w http.ResponseWriter, _ *http.Request) {
 			w.Write([]byte(fmt.Sprintf("Core\nGlacierGlide: Version %s\nGo: Version %s\n%s: Version %s", wikiinfo.Version, runtime.Version(), db.EngineName(), db.Version())))
 		})
+		dorouter.Get("/viewrev/{revid}", func(w http.ResponseWriter, r *http.Request) {
+			revidParam := chi.URLParam(r, "revid")
+			revID, err := strconv.ParseInt(revidParam, 10, 64)
+			if err != nil {
+				jsonresp.JsonERR(w, http.StatusBadRequest, "Invalid revision id.", nil)
+				return
+			}
+
+			pEdit, err := db.ReadPageEdit(revID)
+			if err != nil {
+				jsonresp.JsonERR(w, http.StatusBadRequest, "Error fetching page edit: %s", err)
+				return
+			}
+
+			w.Write([]byte(pEdit.Content))
+		})
+
 		// MODERATION REQUESTS
 		dorouter.Post("/suspend", func(w http.ResponseWriter, r *http.Request) {
 			var bReq data.SusReq
 
 			if err := json.NewDecoder(r.Body).Decode(&bReq); err != nil {
-				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with decoding json: ", err)
+				jsonresp.JsonERR(w, http.StatusBadRequest, "Error with decoding json: %s", err)
 				return
 			}
 

@@ -179,7 +179,7 @@ func (db *PostgresBase) CreatePageEdit(p *Page, editor string) error {
 
 func (db *PostgresBase) ReadPageEdit(id int64) (*PageEdit, error) {
 	// SQL query to fetch the page by ID
-	query := `SELECT page_id,change_date,change_time,editor,anon,description,edit_id FROM page_edits WHERE edit_id=$1`
+	query := `SELECT page_id,change_date,change_time,editor,description,content FROM page_edits WHERE edit_id=$1`
 
 	var pageEdit PageEdit
 
@@ -187,6 +187,8 @@ func (db *PostgresBase) ReadPageEdit(id int64) (*PageEdit, error) {
 	if err := db.conn.QueryRow(context.Background(), query, id).Scan(&pageEdit.PageId, &pageEdit.Date, &pageEdit.Time, &pageEdit.UserId, &pageEdit.Description, &pageEdit.Content); err != nil {
 		return nil, err
 	}
+
+	pageEdit.EditId = id
 
 	return &pageEdit, nil
 }

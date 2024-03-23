@@ -44,7 +44,7 @@ func SetupHistoryHandler(rt *chi.Mux, addr string) {
 			models.WebPage
 			History []models.PageEdit
 			models.WebModes
-		}{models.SessionData{LoggedIn: false}, models.WebPage{
+		}{UserSession(r), models.WebPage{
 			Title: titleParam,
 			Theme: "common",
 		}, PageHistory, models.WebModes{PageMode: "history"}})

@@ -10,8 +10,8 @@ History for {{.Title}} - PolarPages
       <div class="gg-page-history">
         {{ range .History }}
           <div class="gg-page-edit">
-            <p class="gg-edit-date">{{.Time}}, {{.Date}}&emsp;</p>
-            <p class="gg-edit-editor">{{.Editor}}&emsp;</p>
+            <a hx-get="/d/viewrev/{{.EditId}}" class="gg-edit-date">{{.Time}}, {{.Date}}&emsp;</a>
+            <a hx-get="/wiki/user:{{.Editor}}" class="gg-edit-editor">{{.Editor}}&emsp;</a>
             <p class="gg-edit-summary">({{.Description}})</p>
           </div>
         {{ end }}

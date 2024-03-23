@@ -37,7 +37,7 @@ func SetupEditHandler(rt *chi.Mux, addr string) {
 			models.SessionData
 			models.WebPage
 			models.WebModes
-		}{models.SessionData{LoggedIn: false}, models.WebPage{
+		}{UserSession(r), models.WebPage{
 			Title:   titleParam,
 			Content: template.HTML(content),
 			Theme:   "common",

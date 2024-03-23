@@ -22,12 +22,15 @@ func SetupWikiHandler(rt *chi.Mux, addr string) {
 	rt.Get("/wiki", mpRedir)
 
 	// Not found (404) handler
-	rt.NotFound(func(w http.ResponseWriter, _ *http.Request) {
-		tmpl.Execute(w, models.WebPage{
+	rt.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		tmpl.Execute(w, struct {
+			models.SessionData
+			models.WebPage
+		}{UserSession(r), models.WebPage{
 			Title:   "Page Not Found (404)",
 			Content: "Page not found. Try checking your spelling if otherwise",
 			Theme:   "common",
-		})
+		}})
 	})
 
 	// Wiki routing
@@ -54,7 +57,7 @@ func SetupWikiHandler(rt *chi.Mux, addr string) {
 			models.SessionData
 			models.WebPage
 			models.WebModes
-		}{models.SessionData{LoggedIn: false}, models.WebPage{
+		}{UserSession(r), models.WebPage{
 			Title:   titleParam,
 			Content: template.HTML(content),
 			Theme:   "common",
