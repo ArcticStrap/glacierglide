@@ -21,7 +21,6 @@ WITHPOLARP: Use the PolarPages frontend. Set 1 to enable.
 ```
 
 ### Dependencies
-* ![Chi](https://github.com/go-chi/chi) - The HTTP library
 * ![Go-JWT ](https://github.com/golang-jwt/jwt) - The JWT library
 
 #### Database drivers
