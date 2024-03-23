@@ -5,16 +5,15 @@ import (
 	"net/http"
 
 	"github.com/ArcticStrap/glacierglide/polarpages/models"
-	"github.com/go-chi/chi/v5"
 )
 
-func SetupUserHandler(rt *chi.Mux) {
+func SetupUserHandler(rt *http.ServeMux) {
 	// Initalize templates
 	caTmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/createaccount.html"))
 	liTmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/login.html"))
 	loTmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/logout.html"))
 	// User routing
-	rt.Get("/CreateAccount", func(w http.ResponseWriter, r *http.Request) {
+	rt.HandleFunc("GET /CreateAccount", func(w http.ResponseWriter, r *http.Request) {
 		// Parse template
 		caTmpl.Execute(w, struct {
 			models.SessionData
@@ -24,7 +23,7 @@ func SetupUserHandler(rt *chi.Mux) {
 		}})
 	})
 
-	rt.Get("/Login", func(w http.ResponseWriter, r *http.Request) {
+	rt.HandleFunc("GET /Login", func(w http.ResponseWriter, r *http.Request) {
 		// Parse template
 		liTmpl.Execute(w, struct {
 			models.SessionData
@@ -34,7 +33,7 @@ func SetupUserHandler(rt *chi.Mux) {
 		}})
 	})
 
-	rt.Get("/Logout", func(w http.ResponseWriter, r *http.Request) {
+	rt.HandleFunc("GET /Logout", func(w http.ResponseWriter, r *http.Request) {
 		http.Post("/api/Logout", "application/json", nil)
 		loTmpl.Execute(w, UserSession(r))
 	})

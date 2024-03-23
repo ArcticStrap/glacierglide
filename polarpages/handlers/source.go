@@ -6,16 +6,15 @@ import (
 	"net/http"
 
 	"github.com/ArcticStrap/glacierglide/polarpages/models"
-	"github.com/go-chi/chi/v5"
 )
 
-func SetupSourceHandler(rt *chi.Mux, addr string) {
+func SetupSourceHandler(rt *http.ServeMux, addr string) {
 	// Initalize templates
 	tmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/source.html", "polarpages/templates/pagenav.html"))
 
 	// Source routing
-	rt.Get("/s/{title}", func(w http.ResponseWriter, r *http.Request) {
-		titleParam := chi.URLParam(r, "title")
+	rt.HandleFunc("GET /s/{title}", func(w http.ResponseWriter, r *http.Request) {
+		titleParam := r.PathValue("title")
 
 		// Get page content
 		res, err := http.Get(addr + "/api/s/" + titleParam)

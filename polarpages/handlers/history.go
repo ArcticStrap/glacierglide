@@ -7,16 +7,15 @@ import (
 	"slices"
 
 	"github.com/ArcticStrap/glacierglide/polarpages/models"
-	"github.com/go-chi/chi/v5"
 )
 
-func SetupHistoryHandler(rt *chi.Mux, addr string) {
+func SetupHistoryHandler(rt *http.ServeMux, addr string) {
 	// Initalize templates
 	tmpl := template.Must(template.ParseFiles("polarpages/templates/base.html", "polarpages/templates/history.html", "polarpages/templates/pagenav.html"))
 
 	// Source routing
-	rt.Get("/h/{title}", func(w http.ResponseWriter, r *http.Request) {
-		titleParam := chi.URLParam(r, "title")
+	rt.HandleFunc("GET /h/{title}", func(w http.ResponseWriter, r *http.Request) {
+		titleParam := r.PathValue("title")
 
 		// Get page history
 		res, err := http.Get(addr + "/api/h/" + titleParam)

@@ -16,244 +16,244 @@ import (
 
 func SetupEditRoute(rt *http.ServeMux, db data.Datastore, sc *appsignals.SignalConnector) {
 	// Setup subrouter for wiki editing
-			rt.HandleFunc("POST /e/{title}", func(w http.ResponseWriter, r *http.Request) {
-				// Expect json response
-				w.Header().Set("Content-Type", "application/json")
+	rt.HandleFunc("POST /api/e/{title}", func(w http.ResponseWriter, r *http.Request) {
+		// Expect json response
+		w.Header().Set("Content-Type", "application/json")
 
-				// Fetch title param
-				titleParam := strings.ToLower(r.PathValue("title"))
+		// Fetch title param
+		titleParam := strings.ToLower(r.PathValue("title"))
 
-				// Get editor name
-				authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with determining session: %s", err)
-					return
-				}
+		// Get editor name
+		authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with determining session: %s", err)
+			return
+		}
 
-				editor, err := data.GetLoginStatus(authtoken, r, db)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
-					return
-				}
+		editor, err := data.GetLoginStatus(authtoken, r, db)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
+			return
+		}
 
-				// Check if creating a page is possible
-				userGroups, err := db.GetUserGroups(editor)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
-					return
-				}
+		// Check if creating a page is possible
+		userGroups, err := db.GetUserGroups(editor)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
+			return
+		}
 
-				proceed := userutils.UserCan("create", userGroups)
+		proceed := userutils.UserCan("create", userGroups)
 
-				if !proceed {
-					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with creating page: Permission denied", nil)
-					return
-				}
+		if !proceed {
+			jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with creating page: Permission denied", nil)
+			return
+		}
 
-				// Check if user is suspended
-				blocked, err := db.IsSuspended(editor)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with creating page: %s", err)
-					return
-				}
-				if blocked {
-					jsonresp.JsonERR(w, http.StatusUnauthorized, "This user is temprorarily suspended.", nil)
-					return
-				}
+		// Check if user is suspended
+		blocked, err := db.IsSuspended(editor)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with creating page: %s", err)
+			return
+		}
+		if blocked {
+			jsonresp.JsonERR(w, http.StatusUnauthorized, "This user is temprorarily suspended.", nil)
+			return
+		}
 
-				// Handle request
-				newPage := new(data.Page)
-				if err := json.NewDecoder(r.Body).Decode(&newPage); err != nil {
-					jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error with parsing json request: %s", err)
-					return
-				}
+		// Handle request
+		newPage := new(data.Page)
+		if err := json.NewDecoder(r.Body).Decode(&newPage); err != nil {
+			jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error with parsing json request: %s", err)
+			return
+		}
 
-				// Check for namespace
-				if sTitle := strings.Split(newPage.Title, ":"); len(sTitle) == 2 {
-					newPage.Namespace = pnamespace.NumberFromNamespace(sTitle[0])
-					newPage.Title = sTitle[1]
-				}
+		// Check for namespace
+		if sTitle := strings.Split(newPage.Title, ":"); len(sTitle) == 2 {
+			newPage.Namespace = pnamespace.NumberFromNamespace(sTitle[0])
+			newPage.Title = sTitle[1]
+		}
 
-				// Add title if nil
-				if newPage.Title == "" {
-					newPage.Title = titleParam
-				}
-				// Lowercase page title
-				newPage.Title = strings.ToLower(newPage.Title)
+		// Add title if nil
+		if newPage.Title == "" {
+			newPage.Title = titleParam
+		}
+		// Lowercase page title
+		newPage.Title = strings.ToLower(newPage.Title)
 
-				// Check if page already exists
-				pageExists, _ := db.ReadPage(newPage.Title)
-				if pageExists != nil {
-					jsonresp.JsonOK(w, make(map[string]string), "Page already exists!")
-					return
-				}
+		// Check if page already exists
+		pageExists, _ := db.ReadPage(newPage.Title)
+		if pageExists != nil {
+			jsonresp.JsonOK(w, make(map[string]string), "Page already exists!")
+			return
+		}
 
-				// Create page in database
-				if err := db.CreatePage(newPage); err != nil {
-					jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error with inserting page into database: %s", err)
-					return
-				}
+		// Create page in database
+		if err := db.CreatePage(newPage); err != nil {
+			jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error with inserting page into database: %s", err)
+			return
+		}
 
-				// Make response
-				resp := make(map[string]string)
-				resp["pageTitle"] = newPage.Title
+		// Make response
+		resp := make(map[string]string)
+		resp["pageTitle"] = newPage.Title
 
-				jsonresp.JsonOK(w, resp, "Page created!")
+		jsonresp.JsonOK(w, resp, "Page created!")
 
-				// Fire event
-				sc.Fire("onPageCreate", [2]string{editor, newPage.Title})
-			})
+		// Fire event
+		sc.Fire("onPageCreate", [2]string{editor, newPage.Title})
+	})
 
-			// Update page content
-			rt.HandleFunc("PUT /e/{title}", data.CallJWTAuth(db, false, func(w http.ResponseWriter, r *http.Request) {
-				// Expect json response
-				w.Header().Set("Content-Type", "application/json")
+	// Update page content
+	rt.HandleFunc("PUT /api/e/{title}", data.CallJWTAuth(db, false, func(w http.ResponseWriter, r *http.Request) {
+		// Expect json response
+		w.Header().Set("Content-Type", "application/json")
 
-				// Fetch title param
-				titleParam := strings.ToLower(r.PathValue("title"))
+		// Fetch title param
+		titleParam := strings.ToLower(r.PathValue("title"))
 
-				// Check if page exists
-				if _, err := db.GetIdFromPageTitle(titleParam); err != nil {
-					jsonresp.JsonERR(w, http.StatusNotFound, "Page does not exist.", nil)
-					return
-				}
+		// Check if page exists
+		if _, err := db.GetIdFromPageTitle(titleParam); err != nil {
+			jsonresp.JsonERR(w, http.StatusNotFound, "Page does not exist.", nil)
+			return
+		}
 
-				// Get editor name
-				authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with determining session: %s", err)
-					return
-				}
+		// Get editor name
+		authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with determining session: %s", err)
+			return
+		}
 
-				editor, err := data.GetLoginStatus(authtoken, r, db)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
-					return
-				}
+		editor, err := data.GetLoginStatus(authtoken, r, db)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
+			return
+		}
 
-				// Check if editing a page is possible
-				userGroups, err := db.GetUserGroups(editor)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
-					return
-				}
-				proceed := userutils.UserCan("edit", userGroups)
+		// Check if editing a page is possible
+		userGroups, err := db.GetUserGroups(editor)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
+			return
+		}
+		proceed := userutils.UserCan("edit", userGroups)
 
-				if !proceed {
-					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with editing page: Permission denied", nil)
-					return
-				}
+		if !proceed {
+			jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with editing page: Permission denied", nil)
+			return
+		}
 
-				// Check if editor has sufficient permissions to edit
-				minGroup, err := db.GetLockStatus(titleParam)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with editing page: %s", err)
-					return
-				}
+		// Check if editor has sufficient permissions to edit
+		minGroup, err := db.GetLockStatus(titleParam)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with editing page: %s", err)
+			return
+		}
 
-				proceed = false
-				for i := 0; i < len(userGroups); i++ {
-					if i >= minGroup {
-						proceed = true
-						break
-					}
-				}
+		proceed = false
+		for i := 0; i < len(userGroups); i++ {
+			if i >= minGroup {
+				proceed = true
+				break
+			}
+		}
 
-				if !proceed {
-					jsonresp.JsonERR(w, http.StatusUnauthorized, "This page has been locked. User has insufficient permissions to edit", nil)
-					return
-				}
+		if !proceed {
+			jsonresp.JsonERR(w, http.StatusUnauthorized, "This page has been locked. User has insufficient permissions to edit", nil)
+			return
+		}
 
-				// Check if user is suspended
-				blocked, err := db.IsSuspended(editor)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with editing page: %s", err)
-					return
-				}
-				if blocked {
-					jsonresp.JsonERR(w, http.StatusUnauthorized, "This user is temprorarily suspended.", nil)
-					return
-				}
+		// Check if user is suspended
+		blocked, err := db.IsSuspended(editor)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with editing page: %s", err)
+			return
+		}
+		if blocked {
+			jsonresp.JsonERR(w, http.StatusUnauthorized, "This user is temprorarily suspended.", nil)
+			return
+		}
 
-				// Handle request
-				uPage := new(data.Page)
-				if err := json.NewDecoder(r.Body).Decode(&uPage); err != nil {
-					jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error with parsing json request: %s", err)
-					return
-				}
-				// Add title if nil
-				if uPage.Title == "" {
-					uPage.Title = titleParam
-				}
-				// Lowercase page title
-				uPage.Title = strings.ToLower(uPage.Title)
+		// Handle request
+		uPage := new(data.Page)
+		if err := json.NewDecoder(r.Body).Decode(&uPage); err != nil {
+			jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error with parsing json request: %s", err)
+			return
+		}
+		// Add title if nil
+		if uPage.Title == "" {
+			uPage.Title = titleParam
+		}
+		// Lowercase page title
+		uPage.Title = strings.ToLower(uPage.Title)
 
-				// Update page from database
-				if err := db.UpdatePage(uPage, editor); err != nil {
-					jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error with inserting page into database: %s", err)
-					return
-				}
+		// Update page from database
+		if err := db.UpdatePage(uPage, editor); err != nil {
+			jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error with inserting page into database: %s", err)
+			return
+		}
 
-				// Make response
-				jsonresp.JsonOK(w, make(map[string]string), "Page updated!")
+		// Make response
+		jsonresp.JsonOK(w, make(map[string]string), "Page updated!")
 
-				// Fire event
-				sc.Fire("onPageUpdate", [1]string{editor})
-			}))
+		// Fire event
+		sc.Fire("onPageUpdate", [1]string{editor})
+	}))
 
-			rt.HandleFunc("DELETE /e/{title}", func(w http.ResponseWriter, r *http.Request) {
-				// Expect json response
-				w.Header().Set("Content-Type", "application/json")
+	rt.HandleFunc("DELETE /api/e/{title}", func(w http.ResponseWriter, r *http.Request) {
+		// Expect json response
+		w.Header().Set("Content-Type", "application/json")
 
-				// Fetch title param
-				titleParam := strings.ToLower(r.PathValue("title"))
+		// Fetch title param
+		titleParam := strings.ToLower(r.PathValue("title"))
 
-				// Get editor name
-				authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with determining session: %s", err)
-					return
-				}
+		// Get editor name
+		authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with determining session: %s", err)
+			return
+		}
 
-				editor, err := data.GetLoginStatus(authtoken, r, db)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
-					return
-				}
+		editor, err := data.GetLoginStatus(authtoken, r, db)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with authenticating user: %s", err)
+			return
+		}
 
-				// Check if deleting a page is possible
-				userGroups, err := db.GetUserGroups(editor)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
-					return
-				}
-				proceed := userutils.UserCan("delete", userGroups)
-				if !proceed {
-					jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with deleting page: Permission denied", nil)
-					return
-				}
+		// Check if deleting a page is possible
+		userGroups, err := db.GetUserGroups(editor)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
+			return
+		}
+		proceed := userutils.UserCan("delete", userGroups)
+		if !proceed {
+			jsonresp.JsonERR(w, http.StatusUnauthorized, "Error with deleting page: Permission denied", nil)
+			return
+		}
 
-				// Check if user is suspended
-				blocked, err := db.IsSuspended(editor)
-				if err != nil {
-					jsonresp.JsonERR(w, http.StatusBadRequest, "Error with deleting page: %s", err)
-					return
-				}
-				if blocked {
-					jsonresp.JsonERR(w, http.StatusUnauthorized, "This user is temprorarily suspended.", nil)
-					return
-				}
+		// Check if user is suspended
+		blocked, err := db.IsSuspended(editor)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with deleting page: %s", err)
+			return
+		}
+		if blocked {
+			jsonresp.JsonERR(w, http.StatusUnauthorized, "This user is temprorarily suspended.", nil)
+			return
+		}
 
-				// Delete page from database
-				if err := db.DeletePage(titleParam); err != nil {
-					jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error deleting page from database: %s", err)
-					return
-				}
+		// Delete page from database
+		if err := db.DeletePage(titleParam); err != nil {
+			jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error deleting page from database: %s", err)
+			return
+		}
 
-				// Make response
-				jsonresp.JsonOK(w, make(map[string]string), "Page deleted!")
+		// Make response
+		jsonresp.JsonOK(w, make(map[string]string), "Page deleted!")
 
-				// Fire event
-				sc.Fire("onPageDelete", [1]string{editor})
-			})
+		// Fire event
+		sc.Fire("onPageDelete", [1]string{editor})
+	})
 }

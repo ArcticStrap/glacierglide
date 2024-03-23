@@ -42,15 +42,12 @@ func main() {
 	sc := appsignals.NewSignalConnector()
 
 	// Setup api
-	rt.Route("/api", func(apiroute chi.Router) {
-		// Initalize subrouters
-		wikido.SetupDoRoute(apiroute, &db)
-		wiki.SetupWikiRoute(apiroute, &db)
-		edit.SetupEditRoute(apiroute, &db, sc)
-		history.SetupHistoryRoute(apiroute, &db)
-		source.SetupSourceRoute(apiroute, &db)
-		user.SetupUserRoute(apiroute, &db, sc)
-	})
+	wikido.SetupDoRoute(rt, &db)
+	wiki.SetupWikiRoute(rt, &db)
+	edit.SetupEditRoute(rt, &db, sc)
+	history.SetupHistoryRoute(rt, &db)
+	source.SetupSourceRoute(rt, &db)
+	user.SetupUserRoute(rt, &db, sc)
 
 	// Setup client (if permitted)
 	if os.Getenv("WITHPOLARP") != "" {

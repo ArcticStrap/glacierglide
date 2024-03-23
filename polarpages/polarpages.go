@@ -5,22 +5,19 @@ import (
 	"net/http"
 
 	"github.com/ArcticStrap/glacierglide/polarpages/handlers"
-	"github.com/go-chi/chi/v5"
 )
 
-func Setup(rt *chi.Mux, addr string) {
-	// Parse templates
-
-	// Load skin assets
-	sfs := http.FileServer(http.Dir("polarpages/skins"))
-	rt.Handle("/skins/*", http.StripPrefix("/skins/", sfs))
-
+func Setup(rt *http.ServeMux, addr string) {
 	// Setup handlers
 	handlers.SetupWikiHandler(rt, addr)
 	handlers.SetupEditHandler(rt, addr)
 	handlers.SetupHistoryHandler(rt, addr)
 	handlers.SetupSourceHandler(rt, addr)
 	handlers.SetupUserHandler(rt)
+
+	// Load skin assets
+	sfs := http.NewServeMux()
+	sfs.Handle("/skins/*", http.StripPrefix("/skins/", http.FileServer(http.Dir("polarpages/skins"))))
 
 	log.Println("PolarPages initalized")
 }

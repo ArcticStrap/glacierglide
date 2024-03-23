@@ -13,7 +13,7 @@ import (
 )
 
 func SetupUserRoute(rt *http.ServeMux, db data.Datastore, sc *appsignals.SignalConnector) {
-	rt.HandleFunc("POST /CreateAccount", func(w http.ResponseWriter, r *http.Request) {
+	rt.HandleFunc("POST /api/CreateAccount", func(w http.ResponseWriter, r *http.Request) {
 		// Expect json response
 		w.Header().Set("Content-Type", "application/json")
 
@@ -72,7 +72,7 @@ func SetupUserRoute(rt *http.ServeMux, db data.Datastore, sc *appsignals.SignalC
 		sc.Fire("onCreateAccount", [1]string{createReq.Username})
 	})
 
-	rt.HandleFunc("POST /Login", func(w http.ResponseWriter, r *http.Request) {
+	rt.HandleFunc("POST /api/Login", func(w http.ResponseWriter, r *http.Request) {
 		// Expect json response
 		w.Header().Set("Content-Type", "application/json")
 
@@ -129,7 +129,7 @@ func SetupUserRoute(rt *http.ServeMux, db data.Datastore, sc *appsignals.SignalC
 
 		jsonresp.JsonOK(w, resp, fmt.Sprintf("Successfully logged in as user %s.", loginReq.Username))
 	})
-	rt.HandleFunc("POST /Logout", func(w http.ResponseWriter, _ *http.Request) {
+	rt.HandleFunc("POST /api/Logout", func(w http.ResponseWriter, _ *http.Request) {
 		http.SetCookie(w, &http.Cookie{
 			Name:     "gg_session",
 			Value:    "",
