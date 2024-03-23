@@ -15,6 +15,7 @@ import (
 	"github.com/ArcticStrap/glacierglide/api/wikido"
 	"github.com/ArcticStrap/glacierglide/appsignals"
 	"github.com/ArcticStrap/glacierglide/data"
+	"github.com/ArcticStrap/glacierglide/middleware"
 	"github.com/ArcticStrap/glacierglide/polarpages"
 	"github.com/ArcticStrap/glacierglide/utils/environment"
 )
@@ -35,13 +36,10 @@ func main() {
 	}
 	defer db.Close()
 
-	rt := chi.NewRouter()
+	rt := http.NewServeMux()
 
 	// Initalize the app signal system
 	sc := appsignals.NewSignalConnector()
-
-	// Use logger
-	rt.Use(middleware.Logger)
 
 	// Setup api
 	rt.Route("/api", func(apiroute chi.Router) {
@@ -75,12 +73,23 @@ func main() {
 		os.Exit(0)
 	}()
 
+	// Setup middleware
+	mStack := middleware.CreateStack(
+		middleware.Logging,
+	)
+
 	// Start up web server
+
+	server := http.Server{
+		Addr:    os.Getenv("ADDR"),
+		Handler: mStack(rt),
+	}
+
 	log.Println("Running on " + os.Getenv("ADDR"))
 	if os.Getenv("DEV") == "" {
-		http.ListenAndServeTLS(os.Getenv("ADDR"), "certs/cert.pem", "certs/key.pem", rt)
+		server.ListenAndServeTLS("certs/cert.pem", "certs/key.pem")
 	} else {
 		log.Println("(MODE: DEBUG)")
-		http.ListenAndServe(os.Getenv("ADDR"), rt)
+		log.Fatal(server.ListenAndServe())
 	}
 }
