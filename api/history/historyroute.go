@@ -7,18 +7,16 @@ import (
 
 	"github.com/ArcticStrap/glacierglide/data"
 	"github.com/ArcticStrap/glacierglide/jsonresp"
-	"github.com/go-chi/chi/v5"
 )
 
-func SetupHistoryRoute(rt chi.Router, db data.Datastore) {
+func SetupHistoryRoute(rt *http.ServeMux, db data.Datastore) {
 	// History subroute handler
-	rt.Route("/h", func(histRouter chi.Router) {
 		// Retrieve page history
-		histRouter.Get("/{title}", func(w http.ResponseWriter, r *http.Request) {
+		rt.HandleFunc("GET /h/{title}", func(w http.ResponseWriter, r *http.Request) {
 			// Expect json response
 			w.Header().Set("Content-Type", "application/json")
 
-			titleParam := chi.URLParam(r, "title")
+			titleParam := r.PathValue("title")
 			// Redirect if not lowercase
 			if strings.ToLower(titleParam) != titleParam {
 				http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
@@ -35,5 +33,4 @@ func SetupHistoryRoute(rt chi.Router, db data.Datastore) {
 			// Convert list to json
 			json.NewEncoder(w).Encode(pH)
 		})
-	})
 }

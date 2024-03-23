@@ -4,22 +4,19 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-chi/chi/v5"
-
 	"github.com/ArcticStrap/glacierglide/data"
 	"github.com/ArcticStrap/glacierglide/mprender"
 	"github.com/ArcticStrap/glacierglide/mprender/markdown"
 )
 
-func SetupWikiRoute(rt chi.Router, db data.Datastore) {
+func SetupWikiRoute(rt *http.ServeMux, db data.Datastore) {
 	// Add view subroute
-	rt.Route("/wiki", func(wikirouter chi.Router) {
 		// Redirect root to main page
-		wikirouter.Get("/", http.RedirectHandler("/wiki/Main_Page", http.StatusSeeOther).ServeHTTP)
+		rt.Handle("GET /", http.RedirectHandler("/wiki/Main_Page", http.StatusSeeOther))
 
 		// Page view handler
-		wikirouter.Get("/{title}", func(w http.ResponseWriter, r *http.Request) {
-			titleParam := chi.URLParam(r, "title")
+		rt.HandleFunc("GET /{title}", func(w http.ResponseWriter, r *http.Request) {
+			titleParam := r.PathValue("title")
 			// Redirect if not lowercase
 			if strings.ToLower(titleParam) != titleParam {
 				http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
@@ -41,5 +38,4 @@ func SetupWikiRoute(rt chi.Router, db data.Datastore) {
 
 			w.Write([]byte(p.Content))
 		})
-	})
 }

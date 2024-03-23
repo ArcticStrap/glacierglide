@@ -10,11 +10,10 @@ import (
 	"github.com/ArcticStrap/glacierglide/data"
 	"github.com/ArcticStrap/glacierglide/jsonresp"
 	"github.com/ArcticStrap/glacierglide/utils/userutils"
-	"github.com/go-chi/chi/v5"
 )
 
-func SetupUserRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConnector) {
-	rt.Post("/CreateAccount", func(w http.ResponseWriter, r *http.Request) {
+func SetupUserRoute(rt *http.ServeMux, db data.Datastore, sc *appsignals.SignalConnector) {
+	rt.HandleFunc("POST /CreateAccount", func(w http.ResponseWriter, r *http.Request) {
 		// Expect json response
 		w.Header().Set("Content-Type", "application/json")
 
@@ -73,7 +72,7 @@ func SetupUserRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 		sc.Fire("onCreateAccount", [1]string{createReq.Username})
 	})
 
-	rt.Post("/Login", func(w http.ResponseWriter, r *http.Request) {
+	rt.HandleFunc("POST /Login", func(w http.ResponseWriter, r *http.Request) {
 		// Expect json response
 		w.Header().Set("Content-Type", "application/json")
 
@@ -130,7 +129,7 @@ func SetupUserRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 
 		jsonresp.JsonOK(w, resp, fmt.Sprintf("Successfully logged in as user %s.", loginReq.Username))
 	})
-	rt.Post("/Logout", func(w http.ResponseWriter, _ *http.Request) {
+	rt.HandleFunc("POST /Logout", func(w http.ResponseWriter, _ *http.Request) {
 		http.SetCookie(w, &http.Cookie{
 			Name:     "gg_session",
 			Value:    "",

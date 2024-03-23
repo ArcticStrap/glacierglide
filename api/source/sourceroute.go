@@ -4,17 +4,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-chi/chi/v5"
-
 	"github.com/ArcticStrap/glacierglide/data"
 )
 
-func SetupSourceRoute(rt chi.Router, db data.Datastore) {
+func SetupSourceRoute(rt *http.ServeMux, db data.Datastore) {
 	// Add source subroute
-	rt.Route("/s", func(sourcerouter chi.Router) {
 		// Page source handler
-		sourcerouter.Get("/{title}", func(w http.ResponseWriter, r *http.Request) {
-			titleParam := chi.URLParam(r, "title")
+		rt.HandleFunc("GET /s/{title}", func(w http.ResponseWriter, r *http.Request) {
+			titleParam := r.PathValue("title")
 			// Redirect if not lowercase
 			if strings.ToLower(titleParam) != titleParam {
 				http.Redirect(w, r, strings.ToLower(titleParam), http.StatusSeeOther)
@@ -29,5 +26,4 @@ func SetupSourceRoute(rt chi.Router, db data.Datastore) {
 			}
 			w.Write([]byte(p.Content))
 		})
-	})
 }

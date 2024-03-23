@@ -10,21 +10,18 @@ import (
 	"github.com/ArcticStrap/glacierglide/jsonresp"
 	"github.com/ArcticStrap/glacierglide/utils/pageutils/pnamespace"
 	"github.com/ArcticStrap/glacierglide/utils/userutils"
-	"github.com/go-chi/chi/v5"
 )
 
 // Authenticate token, default to ip address if empty token.
 
-func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConnector) {
+func SetupEditRoute(rt *http.ServeMux, db data.Datastore, sc *appsignals.SignalConnector) {
 	// Setup subrouter for wiki editing
-	rt.Route("/e", func(editrouter chi.Router) {
-		editrouter.Route("/{title}", func(pagerouter chi.Router) {
-			pagerouter.Post("/", func(w http.ResponseWriter, r *http.Request) {
+			rt.HandleFunc("POST /e/{title}", func(w http.ResponseWriter, r *http.Request) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
 
 				// Fetch title param
-				titleParam := strings.ToLower(chi.URLParam(r, "title"))
+				titleParam := strings.ToLower(r.PathValue("title"))
 
 				// Get editor name
 				authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
@@ -108,12 +105,12 @@ func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 			})
 
 			// Update page content
-			pagerouter.Put("/", data.CallJWTAuth(db, false, func(w http.ResponseWriter, r *http.Request) {
+			rt.HandleFunc("PUT /e/{title}", data.CallJWTAuth(db, false, func(w http.ResponseWriter, r *http.Request) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
 
 				// Fetch title param
-				titleParam := strings.ToLower(chi.URLParam(r, "title"))
+				titleParam := strings.ToLower(r.PathValue("title"))
 
 				// Check if page exists
 				if _, err := db.GetIdFromPageTitle(titleParam); err != nil {
@@ -204,12 +201,12 @@ func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 				sc.Fire("onPageUpdate", [1]string{editor})
 			}))
 
-			pagerouter.Delete("/", func(w http.ResponseWriter, r *http.Request) {
+			rt.HandleFunc("DELETE /e/{title}", func(w http.ResponseWriter, r *http.Request) {
 				// Expect json response
 				w.Header().Set("Content-Type", "application/json")
 
 				// Fetch title param
-				titleParam := strings.ToLower(chi.URLParam(r, "title"))
+				titleParam := strings.ToLower(r.PathValue("title"))
 
 				// Get editor name
 				authtoken, err := jsonresp.FetchCookieValue("gg_session", r)
@@ -259,6 +256,4 @@ func SetupEditRoute(rt chi.Router, db data.Datastore, sc *appsignals.SignalConne
 				// Fire event
 				sc.Fire("onPageDelete", [1]string{editor})
 			})
-		})
-	})
 }

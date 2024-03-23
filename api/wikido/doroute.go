@@ -8,24 +8,21 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-chi/chi/v5"
-
 	"github.com/ArcticStrap/glacierglide/data"
 	"github.com/ArcticStrap/glacierglide/jsonresp"
 	"github.com/ArcticStrap/glacierglide/utils/userutils"
 	"github.com/ArcticStrap/glacierglide/wikiinfo"
 )
 
-func SetupDoRoute(rt chi.Router, db data.Datastore) {
+func SetupDoRoute(rt *http.ServeMux, db data.Datastore) {
 	// Add do subroute
-	rt.Route("/d", func(dorouter chi.Router) {
 		// GENERAL REQUESTS
 		// Version info
-		dorouter.Get("/version", func(w http.ResponseWriter, _ *http.Request) {
+		rt.HandleFunc("GET /d/version", func(w http.ResponseWriter, _ *http.Request) {
 			w.Write([]byte(fmt.Sprintf("Core\nGlacierGlide: Version %s\nGo: Version %s\n%s: Version %s", wikiinfo.Version, runtime.Version(), db.EngineName(), db.Version())))
 		})
-		dorouter.Get("/viewrev/{revid}", func(w http.ResponseWriter, r *http.Request) {
-			revidParam := chi.URLParam(r, "revid")
+		rt.HandleFunc("GET /d/viewrev/{revid}", func(w http.ResponseWriter, r *http.Request) {
+			revidParam := r.PathValue("revid")
 			revID, err := strconv.ParseInt(revidParam, 10, 64)
 			if err != nil {
 				jsonresp.JsonERR(w, http.StatusBadRequest, "Invalid revision id.", nil)
@@ -42,7 +39,7 @@ func SetupDoRoute(rt chi.Router, db data.Datastore) {
 		})
 
 		// MODERATION REQUESTS
-		dorouter.Post("/suspend", func(w http.ResponseWriter, r *http.Request) {
+		rt.HandleFunc("POST /suspend", func(w http.ResponseWriter, r *http.Request) {
 			var bReq data.SusReq
 
 			if err := json.NewDecoder(r.Body).Decode(&bReq); err != nil {
@@ -85,7 +82,7 @@ func SetupDoRoute(rt chi.Router, db data.Datastore) {
 			// Make response
 			jsonresp.JsonOK(w, make(map[string]string), "Suspended user")
 		})
-		dorouter.Post("/lock", func(w http.ResponseWriter, r *http.Request) {
+		rt.HandleFunc("POST /lock", func(w http.ResponseWriter, r *http.Request) {
 			// Decode lock request
 			var lockReq data.LockReq
 
@@ -133,5 +130,4 @@ func SetupDoRoute(rt chi.Router, db data.Datastore) {
 			// Make response
 			jsonresp.JsonOK(w, make(map[string]string), "Page Locked")
 		})
-	})
 }
