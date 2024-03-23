@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"log"
+	"fmt"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -26,6 +27,6 @@ func Logging(next http.Handler) http.Handler {
 		}
 
 		next.ServeHTTP(wrapped, r)
-		log.Println(wrapped.statusCode, r.Method, r.URL.Path, time.Since(start))
+		fmt.Fprintf(os.Stdout, "%s \"%s %s %s\" from %s - %d in %s\n", start.Format("2006-01-02 01:16:50"), r.Method, r.URL.Path, r.Proto, r.RemoteAddr, wrapped.statusCode, time.Since(start))
 	})
 }
