@@ -16,8 +16,7 @@ func Setup(rt *http.ServeMux, addr string) {
 	handlers.SetupUserHandler(rt)
 
 	// Load skin assets
-	sfs := http.NewServeMux()
-	sfs.Handle("/skins/*", http.StripPrefix("/skins/", http.FileServer(http.Dir("polarpages/skins"))))
+	rt.Handle("GET /skins/*", http.StripPrefix("/skins/", http.FileServer(http.Dir("polarpages/skins"))))
 
 	log.Println("PolarPages initalized")
 }
