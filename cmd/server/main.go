@@ -7,12 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/ArcticStrap/glacierglide/api/edit"
-	"github.com/ArcticStrap/glacierglide/api/history"
-	"github.com/ArcticStrap/glacierglide/api/source"
-	"github.com/ArcticStrap/glacierglide/api/user"
-	"github.com/ArcticStrap/glacierglide/api/wiki"
-	"github.com/ArcticStrap/glacierglide/api/wikido"
+	"github.com/ArcticStrap/glacierglide/api"
 	"github.com/ArcticStrap/glacierglide/appsignals"
 	"github.com/ArcticStrap/glacierglide/data"
 	"github.com/ArcticStrap/glacierglide/middleware"
@@ -42,12 +37,7 @@ func main() {
 	sc := appsignals.NewSignalConnector()
 
 	// Setup api
-	wikido.SetupDoRoute(rt, &db)
-	wiki.SetupWikiRoute(rt, &db)
-	edit.SetupEditRoute(rt, &db, sc)
-	history.SetupHistoryRoute(rt, &db)
-	source.SetupSourceRoute(rt, &db)
-	user.SetupUserRoute(rt, &db, sc)
+	api.Setup(rt, &db, sc)
 
 	// Setup client (if permitted)
 	if os.Getenv("WITHPOLARP") != "" {

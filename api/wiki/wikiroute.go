@@ -10,8 +10,6 @@ import (
 )
 
 func SetupWikiRoute(rt *http.ServeMux, db data.Datastore) {
-	// Add view subroute
-
 	// Page view handler
 	rt.HandleFunc("GET /api/wiki/{title}", func(w http.ResponseWriter, r *http.Request) {
 		titleParam := r.PathValue("title")

@@ -8,7 +8,6 @@ import (
 )
 
 func SetupSourceRoute(rt *http.ServeMux, db data.Datastore) {
-	// Add source subroute
 	// Page source handler
 	rt.HandleFunc("GET /api/s/{title}", func(w http.ResponseWriter, r *http.Request) {
 		titleParam := r.PathValue("title")

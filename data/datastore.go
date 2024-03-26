@@ -48,6 +48,11 @@ type Datastore interface {
 	ReadPageEdit(id int64) (*PageEdit, error)
 	DeletePageEdit(id int64) error
 
+	// Search operations
+	SearchPagesFromTitle(title string) ([]Page, error)
+	SearchPagesFromTitlePrefix(prefix string, limit int) ([]Page, error)
+	SearchPagesContainingTitle(title string) ([]Page, error)
+
 	// Moderation actions
 	GetLockStatus(p string) (int, error)
 	LockPage(p string, min_group int) error
@@ -440,6 +445,89 @@ func (db *PostgresBase) GetUserGroups(username string) ([]string, error) {
 	}
 
 	return groups, nil
+}
+
+// Search operatons
+func (db *PostgresBase) SearchPagesFromTitle(title string) ([]Page, error) {
+	var results []Page
+
+	// Query
+	rows, err := db.conn.Query(context.Background(), "SELECT * FROM pages WHERE title=$1", title)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	ok := true
+	for rows.Next() {
+		var rPage Page
+		err = rows.Scan(nil, &rPage.Title, &rPage.Content, &rPage.Namespace, &rPage.MPType)
+		if err != nil {
+			ok = false
+			break
+		}
+		results = append(results, rPage)
+	}
+	if !ok {
+		return nil, err
+	}
+
+	return results, nil
+}
+
+func (db *PostgresBase) SearchPagesFromTitlePrefix(prefix string, limit int) ([]Page, error) {
+	var results []Page
+
+	// Query
+	rows, err := db.conn.Query(context.Background(), "SELECT * FROM pages WHERE title LIKE $1 || '%' LIMIT $2", prefix, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	ok := true
+	for rows.Next() {
+		var rPage Page
+		err = rows.Scan(nil, &rPage.Title, &rPage.Content, &rPage.Namespace, &rPage.MPType)
+		if err != nil {
+			ok = false
+			break
+		}
+		results = append(results, rPage)
+	}
+	if !ok {
+		println(err.Error())
+		return nil, err
+	}
+
+	return results, nil
+}
+
+func (db *PostgresBase) SearchPagesContainingTitle(title string) ([]Page, error) {
+	results := []Page{}
+
+	// Query
+	rows, err := db.conn.Query(context.Background(), "SELECT * FROM pages WHERE title LIKE '%' || $1 || '%'", title)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	ok := true
+	for rows.Next() {
+		var rPage Page
+		err = rows.Scan(nil, &rPage.Title, &rPage.Content, &rPage.Namespace, &rPage.MPType)
+		if err != nil {
+			ok = false
+			break
+		}
+		results = append(results, rPage)
+	}
+	if !ok {
+		return nil, err
+	}
+
+	return results, nil
 }
 
 // Moderation actions

@@ -18,9 +18,9 @@
           <li><a hx-get="/wiki/project:contact">Contact</a></li>
           {{if .LoggedIn}}
             <li><strong>{{.Username}}</strong></li>
-            <li><a href="/Logout">Logout</a></li>
+            <li><a hx-get="/Logout">Logout</a></li>
           {{else}}
-            <li><a href="/Login">Login</a></li>
+            <li><a hx-get="/Login">Login</a></li>
           {{end}}
           <li><a onclick="toggleView()">Toggle View</a></li>
         </ul>

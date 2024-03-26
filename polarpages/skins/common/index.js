@@ -158,11 +158,46 @@ const ggLogin = () => {
 const onPageSearch = () => {
   const searchInput = document.getElementById('searchIn');
   const searchResults = document.getElementById('searchOut');
-  if (searchInput.value.trim() !== '') {
-    searchResults.style.display = 'block';
-    // Test placeholder for now
-    searchResults.innerHTML = '<li>Search result 1</li><li>Search result 2</li><li>Search result 3</li>';
-  } else {
-    searchResults.style.display = 'none';
-  }
+
+  apiRes = '';
+
+  searchResults.innerHTML = apiRes;
+
+  const requestBody = {
+    pattern: searchInput.value,
+    limit: 10
+  };
+
+  fetch('/api/search', {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(requestBody)
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Response not ok");
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data === null) {return}
+      for (let i = 0; i < data.length; i++) {
+        apiRes += "<li><a href=\"/wiki/" + data[i] +"\">" + data[i] + "</a></li>"
+      }
+
+      if (searchInput.value.trim() !== '') {
+        searchResults.style.display = 'block';
+        // Test placeholder for now
+        searchResults.innerHTML = apiRes;
+      } else {
+        searchResults.style.display = 'none';
+      }
+    })
+    .catch(error => {
+      console.error(error)
+      searchResults.style.display = 'none';
+    })
+
 }
