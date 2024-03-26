@@ -46,9 +46,15 @@ func UserSession(r *http.Request) models.SessionData {
 			LoggedIn: false,
 		}
 	}
+	username, err := r.Cookie("gg_username")
+	if err != nil {
+		return models.SessionData{
+			LoggedIn: false,
+		}
+	}
 
 	return models.SessionData{
 		LoggedIn: true,
-		Username: "User",
+		Username: username.Value,
 	}
 }

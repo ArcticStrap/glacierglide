@@ -123,6 +123,12 @@ func SetupUserRoute(rt *http.ServeMux, db data.Datastore, sc *appsignals.SignalC
 			Expires:  time.Unix(time.Now().Unix()+86400, 0), // Expire in 24 hours
 			HttpOnly: true,
 		})
+		http.SetCookie(w, &http.Cookie{
+			Name:     "gg_username",
+			Value:    loginReq.Username,
+			Expires:  time.Unix(time.Now().Unix()+86400, 0), // Expire in 24 hours
+			HttpOnly: true,
+		})
 
 		resp := make(map[string]string)
 		resp["token"] = token
@@ -132,6 +138,12 @@ func SetupUserRoute(rt *http.ServeMux, db data.Datastore, sc *appsignals.SignalC
 	rt.HandleFunc("POST /api/Logout", func(w http.ResponseWriter, _ *http.Request) {
 		http.SetCookie(w, &http.Cookie{
 			Name:     "gg_session",
+			Value:    "",
+			Expires:  time.Unix(0, 0),
+			HttpOnly: true,
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:     "gg_username",
 			Value:    "",
 			Expires:  time.Unix(0, 0),
 			HttpOnly: true,
