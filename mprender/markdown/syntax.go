@@ -1,5 +1,7 @@
 package markdown
 
+// Basic syntax
+
 func ParseCode(text []byte, start int) ([]Chunk, int) {
 	if len(text) < 2 {
 		return []Chunk{Paragraph{Part{Value: string(text)}}}, 0
@@ -381,3 +383,5 @@ func ParseQuickLink(text []byte, start int) ([]Chunk, int) {
 
 	return pChildren, (i - start) + 1
 }
+
+// More complicated syntax

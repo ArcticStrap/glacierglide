@@ -9,21 +9,31 @@
     <link href="/skins/{{.Theme}}/style.css" rel="stylesheet">
   </head>
   <body hx-target="this" hx-replace-url="true">
-    <nav>
-      <ul>
-        <li><a hx-get="/wiki/main_page">Home</a></li>
-        <li><a hx-get="/wiki/project:about">About</a></li>
-        <li><a hx-get="/wiki/project:help">Help</a></li>
-        <li><a hx-get="/wiki/project:contact">Contact</a></li>
-        {{if .LoggedIn}}
-          <li><strong>{{.Username}}</strong></li>
-          <li><a href="/Logout">Logout</a></li>
-        {{else}}
-          <li><a href="/Login">Login</a></li>
-        {{end}}
-        <li><a onclick="toggleView()">Toggle View</a></li>
-      </ul>
-    </nav>
+    <div class="gg-nav">
+      <nav id="left-nav">
+        <ul>
+          <li><a hx-get="/wiki/main_page">Home</a></li>
+          <li><a hx-get="/wiki/project:about">About</a></li>
+          <li><a hx-get="/wiki/project:help">Help</a></li>
+          <li><a hx-get="/wiki/project:contact">Contact</a></li>
+          {{if .LoggedIn}}
+            <li><strong>{{.Username}}</strong></li>
+            <li><a href="/Logout">Logout</a></li>
+          {{else}}
+            <li><a href="/Login">Login</a></li>
+          {{end}}
+          <li><a onclick="toggleView()">Toggle View</a></li>
+        </ul>
+      </nav>
+      <nav id="right-nav">
+        <ul>
+          <input id="searchIn" type="search" name="search" placeholder="Search Wiki" oninput="onPageSearch()">
+          <ul id="searchOut">
+            
+          </ul>
+        </ul>
+      </nav>
+    </div>
 
     {{block "gg-main" .}}{{end}}
 

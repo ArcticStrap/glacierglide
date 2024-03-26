@@ -155,3 +155,14 @@ const ggLogin = () => {
     })
 }
 
+const onPageSearch = () => {
+  const searchInput = document.getElementById('searchIn');
+  const searchResults = document.getElementById('searchOut');
+  if (searchInput.value.trim() !== '') {
+    searchResults.style.display = 'block';
+    // Test placeholder for now
+    searchResults.innerHTML = '<li>Search result 1</li><li>Search result 2</li><li>Search result 3</li>';
+  } else {
+    searchResults.style.display = 'none';
+  }
+}

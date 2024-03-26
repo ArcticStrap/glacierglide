@@ -13,33 +13,74 @@ body {
   padding: 0;
 }
 
-nav {
+.gg-nav {
+  display: flex;
+  justify-content: space-between;
+}
+
+.gg-nav nav {
+  flex: 1;
   background-color: #f8f9fa;
   padding: 10px 0;
 }
 
-nav ul {
+.gg-nav nav ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-nav ul li {
+#left-nav ul li {
   display: inline-block;
   margin-right: 20px;
 }
 
-nav ul li:first-child {
+#left-nav ul li:first-child {
   margin-left: 20px;
 }
 
-nav ul li:last-child {
+#left-nav ul li:last-child {
   margin-right: 0;
 }
 
-nav ul li a {
+#left-nav ul li a {
   text-decoration: none;
   color: #333;
+}
+
+#right-nav ul * {
+  float: right;
+}
+
+/* Search related content */
+
+#searchIn {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-left: auto;
+  margin-right: 20px;
+}
+
+#searchOut {
+  display: none;
+  position: absolute;
+  top: 100%; /* Position below the search bar */
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  z-index: 999; /* Ensure it appears above other content */
+}
+
+#searchOut li {
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+}
+
+#searchOut li:last-child {
+  border-bottom: none; /* Remove border from last item */
 }
 
 /* Page contents */
