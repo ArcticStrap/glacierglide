@@ -40,6 +40,14 @@ func SetupSearchEngine(rt *http.ServeMux, db data.Datastore) {
 			return
 		}
 
+		if len(res) == 0 {
+			res, err = db.SearchPagesContainingTitle(sr.Pattern, sr.Limit)
+			if err != nil {
+				jsonresp.JsonERR(w, http.StatusUnprocessableEntity, "Error with searching pages: %s", err)
+				return
+			}
+		}
+
 		var matches []string
 		for _, v := range res {
 			matches = append(matches, v.Title)

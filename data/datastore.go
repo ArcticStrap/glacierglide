@@ -51,7 +51,7 @@ type Datastore interface {
 	// Search operations
 	SearchPagesFromTitle(title string) ([]Page, error)
 	SearchPagesFromTitlePrefix(prefix string, limit int) ([]Page, error)
-	SearchPagesContainingTitle(title string) ([]Page, error)
+	SearchPagesContainingTitle(title string, limit int) ([]Page, error)
 
 	// Moderation actions
 	GetLockStatus(p string) (int, error)
@@ -503,11 +503,11 @@ func (db *PostgresBase) SearchPagesFromTitlePrefix(prefix string, limit int) ([]
 	return results, nil
 }
 
-func (db *PostgresBase) SearchPagesContainingTitle(title string) ([]Page, error) {
+func (db *PostgresBase) SearchPagesContainingTitle(title string, limit int) ([]Page, error) {
 	results := []Page{}
 
 	// Query
-	rows, err := db.conn.Query(context.Background(), "SELECT * FROM pages WHERE title LIKE '%' || $1 || '%'", title)
+	rows, err := db.conn.Query(context.Background(), "SELECT * FROM pages WHERE title LIKE '%' || $1 || '%' LIMIT $2", title, limit)
 	if err != nil {
 		return nil, err
 	}

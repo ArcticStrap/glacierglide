@@ -48,14 +48,11 @@ body {
   color: #333;
 }
 
-#right-nav ul * {
-  float: right;
-}
-
 /* Search related content */
 
 #searchIn {
   padding: 5px;
+  float: right;
   border: 1px solid #ccc;
   border-radius: 3px;
   margin-left: auto;
@@ -66,7 +63,7 @@ body {
   display: none;
   background-color: #fff;
   border: 1px solid #ccc;
-  border-top: none;
+  float: right;
   z-index: 999; /* Ensure it appears above other content */
 }
 
@@ -77,6 +74,15 @@ body {
 
 #searchOut li:last-child {
   border-bottom: none; /* Remove border from last item */
+}
+
+/* Page navigation */
+#gg-page-nav ul {
+  list-style: none;
+}
+
+#gg-page-nav ul li {
+  display: inline-block;
 }
 
 /* Page contents */
