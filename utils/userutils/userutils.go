@@ -23,3 +23,23 @@ func UserCan(action string, userGroups []string) bool {
 	}
 	return false
 }
+
+func WhosGroupSuperior(group1 string, group2 string) string {
+	index1 := 0
+	index2 := 0
+	curIndex := 0
+	for i := range wikiconfig.UserGroups {
+		if i == group1 {
+			index1 = curIndex
+		} else if i == group2 {
+			index2 = curIndex
+		}
+		curIndex++
+	}
+	if index1 > index2 {
+		return group1
+	} else if index1 < index2 {
+		return group2
+	}
+	return ""
+}

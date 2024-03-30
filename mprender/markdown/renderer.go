@@ -9,6 +9,7 @@ func renderInline(p *Part) string {
 	renderedLine := ""
 	for _, v := range p.Children {
 		switch vEle := v.(type) {
+		// Base syntax
 		case Code:
 			renderedLine += fmt.Sprintf("<code>%s</code>", vEle.Value)
 			break
@@ -29,6 +30,7 @@ func renderInline(p *Part) string {
 		case PlainText:
 			renderedLine += vEle.Value
 			break
+			// Extended syntax
 		default:
 			renderedLine += "ERROR: COULD NOT DETERMINE TYPE OF ELEMENT"
 			break

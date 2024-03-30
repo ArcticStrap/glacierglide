@@ -39,7 +39,7 @@ func SetupDoRoute(rt *http.ServeMux, db data.Datastore) {
 	})
 
 	// MODERATION REQUESTS
-	rt.HandleFunc("POST /api/suspend", func(w http.ResponseWriter, r *http.Request) {
+	rt.HandleFunc("POST /api/d/suspend", func(w http.ResponseWriter, r *http.Request) {
 		var bReq data.SusReq
 
 		if err := json.NewDecoder(r.Body).Decode(&bReq); err != nil {
@@ -82,7 +82,7 @@ func SetupDoRoute(rt *http.ServeMux, db data.Datastore) {
 		// Make response
 		jsonresp.JsonOK(w, make(map[string]string), "Suspended user")
 	})
-	rt.HandleFunc("POST /api/lock", func(w http.ResponseWriter, r *http.Request) {
+	rt.HandleFunc("POST /api/d/lock", func(w http.ResponseWriter, r *http.Request) {
 		// Decode lock request
 		var lockReq data.LockReq
 
@@ -129,5 +129,42 @@ func SetupDoRoute(rt *http.ServeMux, db data.Datastore) {
 
 		// Make response
 		jsonresp.JsonOK(w, make(map[string]string), "Page Locked")
+	})
+
+	// User group related functions
+	// Fetch user groups
+	rt.HandleFunc("GET /api/d/ugroups/{username}", func(w http.ResponseWriter, r *http.Request) {
+		// Expect json response
+		w.Header().Set("Content-Type", "application/json")
+
+		username := r.PathValue("username")
+		groups, err := db.GetUserGroups(username)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with fetching user groups: %s", err)
+			return
+		}
+		json.NewEncoder(w).Encode(&groups)
+	})
+	// Update user groups
+	rt.HandleFunc("PUT /api/d/ugroups/{username}", func(w http.ResponseWriter, r *http.Request) {
+		/* Expect json response
+		w.Header().Set("Content-Type", "application/json")
+
+		username := r.PathValue("username")
+
+		var rReq data.RightsReq
+
+		if err := json.NewDecoder(r.Body).Decode(&rReq); err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with decoding json: ", err)
+			return
+		}
+
+		err := db.EditUserGroups(username, rReq)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error changing the user groups: %s", err)
+			return
+		}
+
+		jsonresp.JsonOK(w, make(map[string]string), "User groups updated!")*/
 	})
 }

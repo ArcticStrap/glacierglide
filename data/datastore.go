@@ -41,7 +41,9 @@ type Datastore interface {
 	GetUser(username string) (*User, error)
 	UpdateUser(u *User, newName string, newPass string) error
 	DeleteUser(username string) error
+
 	GetUserGroups(username string) ([]string, error)
+	EditUserGroups(username string, changes RightsReq) error
 
 	// CRUD for page edit
 	CreatePageEdit(p *Page, editor string) error
@@ -445,6 +447,37 @@ func (db *PostgresBase) GetUserGroups(username string) ([]string, error) {
 	}
 
 	return groups, nil
+}
+
+func (db *PostgresBase) EditUserGroups(username string, changes RightsReq) error {
+	tx, err := db.conn.Begin(context.Background())
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(context.Background())
+
+	// Add users to groups
+	for _, group := range changes.Add {
+		_, err := tx.Exec(context.Background(), "INSERT INTO user_groups (user_id, u_group) VALUES ((SELECT user_id FROM users WHERE username = $1), $2)", username, group)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Remove users from groups
+	for _, group := range changes.Remove {
+		_, err := tx.Exec(context.Background(), "DELETE FROM user_groups WHERE user_id = (SELECT user_id FROM users WHERE username = $1) AND u_group = $2", username, group)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Search operatons

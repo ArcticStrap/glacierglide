@@ -53,6 +53,8 @@ func (pe PageEdit) MarshalJSON() ([]byte, error) {
 	})
 }
 
+// Administration requests
+
 type SusReq struct {
 	Target   string `json:"target"`
 	Duration int64  `json:"duration"`
@@ -61,4 +63,9 @@ type SusReq struct {
 type LockReq struct {
 	Title        string `json:"title"`
 	MinimumGroup int64  `json:"minGroup"`
+}
+
+type RightsReq struct {
+	Add    []string
+	Remove []string
 }

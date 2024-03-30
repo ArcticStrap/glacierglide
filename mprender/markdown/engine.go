@@ -5,7 +5,7 @@ package markdown
 type Chunk interface {
 }
 
-// Base
+// Base syntax
 
 type Paragraph struct {
 	Part
@@ -72,9 +72,39 @@ type List struct {
 	Part
 
 	Ordered bool
+	Defined bool
 }
 
 type ListItem struct {
+	Part
+}
+
+// Extended syntax
+type Table struct {
+	Part
+}
+
+type Footnote struct {
+	Part
+}
+
+type StrikeThrough struct {
+	Part
+}
+
+type Emoji struct {
+	Part
+}
+
+type Highlight struct {
+	Part
+}
+
+type Subscript struct {
+	Part
+}
+
+type Superscript struct {
 	Part
 }
 

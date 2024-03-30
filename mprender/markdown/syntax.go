@@ -384,4 +384,4 @@ func ParseQuickLink(text []byte, start int) ([]Chunk, int) {
 	return pChildren, (i - start) + 1
 }
 
-// More complicated syntax
+// Extended syntax
