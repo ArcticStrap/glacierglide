@@ -8,6 +8,8 @@ GlacierGlide is an prototype-stage backend wiki framework written in Go. Basic f
 
 ## Running
 
+![Engine preview](./docs/static/preview.png)
+
 ### Environment variables
 You need a .env file with 3 variables:
     ADDR: The web address to listen and serve
