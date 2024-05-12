@@ -30,3 +30,9 @@ var UserGroups map[string]map[string]bool = map[string]map[string]bool{
 	},
 	"manager": {},
 }
+
+var GroupAssignRights map[string][]string = map[string][]string{
+  "moderator": {},
+  "administrator": {"moderator"},
+  "manager": {"administrator","moderator"},
+}

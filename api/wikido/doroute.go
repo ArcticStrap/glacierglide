@@ -147,7 +147,7 @@ func SetupDoRoute(rt *http.ServeMux, db data.Datastore) {
 	})
 	// Update user groups
 	rt.HandleFunc("PUT /api/d/ugroups/{username}", func(w http.ResponseWriter, r *http.Request) {
-		/* Expect json response
+		//Expect json response
 		w.Header().Set("Content-Type", "application/json")
 
 		username := r.PathValue("username")
@@ -159,12 +159,22 @@ func SetupDoRoute(rt *http.ServeMux, db data.Datastore) {
 			return
 		}
 
-		err := db.EditUserGroups(username, rReq)
+		userGroups, err := db.GetUserGroups(username)
+		if err != nil {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Error with getting user groups: %s", err)
+			return
+		}
+
+    if !userutils.ValidRightsReq(userGroups[len(userGroups)-1],rReq.Add,rReq.Remove) {
+      jsonresp.JsonERR(w,http.StatusBadRequest,"Invalid Rights Request",nil)
+    }
+
+		err = db.EditUserGroups(username, rReq)
 		if err != nil {
 			jsonresp.JsonERR(w, http.StatusBadRequest, "Error changing the user groups: %s", err)
 			return
 		}
 
-		jsonresp.JsonOK(w, make(map[string]string), "User groups updated!")*/
+		jsonresp.JsonOK(w, make(map[string]string), "User groups updated!")
 	})
 }
