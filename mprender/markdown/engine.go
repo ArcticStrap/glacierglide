@@ -117,7 +117,9 @@ func ParseInline(line []byte) []Chunk {
 			// Ignore syntax if escape char is found
 			if i+1 < len(line) {
 				i++
-				bStart++
+        if bStart == i {
+          bStart++
+        }
 			}
 		} else if line[i] == '*' || line[i] == '_' {
 			parts, jump := ParseEmph(line[bStart:], i-bStart, line[i])

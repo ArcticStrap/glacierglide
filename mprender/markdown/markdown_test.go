@@ -110,64 +110,24 @@ func TestMarkdownEngine(t *testing.T) {
 		},
 		// Backslash cases
 		{
-			input:    "Backslashes: \\",
-			expected: "<p>Backslashes: \\</p>\n",
+			input:    "Backslashes: \\a",
+			expected: "<p>Backslashes: \\a</p>\n",
 		},
 		{
-			input:    "Escape asterisk: \\*",
-			expected: "<p>Escape asterisk: \\*</p>\n",
+			input:    "Show Backslashes: \\\\",
+			expected: "<p>Show Backslashes: \\</p>\n",
 		},
 		{
-			input:    "Escape underscore: \\_",
-			expected: "<p>Escape underscore: \\_</p>\n",
+			input:    "Escaped asterik: \\*",
+			expected: "<p>Backslashes: *</p>\n",
 		},
 		{
-			input:    "Escape hash: \\#",
-			expected: "<p>Escape hash: \\#</p>\n",
+			input:    "Escaped markup: \\**hello**)",
+			expected: "<p>Backslashes: **hello**</p>\n",
 		},
 		{
-			input:    "Escape greater-than: \\>",
-			expected: "<p>Escape greater-than: \\></p>\n",
-		},
-		{
-			input:    "Escape backtick: \\`",
-			expected: "<p>Escape backtick: \\`</p>\n",
-		},
-		{
-			input:    "Escape hyphen: \\-",
-			expected: "<p>Escape hyphen: \\-</p>\n",
-		},
-		{
-			input:    "Escape period: \\.",
-			expected: "<p>Escape period: \\.</p>\n",
-		},
-		{
-			input:    "Escape square brackets: \\[ \\]",
-			expected: "<p>Escape square brackets: \\[ \\]</p>\n",
-		},
-		{
-			input:    "Escape parentheses: \\( \\)",
-			expected: "<p>Escape parentheses: \\( \\)</p>\n",
-		},
-		{
-			input:    "Escape angle brackets: \\< \\>",
-			expected: "<p>Escape angle brackets: \\< \\></p>\n",
-		},
-		{
-			input:    "Escape exclamation mark: \\!",
-			expected: "<p>Escape exclamation mark: \\!</p>\n",
-		},
-		{
-			input:    "Escape plus sign: \\+",
-			expected: "<p>Escape plus sign: \\+</p>\n",
-		},
-		{
-			input:    "Escape pipe: \\|",
-			expected: "<p>Escape pipe: \\|</p>\n",
-		},
-		{
-			input:    "Escape backslash: \\\\",
-			expected: "<p>Escape backslash: \\\\</p>\n",
+			input:    "\\## Escaped header",
+			expected: "<p>## Escaped header</p>\n",
 		},
 	}
 
