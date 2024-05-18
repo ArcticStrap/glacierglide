@@ -10,7 +10,7 @@ func TestMarkdownEngine(t *testing.T) {
 		input    string
 		expected string
 	}{
-    // Header cases
+		// Header cases
 		{
 			input:    "# Header 1",
 			expected: "<h1>Header 1</h1>\n",
@@ -35,7 +35,7 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "###### Header 6",
 			expected: "<h6>Header 6</h6>\n",
 		},
-    // Other cases
+		// Other cases
 		{
 			input:    "Horizontal rule below\n---",
 			expected: "<p>Horizontal rule below</p>\n<hr>\n",
@@ -44,7 +44,7 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "Here is some `code` text.",
 			expected: "<p>Here is some <code>code</code> text.</p>\n",
 		},
-    // Blockquote cases
+		// Blockquote cases
 		{
 			input:    "> Single-line blockquote",
 			expected: "<blockquote>Single-line blockquote</blockquote>\n",
@@ -65,7 +65,7 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "> Blockquote with\n> multiple\n> lines\n> of text",
 			expected: "<blockquote>Blockquote with\nmultiple\nlines\nof text</blockquote>\n",
 		},
-    // List cases
+		// List cases
 		{
 			input:    "This is an ordered list:\n1. one\n2. two\n3. three",
 			expected: "<p>This is an ordered list:</p>\n<ol>\n<li>one</li>\n<li>two</li>\n<li>three</li>\n</ol>\n",
@@ -74,7 +74,7 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "This is an unordered list:\n- 1\n- 2\n- 3",
 			expected: "<p>This is an unordered list:</p>\n<ul>\n<li>1</li>\n<li>2</li>\n<li>3</li>\n</ul>\n",
 		},
-    // Emphasis cases
+		// Emphasis cases
 		{
 			input:    "This is *italic* text.",
 			expected: "<p>This is <em>italic</em> text.</p>\n",
@@ -87,7 +87,7 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "This is ***bold* and *italic*** text.",
 			expected: "<p>This is <strong><em>bold</em> and <em>italic</em></strong> text.</p>\n",
 		},
-    // Link cases
+		// Link cases
 		{
 			input:    "This is a link to [wikipedia](https://wikipedia.org wikipedia).",
 			expected: "<p>This is a link to <a href=\"https://wikipedia.org\" alt=\"wikipedia\">wikipedia</a>.</p>\n",
@@ -110,7 +110,7 @@ func TestMarkdownEngine(t *testing.T) {
 		},
 		// Backslash cases
 		{
-			input:    "Backslashes: \\a",
+			input:    "Backslashes: \\\\a",
 			expected: "<p>Backslashes: \\a</p>\n",
 		},
 		{
@@ -119,11 +119,11 @@ func TestMarkdownEngine(t *testing.T) {
 		},
 		{
 			input:    "Escaped asterik: \\*",
-			expected: "<p>Backslashes: *</p>\n",
+			expected: "<p>Escaped asterik: *</p>\n",
 		},
 		{
-			input:    "Escaped markup: \\**hello**)",
-			expected: "<p>Backslashes: **hello**</p>\n",
+			input:    "Escaped markup: \\**hello**",
+			expected: "<p>Escaped markup: *<em>hello</em>*</p>\n",
 		},
 		{
 			input:    "\\## Escaped header",

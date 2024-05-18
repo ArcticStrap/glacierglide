@@ -113,49 +113,47 @@ func ParseInline(line []byte) []Chunk {
 
 	bStart := 0
 	for i := 0; i < len(line); i++ {
-		if line[i] == '\\' && (i-1 <= 0 || line[i-1] != '\\') {
-			// Ignore syntax if escape char is found
-			if i+1 < len(line) {
-				i++
-        if bStart == i {
-          bStart++
-        }
-			}
-		} else if line[i] == '*' || line[i] == '_' {
-			parts, jump := ParseEmph(line[bStart:], i-bStart, line[i])
-			if jump == 0 {
-				continue
-			}
-			pChildren = append(pChildren, parts...)
-			i += jump
-			bStart = i
-		} else if line[i] == '<' {
-			parts, jump := ParseQuickLink(line[bStart:], i-bStart)
-			if jump == 0 {
-				continue
-			}
+		if IsEscape(line, i) {
+      pChildren = append(pChildren,PlainText{Part{Value: string(line[bStart:i-1])}})
+      bStart = i
+      continue
+		} else {
+			if line[i] == '*' || line[i] == '_' {
+				parts, jump := ParseEmph(line[bStart:], i-bStart, line[i])
+				if jump == 0 {
+					continue
+				}
+				pChildren = append(pChildren, parts...)
+				i += jump
+				bStart = i
+			} else if line[i] == '<' {
+				parts, jump := ParseQuickLink(line[bStart:], i-bStart)
+				if jump == 0 {
+					continue
+				}
 
-			pChildren = append(pChildren, parts...)
-			i += jump
-			bStart = i
-		} else if line[i] == '`' {
-			parts, jump := ParseCode(line[bStart:], i-bStart)
-			if jump == 0 {
-				continue
-			}
+				pChildren = append(pChildren, parts...)
+				i += jump
+				bStart = i
+			} else if line[i] == '`' {
+				parts, jump := ParseCode(line[bStart:], i-bStart)
+				if jump == 0 {
+					continue
+				}
 
-			pChildren = append(pChildren, parts...)
-			i += jump
-			bStart = i
-		} else if line[i] == '[' {
-			parts, jump := ParseLink(line[bStart:], i-bStart)
-			if jump == 0 {
-				continue
-			}
+				pChildren = append(pChildren, parts...)
+				i += jump
+				bStart = i
+			} else if line[i] == '[' {
+				parts, jump := ParseLink(line[bStart:], i-bStart)
+				if jump == 0 {
+					continue
+				}
 
-			pChildren = append(pChildren, parts...)
-			i += jump
-			bStart = i
+				pChildren = append(pChildren, parts...)
+				i += jump
+				bStart = i
+			}
 		}
 	}
 
@@ -270,4 +268,23 @@ func RmvCr(str []byte) []byte {
 	}
 
 	return str[:wi]
+}
+
+// IsEscape returns true if byte i is prefixed by an odd number of backslahses.
+func IsEscape(data []byte, i int) bool {
+	if i == 0 {
+		return false
+	}
+	if i == 1 {
+		return data[0] == '\\'
+	}
+	j := i - 1
+	for ; j >= 0; j-- {
+		if data[j] != '\\' {
+			break
+		}
+	}
+	j++
+	// odd number of backslahes means escape
+	return (i-j)%2 != 0
 }
