@@ -165,9 +165,9 @@ func SetupDoRoute(rt *http.ServeMux, db data.Datastore) {
 			return
 		}
 
-    if !userutils.ValidRightsReq(userGroups[len(userGroups)-1],rReq.Add,rReq.Remove) {
-      jsonresp.JsonERR(w,http.StatusBadRequest,"Invalid Rights Request",nil)
-    }
+		if !userutils.ValidRightsReq(userGroups[len(userGroups)-1], rReq.Add, rReq.Remove) {
+			jsonresp.JsonERR(w, http.StatusBadRequest, "Invalid Rights Request", nil)
+		}
 
 		err = db.EditUserGroups(username, rReq)
 		if err != nil {

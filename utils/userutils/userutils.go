@@ -27,15 +27,15 @@ func UserCan(action string, userGroups []string) bool {
 }
 
 func ValidRightsReq(userGroup string, add []string, remove []string) bool {
-  for _, v := range add {
-    if !slices.Contains(wikiconfig.GroupAssignRights[userGroup],v) {
-      return false
-    }
-  }
-  for _, v := range remove {
-    if !slices.Contains(wikiconfig.GroupAssignRights[userGroup],v) {
-      return false
-    }
-  }
-  return true
-} 
+	for _, v := range add {
+		if !slices.Contains(wikiconfig.GroupAssignRights[userGroup], v) {
+			return false
+		}
+	}
+	for _, v := range remove {
+		if !slices.Contains(wikiconfig.GroupAssignRights[userGroup], v) {
+			return false
+		}
+	}
+	return true
+}

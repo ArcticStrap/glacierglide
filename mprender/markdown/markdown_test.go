@@ -10,6 +10,7 @@ func TestMarkdownEngine(t *testing.T) {
 		input    string
 		expected string
 	}{
+    // Header cases
 		{
 			input:    "# Header 1",
 			expected: "<h1>Header 1</h1>\n",
@@ -34,6 +35,7 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "###### Header 6",
 			expected: "<h6>Header 6</h6>\n",
 		},
+    // Other cases
 		{
 			input:    "Horizontal rule below\n---",
 			expected: "<p>Horizontal rule below</p>\n<hr>\n",
@@ -42,6 +44,7 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "Here is some `code` text.",
 			expected: "<p>Here is some <code>code</code> text.</p>\n",
 		},
+    // Blockquote cases
 		{
 			input:    "> Single-line blockquote",
 			expected: "<blockquote>Single-line blockquote</blockquote>\n",
@@ -50,18 +53,19 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "> First line of a multi-line\n> blockquote\n> Last line of a multi-line blockquote",
 			expected: "<blockquote>First line of a multi-line\nblockquote\nLast line of a multi-line blockquote</blockquote>\n",
 		},
-		/*{
+		{
 			input:    "> Blockquote with **bold** and *italic* text.",
 			expected: "<blockquote>Blockquote with <strong>bold</strong> and <em>italic</em> text.</blockquote>\n",
 		},
 		{
 			input:    "> Nested blockquote\n>> Nested within the first one",
 			expected: "<blockquote>Nested blockquote\n<blockquote>Nested within the first one</blockquote>\n</blockquote>\n",
-		},*/
+		},
 		{
 			input:    "> Blockquote with\n> multiple\n> lines\n> of text",
 			expected: "<blockquote>Blockquote with\nmultiple\nlines\nof text</blockquote>\n",
 		},
+    // List cases
 		{
 			input:    "This is an ordered list:\n1. one\n2. two\n3. three",
 			expected: "<p>This is an ordered list:</p>\n<ol>\n<li>one</li>\n<li>two</li>\n<li>three</li>\n</ol>\n",
@@ -70,6 +74,7 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "This is an unordered list:\n- 1\n- 2\n- 3",
 			expected: "<p>This is an unordered list:</p>\n<ul>\n<li>1</li>\n<li>2</li>\n<li>3</li>\n</ul>\n",
 		},
+    // Emphasis cases
 		{
 			input:    "This is *italic* text.",
 			expected: "<p>This is <em>italic</em> text.</p>\n",
@@ -82,6 +87,7 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "This is ***bold* and *italic*** text.",
 			expected: "<p>This is <strong><em>bold</em> and <em>italic</em></strong> text.</p>\n",
 		},
+    // Link cases
 		{
 			input:    "This is a link to [wikipedia](https://wikipedia.org wikipedia).",
 			expected: "<p>This is a link to <a href=\"https://wikipedia.org\" alt=\"wikipedia\">wikipedia</a>.</p>\n",
@@ -101,6 +107,67 @@ func TestMarkdownEngine(t *testing.T) {
 		{
 			input:    "Plain text",
 			expected: "<p>Plain text</p>\n",
+		},
+		// Backslash cases
+		{
+			input:    "Backslashes: \\",
+			expected: "<p>Backslashes: \\</p>\n",
+		},
+		{
+			input:    "Escape asterisk: \\*",
+			expected: "<p>Escape asterisk: \\*</p>\n",
+		},
+		{
+			input:    "Escape underscore: \\_",
+			expected: "<p>Escape underscore: \\_</p>\n",
+		},
+		{
+			input:    "Escape hash: \\#",
+			expected: "<p>Escape hash: \\#</p>\n",
+		},
+		{
+			input:    "Escape greater-than: \\>",
+			expected: "<p>Escape greater-than: \\></p>\n",
+		},
+		{
+			input:    "Escape backtick: \\`",
+			expected: "<p>Escape backtick: \\`</p>\n",
+		},
+		{
+			input:    "Escape hyphen: \\-",
+			expected: "<p>Escape hyphen: \\-</p>\n",
+		},
+		{
+			input:    "Escape period: \\.",
+			expected: "<p>Escape period: \\.</p>\n",
+		},
+		{
+			input:    "Escape square brackets: \\[ \\]",
+			expected: "<p>Escape square brackets: \\[ \\]</p>\n",
+		},
+		{
+			input:    "Escape parentheses: \\( \\)",
+			expected: "<p>Escape parentheses: \\( \\)</p>\n",
+		},
+		{
+			input:    "Escape angle brackets: \\< \\>",
+			expected: "<p>Escape angle brackets: \\< \\></p>\n",
+		},
+		{
+			input:    "Escape exclamation mark: \\!",
+			expected: "<p>Escape exclamation mark: \\!</p>\n",
+		},
+		{
+			input:    "Escape plus sign: \\+",
+			expected: "<p>Escape plus sign: \\+</p>\n",
+		},
+		{
+			input:    "Escape pipe: \\|",
+			expected: "<p>Escape pipe: \\|</p>\n",
+		},
+		{
+			input:    "Escape backslash: \\\\",
+			expected: "<p>Escape backslash: \\\\</p>\n",
 		},
 	}
 
