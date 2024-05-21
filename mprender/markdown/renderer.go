@@ -30,7 +30,10 @@ func renderInline(p *Part) string {
 		case PlainText:
 			renderedLine += vEle.Value
 			break
-			// Extended syntax
+		// Extended syntax
+		case StrikeThrough:
+			renderedLine += fmt.Sprintf("<s>%s</s>", vEle.Value)
+			break
 		default:
 			renderedLine += "ERROR: COULD NOT DETERMINE TYPE OF ELEMENT"
 			break

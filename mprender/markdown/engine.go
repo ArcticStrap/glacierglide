@@ -114,9 +114,9 @@ func ParseInline(line []byte) []Chunk {
 	bStart := 0
 	for i := 0; i < len(line); i++ {
 		if IsEscape(line, i) {
-      pChildren = append(pChildren,PlainText{Part{Value: string(line[bStart:i-1])}})
-      bStart = i
-      continue
+			pChildren = append(pChildren, PlainText{Part{Value: string(line[bStart : i-1])}})
+			bStart = i
+			continue
 		} else {
 			if line[i] == '*' || line[i] == '_' {
 				parts, jump := ParseEmph(line[bStart:], i-bStart, line[i])
@@ -153,7 +153,16 @@ func ParseInline(line []byte) []Chunk {
 				pChildren = append(pChildren, parts...)
 				i += jump
 				bStart = i
-			}
+			} else if line[i] == '~' {
+				parts, jump := ParseStrikeThrough(line[bStart:], i-bStart)
+				if jump == 0 {
+					continue
+				}
+
+				pChildren = append(pChildren, parts...)
+				i += jump
+				bStart = i
+      }
 		}
 	}
 
