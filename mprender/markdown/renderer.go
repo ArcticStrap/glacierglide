@@ -37,6 +37,12 @@ func renderInline(p *Part) string {
 		case Highlight:
 			renderedLine += fmt.Sprintf("<mark>%s</mark>", vEle.Value)
 			break
+		case Superscript:
+			renderedLine += fmt.Sprintf("<sup>%s</sup>", vEle.Value)
+			break
+		case Subscript:
+			renderedLine += fmt.Sprintf("<sub>%s</sub>", vEle.Value)
+			break
 		default:
 			renderedLine += "ERROR: COULD NOT DETERMINE TYPE OF ELEMENT"
 			break

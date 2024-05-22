@@ -150,7 +150,22 @@ func ParseInline(line []byte) []Chunk {
 				i += jump
 				bStart = i
 			} else if line[i] == '~' {
-				parts, jump := ParseStrikeThrough(line[bStart:], i-bStart)
+				var parts []Chunk
+				var jump int
+				if i+1 < len(line) && line[i+1] == '~' {
+					parts, jump = ParseStrikeThrough(line[bStart:], i-bStart)
+				} else {
+					parts, jump = ParseSubScript(line[bStart:], i-bStart)
+				}
+				if jump == 0 {
+					continue
+				}
+
+				pChildren = append(pChildren, parts...)
+				i += jump
+				bStart = i
+			} else if line[i] == '^' {
+				parts, jump := ParseSuperScript(line[bStart:], i-bStart)
 				if jump == 0 {
 					continue
 				}

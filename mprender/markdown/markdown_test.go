@@ -138,6 +138,14 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "==Highlighted text==",
 			expected: "<p><mark>Highlighted text</mark></p>\n",
 		},
+		{
+			input:    "^Super^",
+			expected: "<p><sup>Super</sup></p>\n",
+		},
+		{
+			input:    "~Sub~",
+			expected: "<p><sub>Sub</sub></p>\n",
+		},
 	}
 
 	pass := true

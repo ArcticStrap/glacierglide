@@ -446,3 +446,65 @@ func ParseHighlight(text []byte, start int) ([]Chunk, int) {
 
 	return pChildren, i - start
 }
+
+func ParseSubScript(text []byte, start int) ([]Chunk, int) {
+	if len(text) < 2 {
+		return []Chunk{PlainText{Part{Value: string(text)}}}, 0
+	}
+	pChildren := []Chunk{}
+	var pBytes []byte
+	i := start
+
+	// Append inactive plain text
+	pChildren = append(pChildren, PlainText{Part{Value: string(text[0:i])}})
+
+	if text[i] == '~' {
+		i++
+		for i < len(text) && text[i] != '~' {
+			pBytes = append(pBytes, text[i])
+			i++
+		}
+		if text[i] != '~' {
+			return []Chunk{PlainText{Part{Value: string(text)}}}, 0
+		} else {
+			i++
+		}
+	} else {
+		return []Chunk{PlainText{Part{Value: string(text)}}}, 0
+	}
+
+	pChildren = append(pChildren, Subscript{Part{Value: string(pBytes)}})
+
+	return pChildren, i - start
+}
+
+func ParseSuperScript(text []byte, start int) ([]Chunk, int) {
+	if len(text) < 2 {
+		return []Chunk{PlainText{Part{Value: string(text)}}}, 0
+	}
+	pChildren := []Chunk{}
+	var pBytes []byte
+	i := start
+
+	// Append inactive plain text
+	pChildren = append(pChildren, PlainText{Part{Value: string(text[0:i])}})
+
+	if text[i] == '^' {
+		i++
+		for i < len(text) && text[i] != '^' {
+			pBytes = append(pBytes, text[i])
+			i++
+		}
+		if text[i] != '^' {
+			return []Chunk{PlainText{Part{Value: string(text)}}}, 0
+		} else {
+			i++
+		}
+	} else {
+		return []Chunk{PlainText{Part{Value: string(text)}}}, 0
+	}
+
+	pChildren = append(pChildren, Superscript{Part{Value: string(pBytes)}})
+
+	return pChildren, i - start
+}
