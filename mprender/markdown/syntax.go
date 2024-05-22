@@ -415,3 +415,34 @@ func ParseStrikeThrough(text []byte, start int) ([]Chunk, int) {
 
 	return pChildren, i - start
 }
+
+func ParseHighlight(text []byte, start int) ([]Chunk, int) {
+	if len(text) < 4 {
+		return []Chunk{PlainText{Part{Value: string(text)}}}, 0
+	}
+	pChildren := []Chunk{}
+	var pBytes []byte
+	i := start
+
+	// Append inactive plain text
+	pChildren = append(pChildren, PlainText{Part{Value: string(text[0:i])}})
+
+	if text[i] == '=' && text[i+1] == '=' {
+		i += 2
+		for i < len(text) && text[i] != '=' {
+			pBytes = append(pBytes, text[i])
+			i++
+		}
+		if text[i] != '=' || text[i+1] != '=' {
+			return []Chunk{PlainText{Part{Value: string(text)}}}, 0
+		} else {
+			i += 2
+		}
+	} else {
+		return []Chunk{PlainText{Part{Value: string(text)}}}, 0
+	}
+
+	pChildren = append(pChildren, Highlight{Part{Value: string(pBytes)}})
+
+	return pChildren, i - start
+}

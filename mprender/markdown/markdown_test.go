@@ -134,6 +134,10 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "~~Striked text~~",
 			expected: "<p><s>Striked text</s></p>\n",
 		},
+		{
+			input:    "==Highlighted text==",
+			expected: "<p><mark>Highlighted text</mark></p>\n",
+		},
 	}
 
 	pass := true

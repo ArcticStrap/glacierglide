@@ -34,6 +34,9 @@ func renderInline(p *Part) string {
 		case StrikeThrough:
 			renderedLine += fmt.Sprintf("<s>%s</s>", vEle.Value)
 			break
+		case Highlight:
+			renderedLine += fmt.Sprintf("<mark>%s</mark>", vEle.Value)
+			break
 		default:
 			renderedLine += "ERROR: COULD NOT DETERMINE TYPE OF ELEMENT"
 			break
