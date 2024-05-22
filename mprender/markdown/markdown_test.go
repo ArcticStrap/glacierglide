@@ -129,11 +129,11 @@ func TestMarkdownEngine(t *testing.T) {
 			input:    "\\## Escaped header",
 			expected: "<p>## Escaped header</p>\n",
 		},
-    // Extended syntax cases
-    {
+		// Extended syntax cases
+		{
 			input:    "~~Striked text~~",
 			expected: "<p><s>Striked text</s></p>\n",
-    },
+		},
 	}
 
 	pass := true

@@ -92,10 +92,6 @@ type StrikeThrough struct {
 	Part
 }
 
-type Emoji struct {
-	Part
-}
-
 type Highlight struct {
 	Part
 }
@@ -162,7 +158,7 @@ func ParseInline(line []byte) []Chunk {
 				pChildren = append(pChildren, parts...)
 				i += jump
 				bStart = i
-      }
+			}
 		}
 	}
 
