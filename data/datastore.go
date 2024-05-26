@@ -512,7 +512,7 @@ func (db *PostgresBase) SearchPagesFromTitlePrefix(prefix string, limit int) ([]
 	var results []Page
 
 	// Query
-	rows, err := db.conn.Query(context.Background(), "SELECT * FROM pages WHERE title LIKE $1 || '%' LIMIT $2", prefix, limit)
+	rows, err := db.conn.Query(context.Background(), "SELECT * FROM pages WHERE namespace=0 AND title LIKE $1 || '%' LIMIT $2", prefix, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -540,7 +540,7 @@ func (db *PostgresBase) SearchPagesContainingTitle(title string, limit int) ([]P
 	results := []Page{}
 
 	// Query
-	rows, err := db.conn.Query(context.Background(), "SELECT * FROM pages WHERE title LIKE '%' || $1 || '%' LIMIT $2", title, limit)
+	rows, err := db.conn.Query(context.Background(), "SELECT * FROM pages WHERE namespace=0 AND title LIKE '%' || $1 || '%' LIMIT $2", title, limit)
 	if err != nil {
 		return nil, err
 	}

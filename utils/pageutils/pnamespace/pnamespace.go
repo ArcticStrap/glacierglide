@@ -3,20 +3,20 @@ package pnamespace
 import "github.com/ArcticStrap/glacierglide/wikiconfig"
 
 const (
-	Main int = iota
-	MainD
-	User
-	UserD
-	Project
-	ProjectD
-	File
-	FileD
-	Template
-	TemplateD
-	Help
-	HelpD
-	Category
-	CategoryD
+	Main      int = 0
+	MainD     int = 1
+	User      int = 2
+	UserD     int = 3
+	Project   int = 4
+	ProjectD  int = 5
+	File      int = 6
+	FileD     int = 7
+	Template  int = 8
+	TemplateD int = 9
+	Help      int = 10
+	HelpD     int = 11
+	Category      = 12
+	CategoryD     = 13
 )
 
 func NamespaceFromNumber(ns int) string {
